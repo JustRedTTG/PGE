@@ -1,175 +1,45 @@
-from os import environ, system, path, mkdir
+"""Pygame Extra"""
+from os import environ, path, mkdir, getcwd
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1' # disable pygame's hello message, sorry pygame ;-;
-import pygame, pygame.display
-import requests
+from pygameextra.install import install, requests, pygame, system
+import pygameextra.settings as Settings
+pe_values, rect, pivot, color = None, None, None, None # Nill variables
 NoneText, display_a, display_size, eventsl, scriptpath, slider_image = None, None, None, None, None, None # Nill variables
 
 
-#layer setup \/
+# layer setup \/
 Layer = [None] * 17
 for x in range(0,17):
     Layer[x] = [True, (0,0)]
     #
-#layer setup /\
+# layer setup /\
 
 
 # DEVELOPER OPTIONS!
-__version__ = "1.6.5" # developers, please change this accordingly when developing!
+__version__ = "1.6.5.1" # developers, please change this accordingly when developing!
 modified = False # developers, please set this to True when developing!
 # DEVELOPER OPTIONS!
 
-def install(progress=0):
-    dis = pygame.display.set_mode((500,100))
-    pygame.display.set_caption("Pygame Extra Installation")
-    install = True
-    try:
-        import requests
-    except:
-        print("[ IMPORT ERROR ] Please get the 'requests' library and try to run the installation again!")
-        print("Quiting Instalation of " + __version__)
-        pygame.quit()
-        exit()
-    if not path.exists(path.realpath(path.join(scriptpath, "files"))):
-        mkdir(path.realpath(path.join(scriptpath, "files")))
-    if not path.exists(path.realpath(path.join(scriptpath, "build"))):
-        mkdir(path.realpath(path.join(scriptpath, "build")))
-    if not path.exists(path.realpath(path.join(scriptpath, "build/scripts-3.8"))):
-        mkdir(path.realpath(path.join(scriptpath, "build/scripts-3.8")))
-    if not path.exists(path.realpath(path.join(scriptpath, "examples"))):
-        mkdir(path.realpath(path.join(scriptpath, "examples")))
-    if not path.exists(path.realpath(path.join(scriptpath, "examples/pong"))):
-        mkdir(path.realpath(path.join(scriptpath, "examples/pong")))
-    if not path.exists(path.realpath(path.join(scriptpath, "examples/tester"))):
-        mkdir(path.realpath(path.join(scriptpath, "examples/tester")))
-    if not path.exists(path.realpath(path.join(scriptpath, "dist"))):
-        mkdir(path.realpath(path.join(scriptpath, "dist")))
-    if not path.exists(path.realpath(path.join(scriptpath, "pygameextra_pong.egg-info"))):
-        mkdir(path.realpath(path.join(scriptpath, "pygameextra_pong.egg-info")))
-    if not path.exists(path.realpath(path.join(scriptpath, "pygameextra_tester.egg-info"))):
-        mkdir(path.realpath(path.join(scriptpath, "pygameextra_tester.egg-info")))
-    try:
-        requests.get("http://www.google.com", timeout=5)
-        internet = True
-    except:
-        internet = False
-        #
-    while install:
-        for eventx in pygame.event.get():
-            if eventx.type == pygame.QUIT:
-                print("Quiting Instalation of "+__version__+", please complete the instalation in order to use PGE!")
-                pygame.quit()
-                exit()
-        dis.fill((255,255,255))
-        if internet:
-            if progress < 10:
-                ver = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/version.txt", timeout=5)
-                open(path.join(scriptpath, "files/version"), "wb").write(ver.content)
-                progress += 10
-            elif progress < 20:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/dist/pygameextra_pong-0.0.0-py3.8.egg", timeout=5)
-                open(path.join(scriptpath, "dist/pygameextra_pong-0.0.0-py3.8.egg"), "wb").write(c.content)
-                progress += 10
-            elif progress < 30:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/dist/pygameextra_tester-0.0.0-py3.8.egg", timeout=5)
-                open(path.join(scriptpath, "dist/pygameextra_tester-0.0.0-py3.8.egg"), "wb").write(c.content)
-                progress += 5
-            elif progress < 35:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/pong/pygameextra-pong", timeout=5)
-                open(path.realpath(path.join(scriptpath, "examples/pong/pygameextra-pong")), "wb").write(c.content)
-                progress += 5
-            elif progress < 40:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/pygameextra-tester", timeout=5)
-                open(path.join(scriptpath, "examples/tester/pygameextra-tester"), "wb").write(c.content)
-                progress += 5
-            elif progress < 45:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/pong/font.ttf", timeout=5)
-                open(path.join(scriptpath, "examples/pong/font.ttf"), "wb").write(c.content)
-                progress += 1
-            elif progress < 46:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/Xbutton.png", timeout=5)
-                open(path.join(scriptpath, "examples/tester/Xbutton.png"), "wb").write(c.content)
-                progress += 1
-            elif progress < 47:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/Ybutton.png", timeout=5)
-                open(path.join(scriptpath, "examples/tester/Ybutton.png"), "wb").write(c.content)
-                progress += 1
-            elif progress < 48:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/columns.png", timeout=5)
-                open(path.join(scriptpath, "examples/tester/columns.png"), "wb").write(c.content)
-                progress += 1
-            elif progress < 49:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/rows.png", timeout=5)
-                open(path.join(scriptpath, "examples/tester/rows.png"), "wb").write(c.content)
-                progress += 1
-            elif progress < 50:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/mario_01.png", timeout=5)
-                open(path.join(scriptpath, "examples/tester/mario_01.png"), "wb").write(c.content)
-                progress += 1
-            elif progress < 51:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/files/slider.png", timeout=5)
-                open(path.join(scriptpath, "files/slider.png"), "wb").write(c.content)
-                progress += 1
-            elif progress < 52:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_pong.egg-info/PKG-INFO", timeout=5)
-                open(path.join(scriptpath, "pygameextra_pong.egg-info/PKG-INFO"), "wb").write(c.content)
-                progress += 1
-            elif progress < 53:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_pong.egg-info/SOURCES.txt", timeout=5)
-                open(path.join(scriptpath, "pygameextra_pong.egg-info/SOURCES.txt"), "wb").write(c.content)
-                progress += 1
-            elif progress < 54:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_pong.egg-info/dependency_links.txt", timeout=5)
-                open(path.join(scriptpath, "pygameextra_pong.egg-info/dependency_links.txt"), "wb").write(c.content)
-                progress += 1
-            elif progress < 55:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_pong.egg-info/top_level.txt", timeout=5)
-                open(path.join(scriptpath, "pygameextra_pong.egg-info/top_level.txt"), "wb").write(c.content)
-                progress += 1
-            elif progress < 56:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_tester.egg-info/PKG-INFO", timeout=5)
-                open(path.join(scriptpath, "pygameextra_tester.egg-info/PKG-INFO"), "wb").write(c.content)
-                progress += 1
-            elif progress < 57:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_tester.egg-info/SOURCES.txt", timeout=5)
-                open(path.join(scriptpath, "pygameextra_tester.egg-info/SOURCES.txt"), "wb").write(c.content)
-                progress += 1
-            elif progress < 58:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_tester.egg-info/dependency_links.txt", timeout=5)
-                open(path.join(scriptpath, "pygameextra_tester.egg-info/dependency_links.txt"), "wb").write(c.content)
-                progress += 1
-            elif progress < 59:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/pygameextra_tester.egg-info/top_level.txt", timeout=5)
-                open(path.join(scriptpath, "pygameextra_tester.egg-info/top_level.txt"), "wb").write(c.content)
-                progress += 1
-            elif progress < 60:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/pong/pygameextra-pong", timeout=5)
-                open(path.realpath(path.join(scriptpath, "build/scripts-3.8/pygameextra-pong")), "wb").write(c.content)
-                progress += 1
-            elif progress < 61:
-                c = requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/examples/tester/pygameextra-tester", timeout=5)
-                open(path.join(scriptpath, "build/scripts-3.8/pygameextra-tester"), "wb").write(c.content)
-                progress += 1
-            else:
-                progress += 10
-        else:
-            progress = 100
-        pygame.draw.rect(dis, (0,233,0), (0, 40, progress*5, 20) , 0)
-        pygame.display.set_caption("Pygame Extra Installation - "+str(progress)+"%")
+def preinit():
+    """preinit() -> None
+    Imports important functions to prepare for init
+    """
+    global pe_values, rect, pivot, color
+    # IMPORTING Pygame Extra sub-modules
+    import pygameextra.values as pe_values
+    import pygameextra.rect
+    rect.pygame = pygame
+    rect = rect.rect
+    import pygameextra.pivot
+    import pygameextra.colors as color
 
-        pygame.display.flip()
-        if progress >= 100:
-            install = False
-            open(scriptpath + "files/install.info", "w").write("installed")
-        else:
-            open(scriptpath + "files/install.info", "w").write("in " + str(progress))
-        pygame.time.Clock().tick(160)
+preinit()
+
 def init():
-    global NoneText
-    global display_a
-    global display_size
-    global eventsl
-    global scriptpath
-    global slider_image
+    """init() -> None
+    Makes sure Pygame Extra is ready for operation
+    """
+    global NoneText, display_a, display_size, eventsl, scriptpath, slider_image
     pygame.mixer.pre_init(frequency = 44100, size = 16, channels = 1, buffer = 512)
     pygame.init()
     pygame.display.init()
@@ -182,15 +52,26 @@ def init():
     #RESOURCE LOADING# /\
     NoneText = text.quick.small('', (0, 0))  # an empty placeholder text if you don't supply text objects to functions
 
-    #check instalation...
-    if path.isfile(scriptpath + "files/install.info"):
-        infof = open(scriptpath + "files/install.info", "a+")
-        infof.seek(0)
-        data = infof.read()
-        ver = open(path.join(scriptpath, "files/version"), "a+")
-        ver.seek(0)
-        if data == "no install" or ver.read() != requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/1.6.5/files/version.txt", timeout=5).content.decode('ascii'):
-            if Settings.inittext:
+    if False: # this scraps the old installation of updates
+        #check instalation...
+        if path.isfile(scriptpath + "files/install.info"):
+            infof = open(scriptpath + "files/install.info", "a+")
+            infof.seek(0)
+            data = infof.read()
+            ver = open(path.join(scriptpath, "files/version.info"), "a+")
+            ver.seek(0)
+            if data == "no install" or ver.read() != requests.get("https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/version,info", timeout=5).content.decode('ascii'):
+                if Settings.INIT_TEXT:
+                    if modified:
+                        print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
+                        print("We don't supply resources to modified versions, so please contact the modifier for files")
+                        pygame.quit()
+                        exit()
+                    else:
+                        print("Pygame Extra " + __version__ + " isn't fully installed yet!")
+                        print("Starting Instalation of "+__version__)
+                        install(scriptpath=scriptpath,__version__=__version__)
+            elif "in " in data:
                 if modified:
                     print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
                     print("We don't supply resources to modified versions, so please contact the modifier for files")
@@ -198,67 +79,67 @@ def init():
                     exit()
                 else:
                     print("Pygame Extra " + __version__ + " isn't fully installed yet!")
-                    print("Starting Instalation of "+__version__)
-                    install()
-        elif "in " in data:
-            if modified:
-                print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
-                print("We don't supply resources to modified versions, so please contact the modifier for files")
-                pygame.quit()
-                exit()
-            else:
-                print("Pygame Extra " + __version__ + " isn't fully installed yet!")
-                print("Continuing Instalation of " + __version__)
-                install(int(data.replace("in ", "")))
-        elif data == "installed":
-            if Settings.inittext:
+                    print("Continuing Instalation of " + __version__)
+                    install(progress=int(data.replace("in ", "")), scriptpath=scriptpath, __version__=__version__)
+            elif data == "installed":
+                if Settings.INIT_TEXT:
+                    if modified:
+                        print("Pygame Extra " + __version__ + " (modified) is installed!")
+                        print("Please note we don't take consequnces of using this modified version, use at your own risk!")
+                    else:
+                        print("Pygame Extra " + __version__ + " is installed correctly!")
+        elif path.exists(scriptpath + "files"):
+            open(scriptpath + "files/install.info", "w").write("no install")
+        else:
+            mkdir(scriptpath + "files")
+            open(scriptpath + "files/install.info", "w").write("no install")
+            infof = open(scriptpath + "files/install.info", "a+")
+            infof.seek(0)
+            data = infof.read()
+            ver = open(path.join(scriptpath, "files/version"), "a+")
+            ver.seek(0)
+            if data == "no install" or ver.read() != requests.get(
+                    "https://redstonehair.000webhostapp.com/pygame%20extra/"+__version__+"/files/version.txt",
+                    timeout=5).content.decode('ascii'):
+                if Settings.INIT_TEXT:
+                    if modified:
+                        print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
+                        print("We don't supply resources to modified versions, so please contact the modifier for files")
+                        pygame.quit()
+                        exit()
+                    else:
+                        print("Pygame Extra " + __version__ + " isn't fully installed yet!")
+                        print("Starting Instalation of " + __version__)
+                        install(scriptpath=scriptpath, __version__=__version__)
+            elif "in " in data:
                 if modified:
-                    print("Pygame Extra " + __version__ + " (modified) is installed!")
-                    print("Please note we don't take consequnces of using this modified version, use at your own risk!")
+                    print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
+                    print("We don't supply resources to modified versions, so please contact the modifier for files")
+                    pygame.quit()
+                    exit()
                 else:
-                    print("Pygame Extra " + __version__ + " is installed correctly!")
-    elif path.exists(scriptpath + "files"):
-        open(scriptpath + "files/install.info", "w").write("no install")
+                    print("Pygame Extra " + __version__ + " isn't fully installed yet!")
+                    print("Continuing Instalation of " + __version__)
+                    install(progress=int(data.replace("in ", "")), scriptpath=scriptpath, __version__=__version__)
+            elif data == "installed":
+                if Settings.INIT_TEXT:
+                    if modified:
+                        print("Pygame Extra " + __version__ + " (modified) is installed!")
+                        print("Please note we don't take consequnces of using this modified version, use at your own risk!")
+                    else:
+                        print("Pygame Extra " + __version__ + " is installed correctly!")
     else:
-        mkdir(scriptpath + "files")
-        open(scriptpath + "files/install.info", "w").write("no install")
-        infof = open(scriptpath + "files/install.info", "a+")
-        infof.seek(0)
-        data = infof.read()
-        ver = open(path.join(scriptpath, "files/version"), "a+")
-        ver.seek(0)
-        if data == "no install" or ver.read() != requests.get(
-                "https://redstonehair.000webhostapp.com/pygame%20extra/1.6.5/files/version.txt",
-                timeout=5).content.decode('ascii'):
-            if Settings.inittext:
-                if modified:
-                    print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
-                    print("We don't supply resources to modified versions, so please contact the modifier for files")
-                    pygame.quit()
-                    exit()
-                else:
-                    print("Pygame Extra " + __version__ + " isn't fully installed yet!")
-                    print("Starting Instalation of " + __version__)
-                    install()
-        elif "in " in data:
-            if modified:
-                print("Pygame Extra " + __version__ + " (modified) is installed with missing files")
-                print("We don't supply resources to modified versions, so please contact the modifier for files")
-                pygame.quit()
-                exit()
-            else:
-                print("Pygame Extra " + __version__ + " isn't fully installed yet!")
-                print("Continuing Instalation of " + __version__)
-                install(int(data.replace("in ", "")))
-        elif data == "installed":
-            if Settings.inittext:
-                if modified:
-                    print("Pygame Extra " + __version__ + " (modified) is installed!")
-                    print("Please note we don't take consequnces of using this modified version, use at your own risk!")
-                else:
-                    print("Pygame Extra " + __version__ + " is installed correctly!")
-# Emergency call functions# \/
+        if modified:
+            print("Pygame Extra " + __version__+" modified")
+        else:
+            print("Pygame Extra " + __version__)
+    print("Join our discord: " + "https://discord.gg/8CKtZpYrdj")
+
+
 def error(textS):
+    """error(text) -> None
+    Used to display an error message that is more user friendly than command-line errors
+    """
     pygame.quit()
     print(textS)
     pygame.init()
@@ -283,38 +164,22 @@ def error(textS):
         if sl >= 10000:
             pygame.quit()
             quit()
-# Emergency call functions# /\
 
-
-class Settings:
-    inittext = True
-    update_auto = False
-    update_onButton = False
-    button_delay = 100
-    class button_lock:
-        rect = True
-        image = True
-
-class pe_values:
-    class mouse:
-        in_use = False
-    class last:
-        mouse = (0,0)
-        click = False
-    class slider:
-        start = (-10,-10)
-        rect = (-10,-10,-10,-10)
-        click = False
-        drag = False
 
 class display:
     def update():
+        """update() -> None
+        Used to update the screen"""
         pygame.display.flip()
     def set(dis):
+        """set(Display_Surface) -> None
+        Used by display.make to set the current display in use"""
         global display_a
         display_a = dis
     
     def make(size, caption, mode=0, check=False):
+        """make(size, caption, mode) -> Display Surface
+        Setup the display surface"""
         global display_size
         display_size = size
         if mode == 0:
@@ -341,78 +206,80 @@ class display:
         return dis
     class get:
         def size():
+            """size() -> Tuple
+            Get display_a's changed size"""
             x = display_a.get_width()
             y = display_a.get_height()
             return (x, y)
         def Msize():
+            """Msize() -> Tuple
+            The same as size()"""
             m = pygame.display.Info()
             return (m.current_w,m.current_h)
     class blit:
         def rect(ob, rect):
+            """rect(object, rect) -> None
+            Blit a object and a rect seperately"""
             display_a.blit(ob, rect)
         def object(ob):
+            """object([object, rect]) -> None
+            Blit a list with an object and rect"""
             display_a.blit(ob[0],ob[1])
 
-class color:
-    red = (255, 0, 0)
-    darkred = (155, 0, 0)
-    verydarkred = (55, 0, 0)
-    green = (0, 255, 0)
-    darkgreen = (0, 155, 0)
-    verydarkgreen = (0, 55, 0)
-    blue = (0, 0, 255)
-    darkblue = (0, 0, 155)
-    verydarkblue = (0, 0, 55)
-    yellow = (255, 255, 0)
-    darkyellow = (155, 155, 0)
-    verydarkyellow = (55, 55, 0)
-    aqua = (0, 255, 255)
-    darkaqua = (0, 155, 155)
-    verydarkaqua = (0, 55, 55)
-    pink = (255, 0, 255)
-    darkpink = (155, 0, 155)
-    verydarkpink = (55, 0, 55)
-    white = (255, 255, 255)
-    black = (0, 0, 0)
-    lightgray = (200, 200, 200)
-    gray = (100, 100, 100)
-    darkgray = (50, 50, 50)
-    verydarkgray = (25, 25, 25)
 
 class draw:
-    def line(color, pos, w, update=True, layer=0):
+    def line(color, pos_a, pos_b, w, update=True, layer=0):
+        """line(color, (position_a, position_b), width) -> None
+        Draws a line across two points
+        """
+        pos = (pos_a[0], pos_a[1], pos_b[0], pos_b[1])
         if Layer[layer][0]:
             pygame.draw.line(display_a, color, (pos[0]+Layer[layer][1][0], pos[1]+Layer[layer][1][1]), (pos[2]+Layer[layer][1][0], pos[3]+Layer[layer][1][1]), w)
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                     display.update()
 
     def rect(color, rect, w, update=True, layer=0):
+        """rect(color, rect, width) -> None
+        Draws a rectangle
+        """
         if Layer[layer][0]:
             pygame.draw.rect(display_a, color, (rect[0]+Layer[layer][1][0], rect[1]+Layer[layer][1][1], rect[2], rect[3]), w)
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                     display.update()
 
     def circle(color, pos, size, w, update=True, layer=0):
+        """circle(color, position, radius, width) -> None
+        Draws a circle
+        """
         if Layer[layer][0]:
             pygame.draw.circle(display_a, color, (pos[0]+Layer[layer][1][0], pos[1]+Layer[layer][1][1]), size, w)
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                 display.update()
 
     def ellipse(color, rect, update=True, layer=0):
+        """ellipse(color, rect) -> None
+        Draws a filled circle within a rect
+        """
         if Layer[layer][0]:
             pygame.draw.ellipse(display_a,color,(rect[0]+Layer[layer][1][0], rect[1]+Layer[layer][1][1], rect[2], rect[3]))
-        if Settings.update_auto and update:
+        if Settings.UPDATE_AUTO and update:
             display.update()
+
 
 class fill:
     def full(color, update=True, layer=0):
+        """fill(color)
+        Fills the full screen with a color
+        """
         if Layer[layer][0]:
             display_a.fill(color)
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                 display.update()
+
 
 class text:
     def auto(text, font, fontsize, pos, colors, layer=0):
+        """no info :("""
         if Layer[layer][0]:
             color = colors[0]
             background = colors[1]
@@ -424,6 +291,9 @@ class text:
             display.update()
 
     def make(atext, afont, afontsize, apos, acolors, layer=0):
+        """make(text, font, fontsize, position, [color, background]) -> Text Object
+        Makes a text object
+        """
         acolor = acolors[0]
         abackground = acolors[1]
         class Text:
@@ -453,30 +323,60 @@ class text:
 
     class quick:
         def make(texts, fontsize, pos, layer=0):
+            """make(text, fontsize, position) -> Text Object
+            Quickly makes a custom sized text object
+            """
             return text.make(texts,'freesansbold.ttf',fontsize,pos,((0,0,0),None), layer=layer)
         def small(texts, pos, layer=0):
+            """small(text, position) -> Text Object
+            Quickly makes a small text object
+            """
             return text.quick.make(texts, 20, pos, layer=layer)
         def medium(texts, pos, layer=0):
+            """medium(text, position) -> Text Object
+            Quickly makes a medium text object
+            """
             return text.quick.make(texts, 30, pos, layer=layer)
         def large(texts, pos, layer=0):
+            """large(text, position) -> Text Object
+            Quickly makes a large text object
+            """
             return text.quick.make(texts, 40, pos, layer=layer)
     def display(Text, update=True):
+        """display(Text_Object) -> None
+        Displays a text object
+        """
         if Layer[Text.layer][0]:
             display_a.blit(Text.texto, Text.textRect)
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                 display.update()
+
 
 class time:
     def sleep(time):
+        """sleep(time) -> None
+        Halts the program for the specified time
+        """
         pygame.time.delay(time)
     def tick(tickrate=120):
+        """tick(tickrate) -> None
+        Sets the maximum frames per second
+        """
         pygame.time.Clock().tick(tickrate)
 
+
 def Pquit():
+    """Pquit() -> None
+    Quits pygame
+    """
     pygame.quit()
+
 
 class button:
     def rect(rect,ic,ac,Text=NoneText,action=None,data=None,tmp=True,update=True,layer=0):
+        """rect(rect, color_idle, color_active, Text_Object, action, data -> None
+        Draws a rectanular colored button (optionally with text)
+        """
         if Layer[layer][0]:
             if Text == None:
                 global NoneText
@@ -506,18 +406,21 @@ class button:
                             action()
                             pe_values.last.click = True
                             pe_values.last.mouse = pygame.mouse.get_pos()
-                    if Settings.update_onButton:
+                    if Settings.UPDATE_ON_BUTTON:
                         display.update()
-                    pygame.time.delay(Settings.button_delay)
+                    pygame.time.delay(Settings.BUTTON_DELAY)
                 else:
                     pe_values.mouse.in_use = False
             else:
                 #pe_values.last.click = False
                 draw.rect(ic, rect, 0, False, layer=layer)
             display_a.blit(Textq.texto, Textq.textRect)
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                 display.update()
     def image(rect,ic,ac,action=None,data=None,tmp=True,update=True,layer=0):
+        """image(rect, image_idle, image_active, action, data) -> None
+        Blits a image button on screen
+        """
         if Layer[layer][0]:
             ic.rect = ic.object.get_rect(center = math.center(rect))
             ac.rect = ac.object.get_rect(center = math.center(rect))
@@ -543,26 +446,30 @@ class button:
                             action()
                             pe_values.last.click = True
                             pe_values.last.mouse = pygame.mouse.get_pos()
-                    if Settings.update_onButton:
+                    if Settings.UPDATE_ON_BUTTON:
                         display.update()
-                    pygame.time.delay(Settings.button_delay)
+                    pygame.time.delay(Settings.BUTTON_DELAY)
                 else:
                     pe_values.mouse.in_use = False
             else:
                 #pe_values.last.click = False
                 ic.display()
-            if Settings.update_auto and update:
+            if Settings.UPDATE_AUTO and update:
                 display.update()
+
 
 class slider:
     def normal(rect, imageS, minS, maxS, current, back, color, w, enableT=False, colorT=(255,255,255), wT=0, layer=0):
+        """normal(rect, image/color, min, max, current, color_background, color1, width1, enable2, color2, width2) -> Int
+        Draws a slider without a outsize box. Returns the new current
+        """
         if Layer[layer][0]:
             global slider_image
             global image
             global scriptpath
             global error
-            saveU = Settings.update_auto
-            Settings.update_auto = False
+            saveU = Settings.UPDATE_AUTO
+            Settings.UPDATE_AUTO = False
             rectE = False
             if imageS == None:
                 if slider_image == None:
@@ -630,15 +537,15 @@ class slider:
             draw.rect(back, rectV,0,False)
             if enableT:
                 rectTT[1] = rectTT[3]
-                draw.line(color,tuple(rectTT),w,False)
+                draw.line(color, (rectTT[0], rectTT[1]), (rectTT[2], rectTT[3]), w, False)
                 rectN = rectTT
                 rectN[0] = rect[0] + rect[2]
                 rectN[1] = rect[1] + rect[3]
                 rectN[2] = rectTT[2]
                 rectN[3] = rectTT[3]
-                draw.line(colorT,tuple(rectN),wT,False)
+                draw.line(colorT, (rectN[0], rectN[1]), (rectN[2], rectN[3]), wT, False)
             else:
-                draw.line(color,rectT,w,False)
+                draw.line(color, (rectT[0], rectT[1]), (rectT[2], rectT[3]), w, False)
             if not rectE:
                 display.blit.object(imageIMAGE)
             else:
@@ -674,9 +581,12 @@ class slider:
                 else:
                     pe_values.slider.click = False
                     pe_values.slider.drag = False
-            Settings.update_auto = saveU
+            Settings.UPDATE_AUTO = saveU
         return int(current)
     def boxed(rect, imageS, minS, maxS, current, back, lineout, color, enableT=False, colorT=(255,255,255), layer=0):
+        """boxed(rect, image/color, min, max, current, color_background, outLine, color1, enable2, color2) -> Int
+        Draws a slider with a outsize box. Returns the new current
+        """
         if Layer[layer][0]:
             rect = list(rect)
             rect[0] += 5
@@ -685,8 +595,8 @@ class slider:
             global image
             global scriptpath
             global error
-            saveU = Settings.update_auto
-            Settings.update_auto = False
+            saveU = Settings.UPDATE_AUTO
+            Settings.UPDATE_AUTO = False
             rectE = False
             w = 0
             wT = w
@@ -824,45 +734,70 @@ class slider:
                     pe_values.slider.click = False
                     pe_values.slider.drag = False
                     pe_values.mouse.in_use = False
-            Settings.update_auto = saveU
+            Settings.UPDATE_AUTO = saveU
         return int(current)
+
 
 class event:
     c = None
     def get():
+        """get() -> List
+        Gets and returns the event list
+        """
         tmp = pygame.event.get()
         if tmp != None:
             return tmp
     def quitcheck():
+        """quitcheck() -> Bool
+        Checks if the window was attempted to be closed and returns a bool accordingly
+        """
         tmp = False
         if event.c.type == pygame.QUIT:
             tmp = True
         return tmp
     def quitcheckauto():
+        """quitcheckauto() -> None
+        Checks if the window has been closed and automatically quits the program
+        """
         if event.quitcheck():
             pygame.quit()
             quit()
     def keylog():
+        """keylog() -> int
+        Returns all the button pressed or released
+        """
         if event.c.type == pygame.KEYDOWN or event.c.type == pygame.KEYUP:
             return event.c.key
     def key_UP(var):
+        """key_UP(key) -> Bool
+        Check if a button has been released and returns a bool accordingly
+        """
         if event.c.type == pygame.KEYUP:
             if event.c.key == var:
                 return True
             else:
                 return False
     def key_DOWN(var):
+        """key_DOWN(key) -> Bool
+        Checks if a key is pressed and returns a bool accordingly
+        """
         if event.c.type == pygame.KEYDOWN:
             if event.c.key == var:
                 return True
             else:
                 return False
 
+
 class mouse:
     def pos():
-        #
+        """pos() -> Tuple
+        Gets and returns the mouse position on the open window
+        """
         return pygame.mouse.get_pos()
     def clicked():
+        """clicked() -> List
+        Checks and returns a list with bools depending witch button is pressed [Left, Middle, Right]
+        """
         r = [False] * 3
         m = pygame.mouse.get_pressed()
         if m[0] == 1:
@@ -873,8 +808,12 @@ class mouse:
             r[2] = True
         return r
 
+
 class math:
     def center(rect):
+        """center(rect) -> Tuple
+        Calculates the center of a rectangle
+        """
         return ( (rect[0]+(rect[2]/2)), (rect[1]+(rect[3]/2)) )
     def lerp(point_a, point_b, length):
         a = pygame.math.Vector2(point_a)
@@ -888,18 +827,26 @@ class math:
         dest = a + dir
         return dest
 
+
 class image:
     def display(self, layer=0):
+        """Image_Object.display() -> None
+        Displays a image object
+        """
         if Layer[layer][0]:
             size = self.size
             position = self.position
             self.rect = self.object.get_rect(center=((position[0] + size[0] / 2)+Layer[layer][1][0], (position[1] + size[1] / 2)+Layer[layer][1][1]))
             display.blit.rect(self.object, self.rect)
     def __init__(self, file, size=None, position=(0,0)):
+        """image.(file, size, position) -> Image Object
+        Makes a image object
+        """
         try:
             self.object = pygame.image.load(file).convert_alpha()
             self.Asize = self.object.get_size()
         except:
+            print("file: "+str(file)+" doesn't exist")
             error("File doesn't exist 'Image.__init__()'")
         if size != None:
             self.object = pygame.transform.scale(self.object,size)
@@ -908,29 +855,26 @@ class image:
         self.position = position
         self.old = [self.object, self.rect, self.size, self.position, self.Asize]
 
+
 class sheet:
     columns = 0
     rows = 1
     def __init__(self, file, cellsize, type=1, offset=(0, 0)):
+        """sheet(file, cellSize, type, Start_offset) -> Sheet Object
+        Returns a simple sheet object containing details of a sprite sheet
+        """
         self.file = file
         self.cellsize = cellsize
         self.type = type
         self.offset = offset
 
-class pivot:
-    topleft = "topleft"
-    topright = "topright"
-    top = "top"
-    left = "left"
-    center = "center"
-    right = "right"
-    bottomleft = "bottomleft"
-    bottomright = "bottomright"
-    bottom = "bottom"
 
 if True:
         class Sprite:
             def __init__(self, imagef, size, position=(0,0), rotation=0, pivot="center", layer=0):
+                """Sprite(file/files/image/images/sheet_object, size, position, rotation, pivot) -> Sprite Object
+                Makes and initializes a sprite object
+                """
                 if isinstance(imagef, list):
                     if isinstance(imagef[0], list):
                         imagef = [imagef]
@@ -1008,6 +952,9 @@ if True:
                 self.pingpong = False
                 #return self
             def init_rotation(self):
+                """sprite_object.init_rotation() -> Sprite Object
+                Initializes only the rotation of the sprite
+                """
                 i = 0
                 if not self.sheet_e:
                     for x in self.image:
@@ -1022,6 +969,9 @@ if True:
                         i += 1
                 return self.new
             def init_position(self):
+                """sprite_object.init_position() -> Sprite Object
+                Initializes only the position of the sprite
+                """
                 i = 0
                 if self.sheet_e:
                     sprite_r = self.image
@@ -1086,6 +1036,9 @@ if True:
                         i += 1
                 return self.new
             def init(self):
+                """sprite_object.init() -> Sprite Object
+                Initializes the entire sprite
+                """
                 self.rotation = self.rotationND * 2
                 if self.sheet_e:
                     sprite_r = self.image
@@ -1144,6 +1097,9 @@ if True:
                         i += 1
                 return self.new
             def display(self):
+                """sprite_object.display() -> None
+                displays the sprite object on the screen
+                """
                 if Layer[self.layer][0]:
                     if int(self.frame) >= self.frames:
                         if self.pingpong:
@@ -1181,15 +1137,15 @@ if True:
                     else:
                         display_a.blit(self.new[int(self.frame) - 1].object, self.new[int(self.frame) - 1].rect)
 
-def rect(a,b,c,d):
-    return pygame.Rect(a,b,c,d)
-    #
 
 class E_intro:
     def intro(anim,back,t):
+        """intro(sleep, color_background, color_text) -> None
+        Plays the "PGE" sequence
+        """
         global display_size
-        fvv = Settings.update_auto
-        Settings.update_auto = True
+        fvv = Settings.UPDATE_AUTO
+        Settings.UPDATE_AUTO = True
         if display_size[0] >= 300 and display_size[1] >= 150:
             fx = (display_size[0] / 2) - 150
             fy = (display_size[1] / 2) - 50
@@ -1239,62 +1195,112 @@ class E_intro:
             draw.rect(t,(0+fx,100+fy,75,25),0)
             # E /\
             #INTRO /\
-            Settings.update_auto = fvv
+            Settings.UPDATE_AUTO = fvv
         else:
             print('======================================')
             print('resolution too small to display intro!')
             print('Try again with at least (300,150)')
             print('=================================')
     def run(tA=100,tB=100,tC=1000):
+        """run(sleep_first, delay, finish_delay) -> None
+        Plays the full original "PGE" animation
+        """
         E_intro.intro(tA,color.white,color.red) # Plays first intro
         time.sleep(tB)
-        Settings.update_auto = False # Disables auto update
+        Settings.UPDATE_AUTO = False # Disables auto update
         E_intro.intro(0,color.black,(0,100,255)) # Plays second intro
         display.update() # updates
         time.sleep(tC)
-        Settings.update_auto = True # Enables auto update
+        Settings.UPDATE_AUTO = True # Enables auto update
+
 
 class sound:
     def load(file):
+        """load(file) -> Sound Object
+        Loads a sound file and returns the object
+        """
         return pygame.mixer.Sound(file)
     def play(soundOBJ):
+        """play(sound_object) -> None
+        Plays a sound object
+        """
         soundOBJ.play()
+
 
 class music:
     volume = 100
     def load(file):
+        """load(file) -> None
+        Loads a track to the buffer
+        """
         pygame.mixer.music.load(file)
         
     def play(i=1):
+        """play(times) -> None
+        Plays the buffer for an amount of times, 0 is infinity
+        """
         pygame.mixer.music.play(i-1)
         
     def unload():
+        """unload() -> None
+        Removes the track from buffer
+        """
         pygame.mixer.music.unload()
         
     def restart():
+        """restart() -> None
+        Rewinds to the start of the track
+        """
+        pygame.mixer.music.pause()
         pygame.mixer.music.rewind()
-    
+        pygame.mixer.music.play(0)
+
     def stop():
+        """stop() -> None
+        Stops the buffer playback
+        """
         pygame.mixer.music.stop()
         
     def pause():
+        """pause() -> None
+        Pauses the buffer playback
+        """
         pygame.mixer.music.pause()
         
     def unpause():
+        """unpause() -> None
+        Un-Pauses the buffer playback
+        """
         pygame.mixer.music.unpause()
         
     def fade(time):
+        """fade(time) -> None
+        Fades the playback for a given time and stops
+        """
         pygame.mixer.music.fadeout(time)
     
     def set_v(new_v):
+        """set_v(new) -> None
+        Sets a new playback volume
+        """
         pygame.mixer.music.set_volume(new_v)
         music.volume = new_v
+
     def get_v():
+        """get_v() -> Float
+        Gets the current playback volume
+        """
         music.volume = pygame.mixer.music.get_volume()
         return music.volume
+
     def set_t(new_t):
+        """set_v(new) -> None
+        Changes the playback's position
+        """
         pygame.mixer.music.set_pos(new_t)
-        
+
     def get_t():
+        """get_t() -> Float
+        Get's the current playback position
+        """
         return pygame.mixer.music.get_pos()
-    #
