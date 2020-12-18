@@ -8,7 +8,6 @@ pygame.display.init()
 displaya = None
 display_size = [0,0]
 eventsl = None
-system("clear")
 print("Pygame Extra 1.6.4 is installed correctly!")
 scriptpath = str(__file__).replace("__init__.py",'')
 #RESOURCE LOADING# \/
