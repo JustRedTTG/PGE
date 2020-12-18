@@ -1,0 +1,6 @@
+setup.py
+examples/pong/pygameextra-tester
+pygameextra_tester.egg-info/PKG-INFO
+pygameextra_tester.egg-info/SOURCES.txt
+pygameextra_tester.egg-info/dependency_links.txt
+pygameextra_tester.egg-info/top_level.txt

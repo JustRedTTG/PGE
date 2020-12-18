@@ -1,6 +1,7 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 import pygameextra as pe
+pe.init()
 if True:
     #SETUP \/
     ballP = [[0,0]] * 20
@@ -12,7 +13,7 @@ if True:
     pe.display.make((1000,600), 'Pong')
     playerS = 0
     playerTS = 0
-    ballSO = [7,7]
+    ballSO = [5,5]
     ballS = [1,1]
     playerTR = pe.rect(0,250,15,100)
     playerR = pe.rect(985,250,15,100)
@@ -24,14 +25,14 @@ if True:
     background = pe.color.darkgray
     blue = (0,100,255)
     # colors /\
-    font = str(pe.scriptpath) + '/examples/pong/font.ttf'
+    font = pe.path.join(pe.scriptpath + '/examples/pong/font.ttf')
     score = [0,0]
     scoreT = [None,None]
     scoreT[0] = pe.text.make(str(score[0]), font, 50, pe.math.center((0,0,500,100)), (white, None))
     scoreT[1] = pe.text.make(str(score[1]), font, 50, pe.math.center((500,0,500,100)), (white, None))
-    buttonBOTO = pe.text.make('Bot mode', 'freesansbold.ttf', 20, pe.math.center((0,0,0,0)), (black, None))
-    buttonBOTT = pe.text.make('Bot vs bot', 'freesansbold.ttf', 20, pe.math.center((0,0,0,0)), (black, None))
-    buttonPlayer = pe.text.make('2 Player mode', 'freesansbold.ttf', 20, pe.math.center((0,0,0,0)), (black, None))
+    buttonBOTO = pe.text.make('Bot mode', 'freesansbold.ttf', 20, pe.math.center((150,200,200,50)), (black, None))
+    buttonBOTT = pe.text.make('Bot vs bot', 'freesansbold.ttf', 20, pe.math.center((150,300,200,50)), (black, None))
+    buttonPlayer = pe.text.make('2 Player mode', 'freesansbold.ttf', 20, pe.math.center((150+500,250,200,50)), (black, None))
     #SETUP /\
     # functions \/
     pe.E_intro.run(50)
@@ -178,11 +179,11 @@ if True:
       for pe.event.c in pe.event.get(): # for all the events
         pe.event.quitcheckauto() # check quit
         if not botT:
-          if pe.event.key_DOWN(273): # Arrow Up
+          if pe.event.key_DOWN(1073741906): # Arrow Up
             playerS = speed * -1
-          elif pe.event.key_DOWN(274): # Arrow Down
+          elif pe.event.key_DOWN(1073741905): # Arrow Down
             playerS = speed
-          if pe.event.key_UP(273) or pe.event.key_UP(274): # If arrows relesed
+          if pe.event.key_UP(1073741906) or pe.event.key_UP(1073741905): # If arrows relesed
             playerS = 0
         if not bot:
           if pe.event.key_DOWN(119): # Arrow Up
