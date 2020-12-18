@@ -387,7 +387,7 @@ class button:
             pygame.event.get()
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
-            if rect[0]+rect[2] > mouse[0] > rect[0] and rect[1]+rect[3] > mouse[1] > rect[1]:
+            if rect[0]+Layer[layer][1][0]+rect[2] > mouse[0] > rect[0]+Layer[layer][1][0] and rect[1]+Layer[layer][1][1]+rect[3] > mouse[1] > rect[1]+Layer[layer][1][1]:
                 pe_values.last.mouse = mouse
                 if pe_values.last.click and not click[0] == 1:
                     pe_values.last.click = False
@@ -427,7 +427,7 @@ class button:
             pygame.event.get()
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
-            if rect[0]+rect[2] > mouse[0] > rect[0] and rect[1]+rect[3] > mouse[1] > rect[1]:
+            if rect[0]+Layer[layer][1][0]+rect[2] > mouse[0] > rect[0]+Layer[layer][1][0] and rect[1]+Layer[layer][1][1]+rect[3] > mouse[1] > rect[1]+Layer[layer][1][1]:
                 pe_values.last.mouse = mouse
                 if pe_values.last.click and not click[0] == 1:
                     pe_values.last.click = False
@@ -511,7 +511,7 @@ class slider:
             rectV[2] += 10
             rectV[0] += -5
             rectV = [rectV[0],rectV[1],rectV[2],rectV[3]]
-            imageIMAGE[1] = imageIMAGE[0].get_rect(center = (pos, rectIMAGE[3]))
+            imageIMAGE[1] = imageIMAGE[0].get_rect(center = (pos+Layer[layer][1][0], rectIMAGE[3]+Layer[layer][1][1]))
             if enableT:
                 rectTT = list(rectT)
                 rectTT[2] = pos
@@ -528,7 +528,7 @@ class slider:
             rectB[2] = imageQ[2][0]
             rectB[3] = imageQ[2][1]
             #calculate /\
-            if rectB[0]+rectB[2] > mouse[0] > rectB[0] and rectB[1]+rectB[3] > mouse[1] > rectB[1]:
+            if rectB[0]+Layer[layer][1][0]+rectB[2] > mouse[0] > rectB[0]+Layer[layer][1][0] and rectB[1]+Layer[layer][1][1]+rectB[3] > mouse[1] > rectB[1]+Layer[layer][1][1]:
                 state = True
             else:
                 state = False
@@ -563,7 +563,7 @@ class slider:
             if pe_values.slider.drag:
                 if click[0] == 1 and pe_values.slider.click:
                     if rect == pe_values.slider.rect:
-                        mX = mouse[0]
+                        mX = mouse[0]-Layer[layer][1][0]
                         mY = mouse[1]
                         a = rect[0]
                         b = rect[2]
@@ -648,7 +648,7 @@ class slider:
             rectOP = rectV
             rectV[2] += 10
             rectV[0] += -5
-            imageIMAGE[1] = imageIMAGE[0].get_rect(center = (pos, rectIMAGE[3]))
+            imageIMAGE[1] = imageIMAGE[0].get_rect(center = (pos+Layer[layer][1][0], rectIMAGE[3]+Layer[layer][1][1]))
             if enableT:
                 rectTT = list(rectT)
                 rectTT[2] = pos
@@ -665,7 +665,7 @@ class slider:
             rectB[2] = imageQ[2][0]
             rectB[3] = imageQ[2][1]
             #calculate /\
-            if rectB[0]+rectB[2] > mouse[0] > rectB[0] and rectB[1]+rectB[3] > mouse[1] > rectB[1]:
+            if rectB[0]+Layer[layer][1][0]+rectB[2] > mouse[0] > rectB[0]+Layer[layer][1][0] and rectB[1]+Layer[layer][1][1]+rectB[3] > mouse[1] > rectB[1]+Layer[layer][1][1]:
                 state = True
             else:
                 state = False
@@ -715,7 +715,7 @@ class slider:
                 if click[0] == 1 and pe_values.slider.click:
                     if rect == pe_values.slider.rect:
                         pe_values.mouse.in_use = True
-                        mX = mouse[0]
+                        mX = mouse[0]-Layer[layer][1][0]
                         mY = mouse[1]
                         a = rect[0]
                         b = rect[2]
