@@ -21,7 +21,7 @@ install_requires = \
 
 setup_kwargs = {
     'name': 'pygameextra',
-    'version': '1.6.5.1',
+    'version': '1.6.5.2',
     'description': 'pygame extra is a mask for pygame, you can easily make complex games and or apps with much less lines then you would of before, Pygame Extra makes coding easier. The online documentation can be found at: https://pygame-extra.readthedocs.io/en/latest/',
     'long_description': None,
     'author': 'RedstoneHair',

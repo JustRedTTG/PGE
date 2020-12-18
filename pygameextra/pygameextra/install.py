@@ -2,7 +2,7 @@
 import requests
 import pygame, pygame.display
 from os import system, path, mkdir
-address = "https://redstonehair.000webhostapp.com/pygame%20extra/1.6.5.1/files/"
+address = "https://redstonehair.000webhostapp.com/pygame%20extra/1.6.5.2/files/"
 scriptpathf = str(path.realpath(__file__)).replace("install.py",'')
 def download(link):
     global scriptpathf
@@ -12,7 +12,7 @@ def download(link):
     c = requests.get(address+link,timeout=5)
     open(str(path.realpath(__file__)).replace("install.py",'')+link, "wb").write(c.content)
     
-def install(scriptpath, progress=0, __version__="1.6.5.1"):
+def install(scriptpath, progress=0, __version__="1.6.5.2"):
     """install(progress, scriptpath, version) -> None
     Installs Pygame Extra's additional resources
     """

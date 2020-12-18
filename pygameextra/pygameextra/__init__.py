@@ -16,7 +16,7 @@ for x in range(0,17):
 
 
 # DEVELOPER OPTIONS!
-__version__ = "1.6.5.1" # developers, please change this accordingly when developing!
+__version__ = "1.6.5.2" # developers, please change this accordingly when developing!
 modified = False # developers, please set this to True when developing!
 # DEVELOPER OPTIONS!
 
