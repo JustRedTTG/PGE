@@ -2,11 +2,14 @@ from os import environ, system, path
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import pygame.display
+pygame.mixer.pre_init(frequency = 44100, size = 16, channels = 1, buffer = 512)
 pygame.init()
 pygame.display.init()
 displaya = None
+display_size = [0,0]
+eventsl = None
 system("clear")
-print("Pygame Extra 1.6.X is installed correctly!")
+print("Pygame Extra 1.6.4 is installed correctly!")
 scriptpath = str(__file__).replace("__init__.py",'')
 #RESOURCE LOADING# \/
 slider_image = None
@@ -55,6 +58,9 @@ class display:
     displaya = dis
   
   def make(size, caption):
+    global display_size
+    display_size[0] = size[0]
+    display_size[1] = size[1]
     dis = pygame.display.set_mode(size)
     pygame.display.set_caption(caption)
     display.set(dis)
@@ -96,6 +102,8 @@ class draw:
     if Settings.update_auto:
       display.update()
 
+  def ellipse(color, rect):
+    pygame.draw.ellipse(displaya,color,rect)
 class fill:
   def full(color):
     displaya.fill(color)
@@ -156,7 +164,7 @@ class time:
     pygame.time.delay(time)
   def tick(tickrate=120):
     pygame.time.Clock().tick(tickrate)
-def quit():
+def Pquit():
   pygame.quit()
   
 class button:
@@ -196,7 +204,7 @@ class button:
       else:
         pe_values.mouse.in_use = False
     else:
-      pe_values.last.click = False
+      #pe_values.last.click = False
       draw.rect(ic, rect, 0, False)
     displaya.blit(Textq.texto, Textq.textRect)
     if Settings.update_auto:
@@ -232,7 +240,7 @@ class button:
       else:
         pe_values.mouse.in_use = False
     else:
-      pe_values.last.click = False
+      #pe_values.last.click = False
       display.blit.object(ic)
     if Settings.update_auto:
       display.update()
@@ -242,6 +250,8 @@ class slider:
     global image
     global scriptpath
     global error
+    saveU = Settings.update_auto
+    Settings.update_auto = False
     rectE = False
     if imageS == None:
       if slider_image == None:
@@ -353,7 +363,8 @@ class slider:
       else:
         pe_values.slider.click = False
         pe_values.slider.drag = False
-    return current
+    Settings.update_auto = saveU
+    return int(current)
   def boxed(rect, imageS, minS, maxS, current, back, lineout, color, enableT=False, colorT=(255,255,255)):
     rect = list(rect)
     rect[0] += 5
@@ -362,6 +373,8 @@ class slider:
     global image
     global scriptpath
     global error
+    saveU = Settings.update_auto
+    Settings.update_auto = False
     rectE = False
     w = 0
     wT = w
@@ -499,16 +512,52 @@ class slider:
         pe_values.slider.click = False
         pe_values.slider.drag = False
         pe_values.mouse.in_use = False
-    return current
+    Settings.update_auto = saveU
+    return int(current)
 class event:
-
+  c = None
+  def get():
+    tmp = pygame.event.get()
+    if tmp != None:
+      return tmp
   def quitcheck():
     tmp = False
-    for event in pygame.event.get():
-      if event.type == pygame.QUIT:
-        tmp = True
+    if event.c.type == pygame.QUIT:
+      tmp = True
     return tmp
-
+  def quitcheckauto():
+    if event.quitcheck():
+      pygame.quit()
+      quit()
+  def keylog():
+    if event.c.type == pygame.KEYDOWN or event.c.type == pygame.KEYUP:
+      return event.c.key
+  def key_UP(var):
+    if event.c.type == pygame.KEYUP:
+      if event.c.key == var:
+        return True
+      else:
+        return False
+  def key_DOWN(var):
+    if event.c.type == pygame.KEYDOWN:
+      if event.c.key == var:
+        return True
+      else:
+        return False
+class mouse:
+  def pos():
+    #
+    return pygame.mouse.get_pos()
+  def clicked():
+    r = [False] * 3
+    m = pygame.mouse.get_pressed()
+    if m[0] == 1:
+      r[0] = True
+    if m[1] == 1:
+      r[1] = True
+    if m[2] == 1:
+      r[2] = True
+    return r
 class math:
   def center(rect):
     return ( (rect[0]+(rect[2]/2)), (rect[1]+(rect[3]/2)) )
@@ -531,7 +580,7 @@ class image:
     image[2] = size
     return image
 class sprite:
-  def make(imagef, size, position=(0,0), rotation=90):
+  def make(imagef, size, position=(0,0), rotation=0):
     class Sprite:
       def setup(self):
         self.image = image.load(imagef, size, position)
@@ -570,3 +619,117 @@ class sprite:
         self.new = sprite_r
         return self.new
     return Sprite.setup(Sprite)
+  def display(sprite):
+    display.blit.object(sprite.new)
+def rect(a,b,c,d):
+  return pygame.Rect(a,b,c,d)
+  #
+class E_intro:
+  def intro(anim,back,t):
+    global display_size
+    if display_size[0] >= 300 and display_size[1] >= 150:
+      fx = (display_size[0] / 2) - 150
+      fy = (display_size[1] / 2) - 50
+      #INTRO \/
+      fill.full(back)
+      if anim != 0:
+        time.sleep(anim)
+      # P \/
+      draw.rect(t,(0+fx,0+fy,25,125),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,0+fy,75,25),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(50+fx,0+fy,25,75),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,50+fy,75,25),0)
+      # P /\
+      fx += 100             
+      # G \/
+      draw.rect(t,(0+fx,0+fy,75,25),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(back,(0+fx,50+fy,75,25),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,0+fy,25,125),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,100+fy,75,25),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(50+fx,50+fy,25,75),0)
+      # G /\
+      fx += 100
+      # E \/
+      draw.rect(t,(0+fx,0+fy,75,25),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,50+fy,75,25),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,0+fy,25,125),0)
+      if anim != 0:
+        time.sleep(anim)
+      draw.rect(t,(0+fx,100+fy,75,25),0)
+      # E /\
+      #INTRO /\
+
+    else:
+      print('======================================')
+      print('resolution too small to display intro!')
+      print('Try again with at least (300,150)')
+      print('=================================')
+  def run(tA=100,tB=100,tC=1000):
+    E_intro.intro(tA,color.white,color.red) # Plays first intro
+    time.sleep(tB)
+    Settings.update_auto = False # Disables auto update
+    E_intro.intro(0,color.black,(0,100,255)) # Plays second intro
+    display.update() # updates
+    time.sleep(tC)
+    Settings.update_auto = True # Enables auto update
+class sound:
+  def load(file):
+    return pygame.mixer.Sound(file)
+  def play(soundOBJ):
+    soundOBJ.play()
+class music:
+  volume = 100
+  def load(file):
+    pygame.mixer.music.load(file)
+    
+  def play(i=1):
+    pygame.mixer.music.play(i-1)
+    
+  def unload():
+    pygame.mixer.music.unload()
+    
+  def restart():
+    pygame.mixer.music.rewind()
+  
+  def stop():
+    pygame.mixer.music.stop()
+    
+  def pause():
+    pygame.mixer.music.pause()
+    
+  def unpause():
+    pygame.mixer.music.unpause()
+    
+  def fade(time):
+    pygame.mixer.music.fadeout(time)
+  
+  def set_v(new_v):
+    pygame.mixer.music.set_volume(new_v)
+    music.volume = new_v
+  def get_v():
+    music.volume = pygame.mixer.music.get_volume()
+    return music.volume
+  def set_t(new_t):
+    pygame.mixer.music.set_pos(new_t)
+    
+  def get_t():
+    return pygame.mixer.music.get_pos()
+  #

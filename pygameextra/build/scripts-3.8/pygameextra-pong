@@ -1,0 +1,205 @@
+#!/usr/bin/python3
+
+import pygameextra as pe
+if True:
+    #SETUP \/
+    ballP = [[0,0]] * 20
+    bot = False
+    botT = False
+    speed = 10
+    tick = 0
+    menuA = True
+    pe.display.make((1000,600), 'Pong')
+    playerS = 0
+    playerTS = 0
+    ballSO = [7,7]
+    ballS = [1,1]
+    playerTR = pe.rect(0,250,15,100)
+    playerR = pe.rect(985,250,15,100)
+    ballR = pe.rect(500-(20/2),300-(20/2),20,20)
+    # colors \/
+    red = pe.color.red
+    white = pe.color.white
+    black = pe.color.black
+    background = pe.color.darkgray
+    blue = (0,100,255)
+    # colors /\
+    font = str(pe.scriptpath) + '/examples/pong/font.ttf'
+    score = [0,0]
+    scoreT = [None,None]
+    scoreT[0] = pe.text.make(str(score[0]), font, 50, pe.math.center((0,0,500,100)), (white, None))
+    scoreT[1] = pe.text.make(str(score[1]), font, 50, pe.math.center((500,0,500,100)), (white, None))
+    buttonBOTO = pe.text.make('Bot mode', 'freesansbold.ttf', 20, pe.math.center((0,0,0,0)), (black, None))
+    buttonBOTT = pe.text.make('Bot vs bot', 'freesansbold.ttf', 20, pe.math.center((0,0,0,0)), (black, None))
+    buttonPlayer = pe.text.make('2 Player mode', 'freesansbold.ttf', 20, pe.math.center((0,0,0,0)), (black, None))
+    #SETUP /\
+    # functions \/
+    pe.E_intro.run(50)
+    pe.fill.full(pe.color.gray)
+    def ball_fade(new):
+      global ballP
+      i = 0
+      for x in ballP:
+        i += 1
+        if i < len(ballP):
+          ballP[i-1] = ballP[i]
+      ballP[len(ballP) - 1] = new
+    def score_set():
+      scoreT[0].text = str(score[0])
+      scoreT[1].text = str(score[1])
+      scoreT[0].init(scoreT[0])
+      scoreT[1].init(scoreT[1])
+      i = 0
+      for x in ballP:
+        ballP[i] = [0,0]
+        i += 1
+    def move_players():
+      if not botT:
+        playerR.y += playerS
+      if not bot:
+        playerTR.y += playerTS
+      #bot 1
+      if bot and str(ballS[0])[0:1] == '-':
+        if str(ballS[1])[0:1] == '-':
+          if playerTR.bottom > ballR.top:
+            playerTR.bottom -= 6
+          if playerTR.bottom < ballR.top:
+            playerTR.bottom += 6
+        else:
+          if playerTR.top > ballR.bottom:
+            playerTR.top -= 6
+          if playerTR.top < ballR.bottom:
+            playerTR.top += 6
+      elif bot and str(ballS[0])[0:1] != '-':
+        if playerTR.centery > 300:
+          playerTR.y -= 6
+        if playerTR.centery < 300:
+          playerTR.y += 6
+      #bot 2
+      
+      if botT and str(ballS[0])[0:1] != '-':
+        if str(ballS[1])[0:1] == '-':
+          if playerR.bottom > ballR.top:
+            playerR.bottom -= 6
+          if playerR.bottom < ballR.top:
+            playerR.bottom += 6
+        else:
+          if playerR.top > ballR.bottom:
+            playerR.top -= 6
+          if playerR.top < ballR.bottom:
+            playerR.top += 6
+      elif botT and str(ballS[0])[0:1] == '-':
+        if playerR.centery > 300:
+          playerR.y -= 6
+        if playerR.centery < 300:
+          playerR.y += 6
+
+      if playerR.y <= 0:
+        playerR.y = 0
+      elif playerR.y >= 500:
+        playerR.y = 500
+      if playerTR.y <= 0:
+        playerTR.y = 0
+      elif playerTR.y >= 500:
+        playerTR.y = 500
+    # functions /\
+
+    def draw_all():
+      pe.fill.full(background)
+      pe.draw.line(pe.color.gray,(500,0,500,600),5)
+      pe.text.display(scoreT[0])
+      pe.text.display(scoreT[1])
+      pe.draw.rect(white,playerR,0)
+      pe.draw.rect(white,playerTR,0)
+      pe.draw.ellipse(white,ballR)
+      p = len(ballP) - 1
+      i = 0
+      for x in ballP:
+        if True:
+          pe.draw.circle((255-(p*1),255-(p*8),255-(p*8)), (x[0],x[1]), 2, 0)
+        i += 1
+        p -= 1
+      pe.display.update()
+    def move_ball():
+      global ballR
+      if ballR.top <= 0 or ballR.bottom >= 600:
+        ballS[1] *= -1
+      if ballR.colliderect(playerR) or ballR.colliderect(playerTR):
+        ballS[0] *= -1
+      if ballR.left <= 0:
+        score[1] += 1
+      elif ballR.right >= 1000:
+        score[0] += 1
+      if ballR.left <= 0 or ballR.right >= 1000:
+        score_set()
+        ballR = pe.rect(500-(20/2),300-(20/2),20,20)
+        playerR.y = 250
+        playerTR.y = 250
+        draw_all()
+        pe.time.sleep(1000)
+        ballS[0] *= -1
+        ballSO[0] += 0.1
+        ballSO[1] += 0.1
+      ballR.x += ballS[0] * int(ballSO[0])
+      ballR.y += ballS[1] * int(ballSO[1])
+      ball_fade(ballR.center)
+    def botmode(booleen):
+      global bot
+      global botT
+      global menuA
+      bot = booleen[0]
+      botT = booleen[1]
+      menuA = False
+    def menu():
+      ballR.centerx = -50
+      draw_all()
+      #global menuA
+      menuB = True
+      while menuB:
+        try:
+          menuB = menuA
+        except:
+          pe.time.sleep(0)
+        for pe.event.c in pe.event.get(): # for all the events
+          pe.event.quitcheckauto()
+        pe.button.rect((150,200,200,50),(200,200,200),(150,150,150),buttonBOTO,botmode,[True,False])
+        pe.button.rect((150,300,200,50),(200,200,200),(150,150,150),buttonBOTT,botmode,[True,True])
+        pe.button.rect((150+500,250,200,50),(200,200,200),(150,150,150),buttonPlayer,botmode,[False,False])
+        pe.display.update()
+        pe.time.tick(60)
+      ballR.centerx = 500
+
+    #functions /\
+    pe.Settings.update_auto = False # Disables auto update
+
+    menu()
+    while True:
+      #EVENTS \/
+      for pe.event.c in pe.event.get(): # for all the events
+        pe.event.quitcheckauto() # check quit
+        if not botT:
+          if pe.event.key_DOWN(273): # Arrow Up
+            playerS = speed * -1
+          elif pe.event.key_DOWN(274): # Arrow Down
+            playerS = speed
+          if pe.event.key_UP(273) or pe.event.key_UP(274): # If arrows relesed
+            playerS = 0
+        if not bot:
+          if pe.event.key_DOWN(119): # Arrow Up
+            playerTS = speed * -1
+          elif pe.event.key_DOWN(115): # Arrow Down
+            playerTS = speed
+          if pe.event.key_UP(115) or pe.event.key_UP(119): # If arrows relesed
+            playerTS = 0
+      #EVENTS /\
+      move_players()
+      move_ball()
+      draw_all()
+      pe.time.tick(60)
+      tick += 1
+      if tick >= 500:
+        ballSO[0] += 0.1
+        ballSO[1] += 0.1
+        tick = 0
+      if ballSO[0] > 10 or ballSO[1] > 10:
+        ballSO = [10,10]
