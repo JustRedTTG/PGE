@@ -1,8 +1,11 @@
 """Pygame Extra"""
+import math as mathM
 from os import environ, path, mkdir, getcwd
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1' # disable pygame's hello message, sorry pygame ;-;
 from pygameextra.install import install, requests, pygame, system
+from pygameextra.save import save, load, savePGE, loadPGE
 import pygameextra.settings as Settings
+import math as mathy
 pe_values, rect, pivot, color = None, None, None, None # Nill variables
 NoneText, display_a, display_size, eventsl, scriptpath, slider_image = None, None, None, None, None, None # Nill variables
 
@@ -16,18 +19,18 @@ for x in range(0,17):
 
 
 # DEVELOPER OPTIONS!
-__version__ = "1.6.5.2" # developers, please change this accordingly when developing!
-modified = False # developers, please set this to True when developing!
+__version__ = "1.6.5.3" # developers, please change this accordingly when developing!
+modified = True # developers, please set this to True when developing!
 # DEVELOPER OPTIONS!
 
 def preinit():
     """preinit() -> None
     Imports important functions to prepare for init
     """
-    global pe_values, rect, pivot, color
+    global pe_values, pivot, color
     # IMPORTING Pygame Extra sub-modules
     import pygameextra.values as pe_values
-    import pygameextra.rect
+    import pygameextra.rect as rect
     rect.pygame = pygame
     rect = rect.rect
     import pygameextra.pivot
@@ -51,6 +54,7 @@ def init():
     slider_image = None
     #RESOURCE LOADING# /\
     NoneText = text.quick.small('', (0, 0))  # an empty placeholder text if you don't supply text objects to functions
+
 
     if False: # this scraps the old installation of updates
         #check instalation...
@@ -133,7 +137,6 @@ def init():
             print("Pygame Extra " + __version__+" modified")
         else:
             print("Pygame Extra " + __version__)
-    print("Join our discord: " + "https://discord.gg/8CKtZpYrdj")
 
 
 def error(textS):
@@ -234,6 +237,20 @@ class draw:
         """
         pos = (pos_a[0], pos_a[1], pos_b[0], pos_b[1])
         if Layer[layer][0]:
+            color = list(color)
+            while color[0] > 255:
+                color[0] -= 255
+            while color[1] > 255:
+                color[1] -= 255
+            while color[2] > 255:
+                color[2] -= 255
+            if color[0] < 0:
+                color[0] = 0
+            if color[1] < 0:
+                color[1] = 0
+            if color[2] < 0:
+                color[2] = 0
+            color = tuple(color)
             pygame.draw.line(display_a, color, (pos[0]+Layer[layer][1][0], pos[1]+Layer[layer][1][1]), (pos[2]+Layer[layer][1][0], pos[3]+Layer[layer][1][1]), w)
             if Settings.UPDATE_AUTO and update:
                     display.update()
@@ -242,10 +259,31 @@ class draw:
         """rect(color, rect, width) -> None
         Draws a rectangle
         """
-        if Layer[layer][0]:
-            pygame.draw.rect(display_a, color, (rect[0]+Layer[layer][1][0], rect[1]+Layer[layer][1][1], rect[2], rect[3]), w)
+
+        if Layer[layer][0] and color != None:
+            if len(color)>3:
+                s = pygame.Surface((rect[2], rect[3]))
+                s.set_alpha(color[3])
+                s.fill((color[0],color[1],color[2]))
+                display.blit.rect(s, (rect[0]+Layer[layer][1][0], rect[1]+Layer[layer][1][1]))
+            else:
+                color=list(color)
+                while color[0]>255:
+                    color[0]-=255
+                while color[1]>255:
+                    color[1]-=255
+                while color[2]>255:
+                    color[2]-=255
+                if color[0]<0:
+                    color[0]=0
+                if color[1]<0:
+                    color[1]=0
+                if color[2]<0:
+                    color[2]=0
+                color=tuple(color)
+                pygame.draw.rect(display_a, color, (rect[0]+Layer[layer][1][0], rect[1]+Layer[layer][1][1], rect[2], rect[3]), w)
             if Settings.UPDATE_AUTO and update:
-                    display.update()
+                display.update()
 
     def circle(color, pos, size, w, update=True, layer=0):
         """circle(color, position, radius, width) -> None
@@ -265,7 +303,12 @@ class draw:
         if Settings.UPDATE_AUTO and update:
             display.update()
 
+    def polygon(color, *args, width=0, update=True, layer=0):
 
+        if Layer[layer][0]:
+            pygame.draw.polygon(display_a,color,args,width)
+        if Settings.UPDATE_AUTO and update:
+            display.update()
 class fill:
     def full(color, update=True, layer=0):
         """fill(color)
@@ -298,6 +341,7 @@ class text:
         abackground = acolors[1]
         class Text:
             def setup(self):
+                self.PGE = "text"
                 self.text = atext
                 self.font = afont
                 self.fontsize = afontsize
@@ -372,49 +416,79 @@ def Pquit():
     pygame.quit()
 
 
+class mouse:
+    taken = False
+    off = (0,0)
+    def pos():
+        """pos() -> Tuple
+        Gets and returns the mouse position on the open window
+        """
+        p = pygame.mouse.get_pos()
+        return (p[0]+mouse.off[0],p[1]+mouse.off[1])
+    def clicked():
+        """clicked() -> List
+        Checks and returns a list with bools depending on witch button is pressed [Left, Middle, Right]
+        """
+        r = [False] * 3
+        m = pygame.mouse.get_pressed()
+        if m[0] == 1:
+            r[0] = True
+        if m[1] == 1:
+            r[1] = True
+        if m[2] == 1:
+            r[2] = True
+        if r[0] == False:
+            mouse.taken = False
+        return r
+    def take():
+        if mouse.taken:
+            return False
+        else:
+            mouse.taken = True
+            return True
+
+
 class button:
-    def rect(rect,ic,ac,Text=NoneText,action=None,data=None,tmp=True,update=True,layer=0):
+    def rect(rect,ic,ac,Text=NoneText,action=None,data=None,tmp=True,update=True,layer=0,enableLock=True):
         """rect(rect, color_idle, color_active, Text_Object, action, data -> None
         Draws a rectanular colored button (optionally with text)
         """
         if Layer[layer][0]:
-            if Text == None:
-                global NoneText
-                Text = NoneText
-            Textq = Text
-            Textq.pos = math.center(rect)
-            Textq.init(Textq)
-            pygame.event.get()
-            mouse = pygame.mouse.get_pos()
-            click = pygame.mouse.get_pressed()
-            if rect[0]+Layer[layer][1][0]+rect[2] > mouse[0] > rect[0]+Layer[layer][1][0] and rect[1]+Layer[layer][1][1]+rect[3] > mouse[1] > rect[1]+Layer[layer][1][1]:
-                pe_values.last.mouse = mouse
-                if pe_values.last.click and not click[0] == 1:
-                    pe_values.last.click = False
-                    pe_values.mouse.in_use = False
-                draw.rect(ac, rect, 0, False, layer=layer)
-                if click[0] == 1 and action != None:
-                    mouse = pe_values.last.mouse
-                    click = pe_values.last.click
-                    if data != None:
-                        if (pe_values.mouse.in_use == False and rect[0]+rect[2] > mouse[0] > rect[0] and rect[1]+rect[3] > mouse[1] > rect[1] and not click) or not Settings.button_lock.rect:
-                            action(data)
-                            pe_values.last.click = True
-                            pe_values.last.mouse = pygame.mouse.get_pos()
+            #get mouse cords
+            mp = mouse.pos()
+            r = (rect[0]+Layer[layer][1][0],rect[1]+Layer[layer][1][1], rect[0]+rect[2]+Layer[layer][1][0],rect[1]+rect[3]+Layer[layer][1][1])
+            #check hover
+            if mp[0] >= r[0] and mp[0] <= r[2] and mp[1] >= r[1] and mp[1] <= r[3]:
+                draw.rect(ac, rect, layer=layer, w=0)
+                #check click
+                if mouse.clicked()[0]:
+                    #check lock
+                    if enableLock:
+                        if mouse.take():
+                            #check for action
+                            if action != None:
+                                #check for data
+                                if data != None:
+                                    action(data)
+                                else:
+                                    action()
                     else:
-                        if (pe_values.mouse.in_use == False and rect[0]+rect[2] > mouse[0] > rect[0] and rect[1]+rect[3] > mouse[1] > rect[1] and not click) or not Settings.button_lock.rect:
-                            action()
-                            pe_values.last.click = True
-                            pe_values.last.mouse = pygame.mouse.get_pos()
-                    if Settings.UPDATE_ON_BUTTON:
-                        display.update()
-                    pygame.time.delay(Settings.BUTTON_DELAY)
-                else:
-                    pe_values.mouse.in_use = False
+                        # check for action
+                        if action != None:
+                            # check for data
+                            if data != None:
+                                action(data)
+                            else:
+                                action()
             else:
-                #pe_values.last.click = False
-                draw.rect(ic, rect, 0, False, layer=layer)
-            display_a.blit(Textq.texto, Textq.textRect)
+                draw.rect(ic, rect, layer=layer, w=0)
+            #TEXT
+            if Text != None:
+                if Text.pos != (Text.original_pos[0] + Layer[Text.layer][1][0], Text.original_pos[1] + Layer[Text.layer][1][0]):
+                    Text.pos = (Text.original_pos[0] + Layer[Text.layer][1][0], Text.original_pos[1] + Layer[Text.layer][1][0])
+                    #Text.textRect = Text.texto.get_rect()
+                    Text.textRect.center = Text.pos
+                text.display(Text)
             if Settings.UPDATE_AUTO and update:
                 display.update()
     def image(rect,ic,ac,action=None,data=None,tmp=True,update=True,layer=0):
@@ -519,7 +593,7 @@ class slider:
             if rectE:
                 rectRECT = (pos - (rect[4] / 2), rectIMAGE[3] - (rect[3] / 2), (pos + (rect[4] / 2)) - (pos - (rect[4] / 2)), (rectIMAGE[3] + (rect[3] / 2)) - (rectIMAGE[3] - (rect[3] / 2)))
             pygame.event.get()
-            mouse = pygame.mouse.get_pos()
+            mouseV = mouse.pos()
             click = pygame.mouse.get_pressed()
             rectB = [None] * 4
             #calculate \/
@@ -528,7 +602,7 @@ class slider:
             rectB[2] = imageQ[2][0]
             rectB[3] = imageQ[2][1]
             #calculate /\
-            if rectB[0]+Layer[layer][1][0]+rectB[2] > mouse[0] > rectB[0]+Layer[layer][1][0] and rectB[1]+Layer[layer][1][1]+rectB[3] > mouse[1] > rectB[1]+Layer[layer][1][1]:
+            if rectB[0]+Layer[layer][1][0]+rectB[2] > mouseV[0] > rectB[0]+Layer[layer][1][0] and rectB[1]+Layer[layer][1][1]+rectB[3] > mouseV[1] > rectB[1]+Layer[layer][1][1]:
                 state = True
             else:
                 state = False
@@ -563,8 +637,8 @@ class slider:
             if pe_values.slider.drag:
                 if click[0] == 1 and pe_values.slider.click:
                     if rect == pe_values.slider.rect:
-                        mX = mouse[0]-Layer[layer][1][0]
-                        mY = mouse[1]
+                        mX = mouseV[0]-Layer[layer][1][0]
+                        mY = mouseV[1]
                         a = rect[0]
                         b = rect[2]
                         c = a + b
@@ -675,13 +749,13 @@ class slider:
             draw.rect(back, rectV,0,False)
             if not m:
                 if enableT:
-                    draw.line(color,tuple(rectTT),w,False)
+                    draw.line(color,(rectTT[0],rectTT[1]),(rectTT[0]+rectTT[2],rectTT[1]+rectTT[3]),w,False)
                     rectN = rectTT
                     rectN[0] = rect[0] + rect[2]
                     rectN[1] = rect[1] + rect[3]
                     rectN[2] = rectTT[2]
                     rectN[3] = rectTT[3]
-                    draw.line(colorT,tuple(rectN),wT,False)
+                    draw.line(colorT,(rectN[0],rectN[1]),(rectN[0]+rectN[2],rectN[1]+rectN[3]),wT,False)
                 else:
                     draw.line(color,rectT,w,False)
             else:
@@ -788,27 +862,6 @@ class event:
                 return False
 
 
-class mouse:
-    def pos():
-        """pos() -> Tuple
-        Gets and returns the mouse position on the open window
-        """
-        return pygame.mouse.get_pos()
-    def clicked():
-        """clicked() -> List
-        Checks and returns a list with bools depending witch button is pressed [Left, Middle, Right]
-        """
-        r = [False] * 3
-        m = pygame.mouse.get_pressed()
-        if m[0] == 1:
-            r[0] = True
-        if m[1] == 1:
-            r[1] = True
-        if m[2] == 1:
-            r[2] = True
-        return r
-
-
 class math:
     def center(rect):
         """center(rect) -> Tuple
@@ -826,7 +879,38 @@ class math:
         dir *= length
         dest = a + dir
         return dest
-
+    class tsx:
+      def make(pos,r):
+        var = []
+        PI = 3.1415926535
+        angle = 0
+        x1 = 0
+        y1 = 0
+        while angle < 360:
+            x1 = r * mathM.cos(angle * PI / 180)
+            y1 = r * mathM.sin(angle * PI / 180)
+            var.append((pos[0] + x1, pos[1] + y1))
+            angle += 0.1
+        return var
+      def get(tsx, angle):
+        angle -= 90
+        while angle > 360:
+          angle = angle-360
+        while angle < 0:
+          angle = 360+angle
+        l = len(tsx)-1
+        try:
+          return tsx[int((l/360)*angle)]
+        except:
+          print("fail",l, angle)
+          return (0,0)
+    def tupleint(tupleV):
+      l = []
+      for x in tupleV:
+        l.append(int(x))
+      return tuple(l)
+    def dist(p1,p2):
+        return mathy.sqrt(((p1[0] - p2[0]) ** 2) + ((p1[1] - p2[1]) ** 2))
 
 class image:
     def display(self, layer=0):
@@ -842,10 +926,12 @@ class image:
         """image.(file, size, position) -> Image Object
         Makes a image object
         """
-        try:
+        self.PGE = "image"
+        self.file = file
+        if path.exists(file):
             self.object = pygame.image.load(file).convert_alpha()
             self.Asize = self.object.get_size()
-        except:
+        else:
             print("file: "+str(file)+" doesn't exist")
             error("File doesn't exist 'Image.__init__()'")
         if size != None:
@@ -875,18 +961,22 @@ if True:
                 """Sprite(file/files/image/images/sheet_object, size, position, rotation, pivot) -> Sprite Object
                 Makes and initializes a sprite object
                 """
-                if isinstance(imagef, list):
-                    if isinstance(imagef[0], list):
-                        imagef = [imagef]
+                # starts by converting the image(s) format. this makes sure it's like this [Image_obj, Image_obj] or Image_obj to [Image_obj] and so on...
+                if isinstance(imagef, list): #If it's a list
+                    if isinstance(imagef[0], list): #If there's a list inside that list
+                        imagef = [imagef] #cover the image(s) with a list
                 else:
                     imagef = [imagef]
                     #
+                self.PGE = "sprite"
                 self.sheet_e = False
                 self.frames = len(imagef)
                 self.fx = 0
-                if isinstance(imagef[0], image):
+                # checks the image(s) type, this will determain how it should load them to the sprite's variables
+                if isinstance(imagef[0], image): # it's a type image!
                     self.image = [None] * len(imagef)
                     i = 0
+                    # LOAD
                     for x in imagef:
                         self.image[i] = imagef[i]
                         if rotation > 0:
@@ -894,6 +984,7 @@ if True:
                         self.image[i].object = pygame.transform.scale(self.image[i].object, size)
                         sprite_r = self.image[i]
                         sizev = (size[0]/2,size[1]/2)
+                        # Set the correct pivot...
                         if pivot == "center":
                             sprite_r.rect = sprite_r.object.get_rect(center=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
                         elif pivot == "left":
@@ -914,7 +1005,7 @@ if True:
                             sprite_r.rect = sprite_r.object.get_rect(bottomright=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
                         self.image[i] = sprite_r
                         i += 1
-                elif isinstance(imagef[0], sheet):
+                elif isinstance(imagef[0], sheet): # it's a type SpriteSheet!
                     self.sheet = imagef[0]
                     self.image = image(self.sheet.file, position=position)
                     sd = (int((self.image.Asize[0]/self.sheet.cellsize[0])*size[0]), int((self.image.Asize[1]/self.sheet.cellsize[0])*size[1]))
@@ -929,7 +1020,7 @@ if True:
                         self.fx[1] = int(self.image.Asize[1] / self.sheet.cellsize[1])
                     self.image.object = pygame.transform.scale(self.image.object, sd)
                     self.sheet_e = True
-                else:
+                else: # otherwise just load as if image
                     self.image = [None] * len(imagef)
                     i = 0
                     for x in imagef:
@@ -937,19 +1028,19 @@ if True:
                         if rotation > 0:
                             self.image[i].object = pygame.transform.rotozoom(self.image[i].object,rotation,1)
                         i += 1
-                self.pivot = pivot
-                self.rotation = rotation * 2
-                self.rotationND = rotation
-                self.position = position
-                self.rect = size
-                self.size = 1
-                self.new = self.image
-                self.refresh = True
-                self.layer = layer
-                self.frame = 0
-                self.step = 0
-                self.step_m = 1
-                self.pingpong = False
+                self.pivot = pivot # determines the pivot for future inits or user needs
+                self.rotation = rotation * 1 # saves the rotation double
+                self.rotationND = rotation # saves the rotation again
+                self.position = position # saves the position
+                self.rect = size # saves the sprite area
+                self.size = 1 # sets the default multiplier for the size
+                self.new = self.image # the current sprite image
+                self.refresh = True # makes a user variable
+                self.layer = layer # saves the layer
+                self.frame = 0 # sets the frame to 0 as it's a index
+                self.step = 0 # sets the step to 0 (disabled)
+                self.step_m = 1 # sets the step multiplier to 1 (default)
+                self.pingpong = False # disables ping~pong
                 #return self
             def init_rotation(self):
                 """sprite_object.init_rotation() -> Sprite Object
@@ -1039,7 +1130,7 @@ if True:
                 """sprite_object.init() -> Sprite Object
                 Initializes the entire sprite
                 """
-                self.rotation = self.rotationND * 2
+                self.rotation = self.rotationND - 90
                 if self.sheet_e:
                     sprite_r = self.image
                     if self.rotation != 0:

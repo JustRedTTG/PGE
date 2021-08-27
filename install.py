@@ -69,10 +69,10 @@ def install(scriptpath, progress=0, __version__="1.6.5.2"):
                 download("dist/pygameextra_tester-0.0.0-py3.8.egg")
                 progress += 5
             elif progress < 35:
-                download("examples/pong/pygameextra-pong")
+                download("examples/pong/pgerom-pong")
                 progress += 5
             elif progress < 40:
-                download("examples/tester/pygameextra-tester")
+                download("examples/tester/pgerom-tester.py")
                 progress += 5
             elif progress < 45:
                 download("examples/pong/font.ttf")
@@ -120,10 +120,10 @@ def install(scriptpath, progress=0, __version__="1.6.5.2"):
                 download("pygameextra_tester.egg-info/top_level.txt")
                 progress += 1
             elif progress < 60:
-                download("examples/pong/pygameextra-pong")
+                download("examples/pong/pgerom-pong")
                 progress += 1
             elif progress < 61:
-                download("examples/tester/pygameextra-tester")
+                download("examples/tester/pgerom-tester.py")
                 progress += 1
             else:
                 progress += 10

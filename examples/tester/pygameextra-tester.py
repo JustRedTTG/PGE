@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import pygameextra as pe
 pe.init()
 pe.Layer[0][1] = (25, 25)
