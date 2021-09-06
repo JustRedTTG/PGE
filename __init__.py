@@ -3,9 +3,13 @@ import math as mathM
 from os import environ, path, mkdir, getcwd
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1' # disable pygame's hello message, sorry pygame ;-;
 from pygameextra.install import install, requests, pygame, system
-from pygameextra.save import save, load, savePGE, loadPGE
+from pygameextra.save import *
 import pygameextra.settings as Settings
 import math as mathy
+from libraries import anim, popup
+from libraries.filemanage import folder, check
+from libraries.group import group
+from libraries.roundrect import rect as roundrect
 pe_values, rect, pivot, color = None, None, None, None # Nill variables
 NoneText, display_a, display_size, eventsl, scriptpath, slider_image = None, None, None, None, None, None # Nill variables
 
@@ -139,7 +143,7 @@ def init():
             print("Pygame Extra " + __version__)
 
 
-def error(textS):
+def error(textS : str):
     """error(text) -> None
     Used to display an error message that is more user friendly than command-line errors
     """
@@ -174,13 +178,13 @@ class display:
         """update() -> None
         Used to update the screen"""
         pygame.display.flip()
-    def set(dis):
+    def set(dis : pygame.Surface):
         """set(Display_Surface) -> None
         Used by display.make to set the current display in use"""
         global display_a
         display_a = dis
     
-    def make(size, caption, mode=0, check=False):
+    def make(size : tuple, caption : str, mode : int = 0, check : bool = False):
         """make(size, caption, mode) -> Display Surface
         Setup the display surface"""
         global display_size
@@ -220,18 +224,18 @@ class display:
             m = pygame.display.Info()
             return (m.current_w,m.current_h)
     class blit:
-        def rect(ob, rect):
+        def rect(ob : pygame.Surface, rect : tuple):
             """rect(object, rect) -> None
             Blit a object and a rect seperately"""
             display_a.blit(ob, rect)
-        def object(ob):
+        def object(ob : pygame.Surface):
             """object([object, rect]) -> None
             Blit a list with an object and rect"""
             display_a.blit(ob[0],ob[1])
 
 
 class draw:
-    def line(color, pos_a, pos_b, w, update=True, layer=0):
+    def line(color : tuple, pos_a : tuple, pos_b : tuple, w : int, update : bool = True, layer : int = 0):
         """line(color, (position_a, position_b), width) -> None
         Draws a line across two points
         """
@@ -255,7 +259,7 @@ class draw:
             if Settings.UPDATE_AUTO and update:
                     display.update()
 
-    def rect(color, rect, w, update=True, layer=0):
+    def rect(color : tuple, rect : tuple, w : int, update : bool = True, layer : int = 0):
         """rect(color, rect, width) -> None
         Draws a rectangle
         """
@@ -285,7 +289,7 @@ class draw:
             if Settings.UPDATE_AUTO and update:
                 display.update()
 
-    def circle(color, pos, size, w, update=True, layer=0):
+    def circle(color : tuple, pos : tuple, size : int, w : int, update : bool = True, layer : int = 0):
         """circle(color, position, radius, width) -> None
         Draws a circle
         """
@@ -294,7 +298,7 @@ class draw:
             if Settings.UPDATE_AUTO and update:
                 display.update()
 
-    def ellipse(color, rect, update=True, layer=0):
+    def ellipse(color : tuple, rect : tuple, update : bool = True, layer : int = 0):
         """ellipse(color, rect) -> None
         Draws a filled circle within a rect
         """
@@ -303,25 +307,25 @@ class draw:
         if Settings.UPDATE_AUTO and update:
             display.update()
 
-    def polygon(color, *args, width=0, update=True, layer=0):
+    def polygon(color : tuple, *args : tuple, width : int = 0, update : bool = True, layer : int = 0):
 
         if Layer[layer][0]:
             pygame.draw.polygon(display_a,color,args,width)
         if Settings.UPDATE_AUTO and update:
             display.update()
+
+
 class fill:
-    def full(color, update=True, layer=0):
+    def full(color : tuple = (0, 0, 0), update : bool = True, layer : int = 0):
         """fill(color)
         Fills the full screen with a color
         """
-        if Layer[layer][0]:
-            display_a.fill(color)
-            if Settings.UPDATE_AUTO and update:
-                display.update()
+        pos = display.get.size()
+        draw.rect(color, (0, 0, pos[0], pos[1]), 0, update, layer)
 
 
 class text:
-    def auto(text, font, fontsize, pos, colors, layer=0):
+    def auto(text : str, font : str = 'freesansbold.ttf', fontsize : int = 1, pos : tuple = (0, 0), colors : list = [(0, 0, 0), None], layer : int = 0):
         """no info :("""
         if Layer[layer][0]:
             color = colors[0]
@@ -333,7 +337,7 @@ class text:
             display_a.blit(texto, textRect)
             display.update()
 
-    def make(atext, afont, afontsize, apos, acolors, layer=0):
+    def make(atext : str, afont : str = 'freesansbold.ttf', afontsize : int = 1, apos : tuple = (0, 0), acolors : list = [(0, 0, 0), None], layer : int = 0):
         """make(text, font, fontsize, position, [color, background]) -> Text Object
         Makes a text object
         """
@@ -366,27 +370,27 @@ class text:
         return ob
 
     class quick:
-        def make(texts, fontsize, pos, layer=0):
+        def make(texts : str, fontsize : int, pos : tuple, layer : int = 0):
             """make(text, fontsize, position) -> Text Object
             Quickly makes a custom sized text object
             """
-            return text.make(texts,'freesansbold.ttf',fontsize,pos,((0,0,0),None), layer=layer)
-        def small(texts, pos, layer=0):
+            return text.make(texts, 'freesansbold.ttf', fontsize, pos, ((0, 0, 0), None), layer = layer)
+        def small(texts : str, pos : tuple, layer : int = 0):
             """small(text, position) -> Text Object
             Quickly makes a small text object
             """
-            return text.quick.make(texts, 20, pos, layer=layer)
-        def medium(texts, pos, layer=0):
+            return text.quick.make(texts, 20, pos, layer = layer)
+        def medium(texts : str, pos : tuple, layer : int = 0):
             """medium(text, position) -> Text Object
             Quickly makes a medium text object
             """
-            return text.quick.make(texts, 30, pos, layer=layer)
-        def large(texts, pos, layer=0):
+            return text.quick.make(texts, 30, pos, layer = layer)
+        def large(texts : str, pos : tuple, layer : int = 0):
             """large(text, position) -> Text Object
             Quickly makes a large text object
             """
-            return text.quick.make(texts, 40, pos, layer=layer)
-    def display(Text, update=True):
+            return text.quick.make(texts, 40, pos, layer = layer)
+    def display(Text : make.Text, update : bool = True):
         """display(Text_Object) -> None
         Displays a text object
         """
@@ -397,12 +401,12 @@ class text:
 
 
 class time:
-    def sleep(time):
+    def sleep(time : float):
         """sleep(time) -> None
         Halts the program for the specified time
         """
         pygame.time.delay(time)
-    def tick(tickrate=120):
+    def tick(tickrate : int = 120):
         """tick(tickrate) -> None
         Sets the maximum frames per second
         """
@@ -449,7 +453,7 @@ class mouse:
 
 
 class button:
-    def rect(rect,ic,ac,Text=NoneText,action=None,data=None,tmp=True,update=True,layer=0,enableLock=True):
+    def rect(rect : tuple, ic : tuple, ac : tuple, Text : text.make.Text = NoneText, action = None, data : tuple = None, tmp : bool = True, update : bool = True, layer : int = 0, enableLock : bool = True):
         """rect(rect, color_idle, color_active, Text_Object, action, data -> None
         Draws a rectanular colored button (optionally with text)
         """
@@ -491,7 +495,7 @@ class button:
                 text.display(Text)
             if Settings.UPDATE_AUTO and update:
                 display.update()
-    def image(rect,ic,ac,action=None,data=None,tmp=True,update=True,layer=0):
+    def image(rect : tuple, ic : tuple, ac : tuple, action = None, data : tuple = None, tmp : bool = True, update : bool = True, layer : int = 0):
         """image(rect, image_idle, image_active, action, data) -> None
         Blits a image button on screen
         """
@@ -533,7 +537,7 @@ class button:
 
 
 class slider:
-    def normal(rect, imageS, minS, maxS, current, back, color, w, enableT=False, colorT=(255,255,255), wT=0, layer=0):
+    def normal(rect : tuple, imageS, minS : int, maxS : int, current : int, back : tuple, color : tuple, w : int, enableT : bool = False, colorT : tuple = (255, 255, 255), wT : int = 0, layer : int = 0):
         """normal(rect, image/color, min, max, current, color_background, color1, width1, enable2, color2, width2) -> Int
         Draws a slider without a outsize box. Returns the new current
         """
@@ -657,7 +661,7 @@ class slider:
                     pe_values.slider.drag = False
             Settings.UPDATE_AUTO = saveU
         return int(current)
-    def boxed(rect, imageS, minS, maxS, current, back, lineout, color, enableT=False, colorT=(255,255,255), layer=0):
+    def boxed(rect : tuple, imageS, minS : int, maxS : int, current : int, back : tuple, lineout : tuple, color : tuple, enableT : bool = False, colorT : tuple = (255, 255, 255), layer : int = 0):
         """boxed(rect, image/color, min, max, current, color_background, outLine, color1, enable2, color2) -> Int
         Draws a slider with a outsize box. Returns the new current
         """
@@ -842,7 +846,7 @@ class event:
         """
         if event.c.type == pygame.KEYDOWN or event.c.type == pygame.KEYUP:
             return event.c.key
-    def key_UP(var):
+    def key_UP(var : int):
         """key_UP(key) -> Bool
         Check if a button has been released and returns a bool accordingly
         """
@@ -851,7 +855,7 @@ class event:
                 return True
             else:
                 return False
-    def key_DOWN(var):
+    def key_DOWN(var : int):
         """key_DOWN(key) -> Bool
         Checks if a key is pressed and returns a bool accordingly
         """
@@ -863,12 +867,12 @@ class event:
 
 
 class math:
-    def center(rect):
+    def center(rect : tuple):
         """center(rect) -> Tuple
         Calculates the center of a rectangle
         """
         return ( (rect[0]+(rect[2]/2)), (rect[1]+(rect[3]/2)) )
-    def lerp(point_a, point_b, length):
+    def lerp(point_a : tuple, point_b : tuple, length : int):
         a = pygame.math.Vector2(point_a)
         b = pygame.math.Vector2(point_b)
         dir = b - a
@@ -880,8 +884,8 @@ class math:
         dest = a + dir
         return dest
     class tsx:
-      def make(pos,r):
-        var = []
+      def __init__(self, pos : tuple, r : int):
+        self.var = []
         PI = 3.1415926535
         angle = 0
         x1 = 0
@@ -889,10 +893,10 @@ class math:
         while angle < 360:
             x1 = r * mathM.cos(angle * PI / 180)
             y1 = r * mathM.sin(angle * PI / 180)
-            var.append((pos[0] + x1, pos[1] + y1))
+            self.var.append((pos[0] + x1, pos[1] + y1))
             angle += 0.1
-        return var
-      def get(tsx, angle):
+      def get(self, angle):
+        tsx = self.var
         angle -= 90
         while angle > 360:
           angle = angle-360
@@ -904,16 +908,16 @@ class math:
         except:
           print("fail",l, angle)
           return (0,0)
-    def tupleint(tupleV):
+    def tupleint(tupleV : tuple):
       l = []
       for x in tupleV:
         l.append(int(x))
       return tuple(l)
-    def dist(p1,p2):
+    def dist(p1 : tuple, p2 : tuple):
         return mathy.sqrt(((p1[0] - p2[0]) ** 2) + ((p1[1] - p2[1]) ** 2))
 
 class image:
-    def display(self, layer=0):
+    def display(self, layer : int = 0):
         """Image_Object.display() -> None
         Displays a image object
         """
@@ -922,7 +926,7 @@ class image:
             position = self.position
             self.rect = self.object.get_rect(center=((position[0] + size[0] / 2)+Layer[layer][1][0], (position[1] + size[1] / 2)+Layer[layer][1][1]))
             display.blit.rect(self.object, self.rect)
-    def __init__(self, file, size=None, position=(0,0)):
+    def __init__(self, file : str, size : tuple = None, position : tuple = (0, 0)):
         """image.(file, size, position) -> Image Object
         Makes a image object
         """
@@ -945,7 +949,7 @@ class image:
 class sheet:
     columns = 0
     rows = 1
-    def __init__(self, file, cellsize, type=1, offset=(0, 0)):
+    def __init__(self, file : str, cellsize : tuple, type : int = 1, offset : tuple = (0, 0)):
         """sheet(file, cellSize, type, Start_offset) -> Sheet Object
         Returns a simple sheet object containing details of a sprite sheet
         """
@@ -955,282 +959,281 @@ class sheet:
         self.offset = offset
 
 
-if True:
-        class Sprite:
-            def __init__(self, imagef, size, position=(0,0), rotation=0, pivot="center", layer=0):
-                """Sprite(file/files/image/images/sheet_object, size, position, rotation, pivot) -> Sprite Object
-                Makes and initializes a sprite object
-                """
-                # starts by converting the image(s) format. this makes sure it's like this [Image_obj, Image_obj] or Image_obj to [Image_obj] and so on...
-                if isinstance(imagef, list): #If it's a list
-                    if isinstance(imagef[0], list): #If there's a list inside that list
-                        imagef = [imagef] #cover the image(s) with a list
+class Sprite:
+    def __init__(self, imagef, size : tuple, position : tuple = (0, 0), rotation : int = 0, pivot : str = "center", layer = 0):
+        """Sprite(file/files/image/images/sheet_object, size, position, rotation, pivot) -> Sprite Object
+        Makes and initializes a sprite object
+        """
+        # starts by converting the image(s) format. this makes sure it's like this [Image_obj, Image_obj] or Image_obj to [Image_obj] and so on...
+        if isinstance(imagef, list): #If it's a list
+            if isinstance(imagef[0], list): #If there's a list inside that list
+                imagef = [imagef] #cover the image(s) with a list
+        else:
+            imagef = [imagef]
+            #
+        self.PGE = "sprite"
+        self.sheet_e = False
+        self.frames = len(imagef)
+        self.fx = 0
+        # checks the image(s) type, this will determain how it should load them to the sprite's variables
+        if isinstance(imagef[0], image): # it's a type image!
+            self.image = [None] * len(imagef)
+            i = 0
+            # LOAD
+            for x in imagef:
+                self.image[i] = imagef[i]
+                if rotation > 0:
+                    self.image[i].object = pygame.transform.rotozoom(self.image[i].object, rotation, 1)
+                self.image[i].object = pygame.transform.scale(self.image[i].object, size)
+                sprite_r = self.image[i]
+                sizev = (size[0]/2,size[1]/2)
+                # Set the correct pivot...
+                if pivot == "center":
+                    sprite_r.rect = sprite_r.object.get_rect(center=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "left":
+                    sprite_r.rect = sprite_r.object.get_rect(left=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "right":
+                    sprite_r.rect = sprite_r.object.get_rect(right=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "top":
+                    sprite_r.rect = sprite_r.object.get_rect(top=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "topleft":
+                    sprite_r.rect = sprite_r.object.get_rect(topleft=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "topright":
+                    sprite_r.rect = sprite_r.object.get_rect(topright=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "bottom":
+                    sprite_r.rect = sprite_r.object.get_rect(bottom=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "bottomleft":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                elif pivot == "bottomright":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomright=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
+                self.image[i] = sprite_r
+                i += 1
+        elif isinstance(imagef[0], sheet): # it's a type SpriteSheet!
+            self.sheet = imagef[0]
+            self.image = image(self.sheet.file, position=position)
+            sd = (int((self.image.Asize[0]/self.sheet.cellsize[0])*size[0]), int((self.image.Asize[1]/self.sheet.cellsize[0])*size[1]))
+            self.frames = 0
+            self.fx = [0,0]
+            self.frames = int(self.image.Asize[0]/self.sheet.cellsize[0])*int(self.image.Asize[1]/self.sheet.cellsize[1])
+            if self.sheet.type == 1:
+                self.fx[0] = int(self.image.Asize[0]/self.sheet.cellsize[0])
+                self.fx[1] = int(self.image.Asize[1]/self.sheet.cellsize[1])-1
+            else:
+                self.fx[0] = int(self.image.Asize[0] / self.sheet.cellsize[0]) - 1
+                self.fx[1] = int(self.image.Asize[1] / self.sheet.cellsize[1])
+            self.image.object = pygame.transform.scale(self.image.object, sd)
+            self.sheet_e = True
+        else: # otherwise just load as if image
+            self.image = [None] * len(imagef)
+            i = 0
+            for x in imagef:
+                self.image[i] = image(str(x), size, position)
+                if rotation > 0:
+                    self.image[i].object = pygame.transform.rotozoom(self.image[i].object,rotation,1)
+                i += 1
+        self.pivot = pivot # determines the pivot for future inits or user needs
+        self.rotation = rotation * 1 # saves the rotation double
+        self.rotationND = rotation # saves the rotation again
+        self.position = position # saves the position
+        self.rect = size # saves the sprite area
+        self.size = 1 # sets the default multiplier for the size
+        self.new = self.image # the current sprite image
+        self.refresh = True # makes a user variable
+        self.layer = layer # saves the layer
+        self.frame = 0 # sets the frame to 0 as it's a index
+        self.step = 0 # sets the step to 0 (disabled)
+        self.step_m = 1 # sets the step multiplier to 1 (default)
+        self.pingpong = False # disables ping~pong
+        #return self
+    def init_rotation(self):
+        """sprite_object.init_rotation() -> Sprite Object
+        Initializes only the rotation of the sprite
+        """
+        i = 0
+        if not self.sheet_e:
+            for x in self.image:
+                sprite_r = x
+                sprite_r.object = pygame.Surface(x.object.get_size(),pygame.SRCALPHA)
+                if self.rotation != 0:
+                    sprite_r.object = pygame.transform.rotozoom(x.object,self.rotation,self.size)
                 else:
-                    imagef = [imagef]
+                    sprite_r.object = x.object
+                sprite_r.rect = sprite_r.object.get_rect(center = x.rect.center)
+                self.new[i] = sprite_r
+                i += 1
+        return self.new
+    def init_position(self):
+        """sprite_object.init_position() -> Sprite Object
+        Initializes only the position of the sprite
+        """
+        i = 0
+        if self.sheet_e:
+            sprite_r = self.image
+            if self.pivot == "topleft":
+                sprite_r.rect = sprite_r.object.get_rect(topleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "topright":
+                sprite_r.rect = sprite_r.object.get_rect(topright=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "top":
+                sprite_r.rect = sprite_r.object.get_rect(top=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "bottomleft":
+                sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "bottomright":
+                sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "bottom":
+                sprite_r.rect = sprite_r.object.get_rect(bottom=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "left":
+                sprite_r.rect = sprite_r.object.get_rect(left=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "right":
+                sprite_r.rect = sprite_r.object.get_rect(right=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+            elif self.pivot == "center":
+                sprite_r.rect = sprite_r.object.get_rect(center=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                #
+        else:
+            for x in self.image:
+                sprite_r = x
+                if self.pivot == "topleft":
+                    sprite_r.rect = sprite_r.object.get_rect(topleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
                     #
-                self.PGE = "sprite"
-                self.sheet_e = False
-                self.frames = len(imagef)
-                self.fx = 0
-                # checks the image(s) type, this will determain how it should load them to the sprite's variables
-                if isinstance(imagef[0], image): # it's a type image!
-                    self.image = [None] * len(imagef)
-                    i = 0
-                    # LOAD
-                    for x in imagef:
-                        self.image[i] = imagef[i]
-                        if rotation > 0:
-                            self.image[i].object = pygame.transform.rotozoom(self.image[i].object, rotation, 1)
-                        self.image[i].object = pygame.transform.scale(self.image[i].object, size)
-                        sprite_r = self.image[i]
-                        sizev = (size[0]/2,size[1]/2)
-                        # Set the correct pivot...
-                        if pivot == "center":
-                            sprite_r.rect = sprite_r.object.get_rect(center=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "left":
-                            sprite_r.rect = sprite_r.object.get_rect(left=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "right":
-                            sprite_r.rect = sprite_r.object.get_rect(right=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "top":
-                            sprite_r.rect = sprite_r.object.get_rect(top=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "topleft":
-                            sprite_r.rect = sprite_r.object.get_rect(topleft=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "topright":
-                            sprite_r.rect = sprite_r.object.get_rect(topright=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "bottom":
-                            sprite_r.rect = sprite_r.object.get_rect(bottom=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "bottomleft":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        elif pivot == "bottomright":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomright=(list(position)[0] + Layer[layer][1][0] + sizev[0],list(position)[1] + Layer[layer][1][1] + sizev[1]))
-                        self.image[i] = sprite_r
-                        i += 1
-                elif isinstance(imagef[0], sheet): # it's a type SpriteSheet!
-                    self.sheet = imagef[0]
-                    self.image = image(self.sheet.file, position=position)
-                    sd = (int((self.image.Asize[0]/self.sheet.cellsize[0])*size[0]), int((self.image.Asize[1]/self.sheet.cellsize[0])*size[1]))
-                    self.frames = 0
-                    self.fx = [0,0]
-                    self.frames = int(self.image.Asize[0]/self.sheet.cellsize[0])*int(self.image.Asize[1]/self.sheet.cellsize[1])
-                    if self.sheet.type == 1:
-                        self.fx[0] = int(self.image.Asize[0]/self.sheet.cellsize[0])
-                        self.fx[1] = int(self.image.Asize[1]/self.sheet.cellsize[1])-1
-                    else:
-                        self.fx[0] = int(self.image.Asize[0] / self.sheet.cellsize[0]) - 1
-                        self.fx[1] = int(self.image.Asize[1] / self.sheet.cellsize[1])
-                    self.image.object = pygame.transform.scale(self.image.object, sd)
-                    self.sheet_e = True
-                else: # otherwise just load as if image
-                    self.image = [None] * len(imagef)
-                    i = 0
-                    for x in imagef:
-                        self.image[i] = image(str(x), size, position)
-                        if rotation > 0:
-                            self.image[i].object = pygame.transform.rotozoom(self.image[i].object,rotation,1)
-                        i += 1
-                self.pivot = pivot # determines the pivot for future inits or user needs
-                self.rotation = rotation * 1 # saves the rotation double
-                self.rotationND = rotation # saves the rotation again
-                self.position = position # saves the position
-                self.rect = size # saves the sprite area
-                self.size = 1 # sets the default multiplier for the size
-                self.new = self.image # the current sprite image
-                self.refresh = True # makes a user variable
-                self.layer = layer # saves the layer
-                self.frame = 0 # sets the frame to 0 as it's a index
-                self.step = 0 # sets the step to 0 (disabled)
-                self.step_m = 1 # sets the step multiplier to 1 (default)
-                self.pingpong = False # disables ping~pong
-                #return self
-            def init_rotation(self):
-                """sprite_object.init_rotation() -> Sprite Object
-                Initializes only the rotation of the sprite
-                """
-                i = 0
-                if not self.sheet_e:
-                    for x in self.image:
-                        sprite_r = x
-                        sprite_r.object = pygame.Surface(x.object.get_size(),pygame.SRCALPHA)
-                        if self.rotation != 0:
-                            sprite_r.object = pygame.transform.rotozoom(x.object,self.rotation,self.size)
-                        else:
-                            sprite_r.object = x.object
-                        sprite_r.rect = sprite_r.object.get_rect(center = x.rect.center)
-                        self.new[i] = sprite_r
-                        i += 1
-                return self.new
-            def init_position(self):
-                """sprite_object.init_position() -> Sprite Object
-                Initializes only the position of the sprite
-                """
-                i = 0
-                if self.sheet_e:
-                    sprite_r = self.image
-                    if self.pivot == "topleft":
-                        sprite_r.rect = sprite_r.object.get_rect(topleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "topright":
-                        sprite_r.rect = sprite_r.object.get_rect(topright=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "top":
-                        sprite_r.rect = sprite_r.object.get_rect(top=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "bottomleft":
-                        sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "bottomright":
-                        sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "bottom":
-                        sprite_r.rect = sprite_r.object.get_rect(bottom=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "left":
-                        sprite_r.rect = sprite_r.object.get_rect(left=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "right":
-                        sprite_r.rect = sprite_r.object.get_rect(right=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                    elif self.pivot == "center":
-                        sprite_r.rect = sprite_r.object.get_rect(center=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        #
-                else:
-                    for x in self.image:
-                        sprite_r = x
-                        if self.pivot == "topleft":
-                            sprite_r.rect = sprite_r.object.get_rect(topleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "topright":
-                            sprite_r.rect = sprite_r.object.get_rect(topright=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "top":
-                            sprite_r.rect = sprite_r.object.get_rect(top=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "bottomleft":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "bottomright":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "bottom":
-                            sprite_r.rect = sprite_r.object.get_rect(bottom=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "left":
-                            sprite_r.rect = sprite_r.object.get_rect(left=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "right":
-                            sprite_r.rect = sprite_r.object.get_rect(right=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        elif self.pivot == "center":
-                            sprite_r.rect = sprite_r.object.get_rect(center=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                            #
-                        self.new[i] = sprite_r
-                        i += 1
-                return self.new
-            def init(self):
-                """sprite_object.init() -> Sprite Object
-                Initializes the entire sprite
-                """
-                self.rotation = self.rotationND - 90
-                if self.sheet_e:
-                    sprite_r = self.image
-                    if self.rotation != 0:
-                        #sprite_r.object = pygame.transform.rotate(self.image, self.rotation)
-                        pass
-                    else:
-                        if self.pivot == "topleft":
-                            sprite_r.rect = sprite_r.object.get_rect(topleft = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "topright":
-                            sprite_r.rect = sprite_r.object.get_rect(topright = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "top":
-                            sprite_r.rect = sprite_r.object.get_rect(top = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "bottomleft":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "bottomright":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "bottom":
-                            sprite_r.rect = sprite_r.object.get_rect(bottom = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "left":
-                            sprite_r.rect = sprite_r.object.get_rect(left = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "right":
-                            sprite_r.rect = sprite_r.object.get_rect(right = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "center":
-                            sprite_r.rect = sprite_r.object.get_rect(center = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "topright":
+                    sprite_r.rect = sprite_r.object.get_rect(topright=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "top":
+                    sprite_r.rect = sprite_r.object.get_rect(top=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "bottomleft":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "bottomright":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "bottom":
+                    sprite_r.rect = sprite_r.object.get_rect(bottom=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "left":
+                    sprite_r.rect = sprite_r.object.get_rect(left=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "right":
+                    sprite_r.rect = sprite_r.object.get_rect(right=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                elif self.pivot == "center":
+                    sprite_r.rect = sprite_r.object.get_rect(center=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                    #
+                self.new[i] = sprite_r
+                i += 1
+        return self.new
+    def init(self):
+        """sprite_object.init() -> Sprite Object
+        Initializes the entire sprite
+        """
+        self.rotation = self.rotationND - 90
+        if self.sheet_e:
+            sprite_r = self.image
+            if self.rotation != 0:
+                #sprite_r.object = pygame.transform.rotate(self.image, self.rotation)
+                pass
+            else:
+                if self.pivot == "topleft":
+                    sprite_r.rect = sprite_r.object.get_rect(topleft = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "topright":
+                    sprite_r.rect = sprite_r.object.get_rect(topright = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "top":
+                    sprite_r.rect = sprite_r.object.get_rect(top = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "bottomleft":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "bottomright":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "bottom":
+                    sprite_r.rect = sprite_r.object.get_rect(bottom = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "left":
+                    sprite_r.rect = sprite_r.object.get_rect(left = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "right":
+                    sprite_r.rect = sprite_r.object.get_rect(right = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "center":
+                    sprite_r.rect = sprite_r.object.get_rect(center = ( list(self.position)[0] + Layer[self.layer][1][0], list(self.position)[1] + Layer[self.layer][1][1]))
 
-                    self.new = sprite_r
+            self.new = sprite_r
+        else:
+            i = 0
+            for x in self.image:
+                sprite_r = x
+                #sprite_r[0] = pygame.Surface(self.image[0].get_size(),pygame.SRCALPHA)
+                if self.rotation != 0 or True:
+                    sprite_r.object = pygame.transform.rotozoom(self.image[i].object,self.rotation,self.size)
                 else:
-                    i = 0
-                    for x in self.image:
-                        sprite_r = x
-                        #sprite_r[0] = pygame.Surface(self.image[0].get_size(),pygame.SRCALPHA)
-                        if self.rotation != 0 or True:
-                            sprite_r.object = pygame.transform.rotozoom(self.image[i].object,self.rotation,self.size)
-                        else:
-                            sprite_r.object = x.object
-                        if self.pivot == "topleft":
-                            sprite_r.rect = sprite_r.object.get_rect(topleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "topright":
-                            sprite_r.rect = sprite_r.object.get_rect(topright=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "top":
-                            sprite_r.rect = sprite_r.object.get_rect(top=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "bottomleft":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "bottomright":
-                            sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "bottom":
-                            sprite_r.rect = sprite_r.object.get_rect(bottom=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "left":
-                            sprite_r.rect = sprite_r.object.get_rect(left=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "right":
-                            sprite_r.rect = sprite_r.object.get_rect(right=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        elif self.pivot == "center":
-                            sprite_r.rect = sprite_r.object.get_rect(center=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
-                        self.new[i] = sprite_r
-                        i += 1
-                return self.new
-            def display(self):
-                """sprite_object.display() -> None
-                displays the sprite object on the screen
-                """
-                if Layer[self.layer][0]:
-                    if int(self.frame) >= self.frames:
-                        if self.pingpong:
-                            self.step_m *= -1
-                        else:
-                            self.frame = 1
-                    if int(self.frame) < 2 and self.pingpong and "-" in str(self.step_m):
-                        self.step_m *= -1
-                    if self.step > 0:
-                        self.frame += self.step * self.step_m
-                    else:
-                        self.frame = 1
-                    if self.sheet_e:
-                        x = 0
-                        y = 0
-                        if self.sheet.type == 1:
-                            for i in range(int(self.frame-1)):
-                                x += 1
-                                if x > self.fx[0]-1:
-                                    x = 0
-                                    y += 1
-                            x *= self.rect[0]
-                            y *= self.rect[1]
-                            area = (x+self.sheet.offset[0], y+self.sheet.offset[1], self.rect[0], self.rect[1])
-                        else:
-                            for i in range(int(self.frame-1)):
-                                y += 1
-                                if y > self.fx[1]-1:
-                                    y = 0
-                                    x += 1
-                            x *= self.rect[0]
-                            y *= self.rect[1]
-                            area = (x+self.sheet.offset[0], y+self.sheet.offset[1], self.rect[0], self.rect[1])
-                        display_a.blit(self.new.object, self.new.rect, area=area)
-                    else:
-                        display_a.blit(self.new[int(self.frame) - 1].object, self.new[int(self.frame) - 1].rect)
+                    sprite_r.object = x.object
+                if self.pivot == "topleft":
+                    sprite_r.rect = sprite_r.object.get_rect(topleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "topright":
+                    sprite_r.rect = sprite_r.object.get_rect(topright=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "top":
+                    sprite_r.rect = sprite_r.object.get_rect(top=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "bottomleft":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "bottomright":
+                    sprite_r.rect = sprite_r.object.get_rect(bottomleft=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "bottom":
+                    sprite_r.rect = sprite_r.object.get_rect(bottom=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "left":
+                    sprite_r.rect = sprite_r.object.get_rect(left=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "right":
+                    sprite_r.rect = sprite_r.object.get_rect(right=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                elif self.pivot == "center":
+                    sprite_r.rect = sprite_r.object.get_rect(center=(list(self.position)[0] + Layer[self.layer][1][0],list(self.position)[1] + Layer[self.layer][1][1]))
+                self.new[i] = sprite_r
+                i += 1
+        return self.new
+    def display(self):
+        """sprite_object.display() -> None
+        displays the sprite object on the screen
+        """
+        if Layer[self.layer][0]:
+            if int(self.frame) >= self.frames:
+                if self.pingpong:
+                    self.step_m *= -1
+                else:
+                    self.frame = 1
+            if int(self.frame) < 2 and self.pingpong and "-" in str(self.step_m):
+                self.step_m *= -1
+            if self.step > 0:
+                self.frame += self.step * self.step_m
+            else:
+                self.frame = 1
+            if self.sheet_e:
+                x = 0
+                y = 0
+                if self.sheet.type == 1:
+                    for i in range(int(self.frame-1)):
+                        x += 1
+                        if x > self.fx[0]-1:
+                            x = 0
+                            y += 1
+                    x *= self.rect[0]
+                    y *= self.rect[1]
+                    area = (x+self.sheet.offset[0], y+self.sheet.offset[1], self.rect[0], self.rect[1])
+                else:
+                    for i in range(int(self.frame-1)):
+                        y += 1
+                        if y > self.fx[1]-1:
+                            y = 0
+                            x += 1
+                    x *= self.rect[0]
+                    y *= self.rect[1]
+                    area = (x+self.sheet.offset[0], y+self.sheet.offset[1], self.rect[0], self.rect[1])
+                display_a.blit(self.new.object, self.new.rect, area=area)
+            else:
+                display_a.blit(self.new[int(self.frame) - 1].object, self.new[int(self.frame) - 1].rect)
 
 
 class E_intro:
-    def intro(anim,back,t):
+    def intro(anim, back, t):
         """intro(sleep, color_background, color_text) -> None
         Plays the "PGE" sequence
         """
@@ -1292,7 +1295,7 @@ class E_intro:
             print('resolution too small to display intro!')
             print('Try again with at least (300,150)')
             print('=================================')
-    def run(tA=100,tB=100,tC=1000):
+    def run(tA : int = 100, tB : int = 100, tC : int = 1000):
         """run(sleep_first, delay, finish_delay) -> None
         Plays the full original "PGE" animation
         """
@@ -1306,12 +1309,12 @@ class E_intro:
 
 
 class sound:
-    def load(file):
+    def load(file : str):
         """load(file) -> Sound Object
         Loads a sound file and returns the object
         """
         return pygame.mixer.Sound(file)
-    def play(soundOBJ):
+    def play(soundOBJ : pygame.mixer.Sound):
         """play(sound_object) -> None
         Plays a sound object
         """
@@ -1320,13 +1323,13 @@ class sound:
 
 class music:
     volume = 100
-    def load(file):
+    def load(file : str):
         """load(file) -> None
         Loads a track to the buffer
         """
         pygame.mixer.music.load(file)
         
-    def play(i=1):
+    def play(i : int = 1):
         """play(times) -> None
         Plays the buffer for an amount of times, 0 is infinity
         """
@@ -1364,13 +1367,13 @@ class music:
         """
         pygame.mixer.music.unpause()
         
-    def fade(time):
+    def fade(time : float):
         """fade(time) -> None
         Fades the playback for a given time and stops
         """
         pygame.mixer.music.fadeout(time)
     
-    def set_v(new_v):
+    def set_v(new_v : float):
         """set_v(new) -> None
         Sets a new playback volume
         """
@@ -1384,7 +1387,7 @@ class music:
         music.volume = pygame.mixer.music.get_volume()
         return music.volume
 
-    def set_t(new_t):
+    def set_t(new_t : float):
         """set_v(new) -> None
         Changes the playback's position
         """
