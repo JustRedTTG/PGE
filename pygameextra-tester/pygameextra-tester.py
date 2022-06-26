@@ -1,8 +1,9 @@
+#!/usr/bin/env python
+
 import pygameextra as pe
 pe.init()
-pe.Layer[0][1] = (25, 25)
 pe.display.make((500,500), "PGE Testing Utility", 0)
-sp = pe.scriptpath+"examples/tester/"
+sp = ""
 #button images
 bX = pe.image(sp+"Xbutton.png", size=(100, 100), position=(100, 0))
 bX2 = pe.image(sp+"Xbutton.png", size=(10, 10), position=(100, 0))
@@ -37,20 +38,18 @@ s6.init()
 s7.init()
 # setup some more things...
 bt = [
-    pe.text.quick.make('Buttons', 15, pe.math.center((0, 200, 100, 50))), #0
-    pe.text.quick.make('Sliders', 15, pe.math.center((100, 200, 100, 50))), #1
-    pe.text.quick.make('< Back', 15, pe.math.center((0, 0, 100, 50))), #2
-    pe.text.quick.make('Sprites', 15, pe.math.center((200, 200, 100, 50))), #3
-    pe.text.quick.make('Shapes', 15, pe.math.center((300, 200, 100, 50))), #4
-    pe.text.quick.make('Math', 15, pe.math.center((400, 200, 100, 50))), #5
-    pe.text.quick.make('Lerp', 15, pe.math.center((0, 200, 100, 50))), #6
-    pe.text.quick.make('Center', 15, pe.math.center((100, 200, 100, 50))), #7
-    pe.text.quick.make('< Math', 15, pe.math.center((0, 0, 100, 50))), #8
-    pe.text.quick.make('+', 15, pe.math.center((275, 200, 50, 50))), #9
-    pe.text.quick.make('-', 15, pe.math.center((175, 200, 50, 50))), #10
-    pe.text.quick.make("100", 15, pe.math.center((225, 200, 50, 50))), #11
-    pe.text.quick.make('+', 25, pe.math.center((25, pe.display.get.size()[1] - 25, 25, 25)), layer=1), #12
-    pe.text.quick.make('-', 25, pe.math.center((50, pe.display.get.size()[1] - 25, 25, 25)), layer=1) #13
+    pe.text.quick.make('Buttons', 15, pe.math.center((0, 200, 100, 50))),
+    pe.text.quick.make('Sliders', 15, pe.math.center((100, 200, 100, 50))),
+    pe.text.quick.make('< Back', 15, pe.math.center((0, 0, 100, 50))),
+    pe.text.quick.make('Sprites', 15, pe.math.center((200, 200, 100, 50))),
+    pe.text.quick.make('Shapes', 15, pe.math.center((300, 200, 100, 50))),
+    pe.text.quick.make('Math', 15, pe.math.center((400, 200, 100, 50))),
+    pe.text.quick.make('Lerp', 15, pe.math.center((0, 200, 100, 50))),
+    pe.text.quick.make('Center', 15, pe.math.center((100, 200, 100, 50))),
+    pe.text.quick.make('< Math', 15, pe.math.center((0, 0, 100, 50))),
+    pe.text.quick.make('+', 15, pe.math.center((275, 200, 50, 50))),
+    pe.text.quick.make('-', 15, pe.math.center((175, 200, 50, 50))),
+    pe.text.quick.make("100", 15, pe.math.center((225, 200, 50, 50)))
 ] # button texts
 bt[8].color = pe.color.white
 bt[8].init(bt[8])
@@ -80,32 +79,6 @@ def set_lerplength(data):
     global lerplength
     lerplength = data
 
-
-def set_layer(move):
-    if move == "False":
-        pe.Layer[0][0] = False
-    elif move == "True":
-        pe.Layer[0][0] = True
-    elif move == "1":
-        pe.Layer[0][1] = (pe.Layer[0][1][0]+5, pe.Layer[0][1][1]+5)
-        s1.init()
-        s2.init()
-        s3.init()
-        s4.init()
-        s5.init()
-        s6.init()
-        s7.init()
-    elif move == "0":
-        pe.Layer[0][1] = (pe.Layer[0][1][0]-5, pe.Layer[0][1][1]-5)
-        s1.init()
-        s2.init()
-        s3.init()
-        s4.init()
-        s5.init()
-        s6.init()
-        s7.init()
-
-
 # Testing Texts
 #testtext = [
 #    pe.text.quick.small("pe.rect", (250,250), layer=1), # 0
@@ -127,7 +100,7 @@ testscore = 0
 while True:
     for pe.event.c in pe.event.get():
         pe.event.quitcheckauto()
-    pe.fill.full(pe.color.verydarkgray, layer=1)
+    pe.fill.full(pe.color.verydarkgray)
 
     if test == "slider":
         sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0), True, (0, 0, 255))
@@ -203,7 +176,7 @@ while True:
             pass
         else:
             pe.button.rect((0, 0, 100, 50), pe.color.white, pe.color.lightgray, bt[2], action=set_test, data="")
-
+        #
 
     if test == "math_lerp":
         if pe.display.get.size()[0] < 325 or pe.display.get.size()[1] < 250:
@@ -237,15 +210,6 @@ while True:
         pe.draw.line(pe.color.white, (pe.display.get.size()[0],pe.display.get.size()[1]), lerp4, 5)
     elif test == "math_center":
         pe.draw.circle(pe.color.white, pe.math.center((0,0,pe.display.get.size()[0],pe.display.get.size()[1])), 5, 5)
-
-    s = pe.display.get.size()
-    if pe.Layer[0][0]:
-        pe.button.rect((0, s[1] - 25, 25, 25), pe.color.green, pe.color.red, action=set_layer, data="False", layer=1)
-    else:
-        pe.button.rect((0, s[1] - 25, 25, 25), pe.color.red, pe.color.green, action=set_layer, data="True", layer=1)
-    pe.button.rect((25, s[1] - 25, 25, 25), pe.color.blue, pe.color.darkblue,bt[12], action=set_layer, data="1", layer=1) # ++
-    pe.button.rect((50, s[1] - 25, 25, 25), pe.color.blue, pe.color.darkblue,bt[13], action=set_layer, data="0", layer=1) # --
-
     if test != "testall":
         pe.display.update()
-    pe.time.tick(300)
+    pe.time.tick(200)
