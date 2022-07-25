@@ -17,6 +17,7 @@ class Surface:
             self.layer = layer
         self.area = None # Used by stamps function
         self.pos = None # Used by stamps function
+        self.frames = 1 # Used by sprite animation function, if used improperly
 
     def stamp(self, source:'Surface', position=(0, 0), area=None, special_flags:int=0):
         self.surface.blit(source.surface, position, area, special_flags)
