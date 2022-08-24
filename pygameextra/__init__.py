@@ -1,14 +1,14 @@
 """PYGAME EXTRA __INIT__"""
 
 import os
-import pygame
+# noinspection PyUnresolvedReferences
+from pygameextra.pygame import pygame
 from pygameextra.image import *
 from pygameextra.sheet_handlers import *
 from pygameextra.sprite import *
 from pygameextra.modified import *
+from pygameextra.fill import *
 from pygameextra import event
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 
 def init(display_init_size=None):

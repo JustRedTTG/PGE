@@ -10,43 +10,58 @@ DISPLAY_MODE_RESIZABLE = 1
 DISPLAY_MODE_FULLSCREEN = 2
 DISPLAY_MODE_HIDDEN = 3
 DISPLAY_FLAG_MAP = {
-    DISPLAY_MODE_NORMAL : 0,
-    DISPLAY_MODE_RESIZABLE : pygame.RESIZABLE,
-    DISPLAY_MODE_FULLSCREEN : pygame.FULLSCREEN,
-    DISPLAY_MODE_HIDDEN : pygame.HIDDEN
+    DISPLAY_MODE_NORMAL: 0,
+    DISPLAY_MODE_RESIZABLE: pygame.RESIZABLE,
+    DISPLAY_MODE_FULLSCREEN: pygame.FULLSCREEN,
+    DISPLAY_MODE_HIDDEN: pygame.HIDDEN
 }
 # Display Others...
 DISPLAY_DEFAULT_TITLE = "pygameextra window"
-display_refrence = Surface
+display_reference = Surface
+
 
 # Functions
 def set_caption(title=DISPLAY_DEFAULT_TITLE): pygame.display.set_caption(title)
-def set_icon(icon:Surface):
+
+
+def set_icon(icon: [Surface, pygame.Surface]):
+    """Set icon
+    context(icon: Surface or pygame.Surface) -> None
+
+    Parameters:
+        icon -- The new icon for the window"""
     surface = icon.surface
-    if type(surface) == Surface: surface = surface.surface
+    if type(surface) == Surface:
+        surface = surface.surface  # Extract pygame extra surface type
 
     pygame.display.set_icon(surface)
 
 
-def context(display:Surface):
-    global display_refrence
-    display_refrence = display
-
-def make(size:tuple=(0, 0), title:str=DISPLAY_DEFAULT_TITLE, mode:int=DISPLAY_MODE_NORMAL):
-    """Creates a window that the user can work with
-    make(size, title, mode = 0) -> None
+def context(display: Surface):
+    """Display context
+    context(display: Surface) -> None
 
     Parameters:
-        size -- A tuple (Width, Height), determains the size of the window
-        title -- A string
+        display -- The new display context"""
+    global display_reference
+    display_reference = display
+
+
+def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int = DISPLAY_MODE_NORMAL):
+    """Creates a window that the user can work with
+    make(size: tuple, title: str, mode = 0) -> None
+
+    Parameters:
+        size -- Determines the size of the window
+        title -- Determines the title of the window
     """
-    flags = [] # Initiate a flags list
-    final_flags = 0 # Initiate a final flags variable
+    flags = []  # Initiate a flags list
+    final_flags = 0  # Initiate a final flags variable
     flags.append(DISPLAY_FLAG_MAP[mode])
 
-    for item in flags: # Go through all the flags
-        final_flags = final_flags | item # Combine all the flags into the final flags variable
-    dis = pygame.display.set_mode(size, final_flags) # Create the display surface
+    for item in flags:  # Go through all the flags
+        final_flags = final_flags | item  # Combine all the flags into the final flags variable
+    dis = pygame.display.set_mode(size, final_flags)  # Create the display surface
     dis = Surface(surface=dis, layer=-1)
 
     set_caption(title)
@@ -55,9 +70,18 @@ def make(size:tuple=(0, 0), title:str=DISPLAY_DEFAULT_TITLE, mode:int=DISPLAY_MO
     context(dis)
     return dis
 
-def update(area=None):
-    if not area: pygame.display.flip()
-    else : pygame.display.update(area)
 
-def blit(object, pos=(0, 0), area=None):
-    display_refrence.stamp(object, pos, area)
+def update(area: tuple = None):
+    """Updates the entire display or an area of it
+    update(area: tuple = None) -> None
+
+    Parameters:
+        area -- The area of the display that should be updated. None for the entire display"""
+    if not area:
+        pygame.display.flip()  # Flip the buffers to display the working buffer to the screen
+    else:
+        pygame.display.update(area)  # Update an area of the display
+
+
+def blit(obj, pos=(0, 0), area=None):
+    display_reference.stamp(obj, pos, area)
