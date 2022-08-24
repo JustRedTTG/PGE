@@ -2,6 +2,7 @@ import pygame
 import pygameextra.display as display
 from pygameextra.modified import *
 
+
 def full(color: tuple):
     display.display_reference.surface.fill(color)
 
