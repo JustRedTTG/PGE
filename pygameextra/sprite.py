@@ -57,4 +57,5 @@ class Sprite:
             self.reference.surface.layer = self.layer  # Update the layer, just in case
             display.blit(self.reference.surface, position or self.pos, self.reference.get(self))  # Display to area, according to the sprite sheet handler
             self.skip_frame()  # Animate!
-        else: display.blit(self.reference, position or self.pos, area)  # Display an image
+        else:
+            display.blit(self.reference, position or self.pos, area)  # Display an image
