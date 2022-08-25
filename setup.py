@@ -25,13 +25,5 @@ setup(
     install_requires=['pygame'],
     package_data={'pygameextra': ['font.ttf']
     },
-    keywords=['python'],
-    classifiers=[
-       "Development Status :: 1 - Planning",
-       "Intended Audience :: Developers",
-       "Programming Language :: Python :: 3",
-       "Operating System :: Unix",
-       "Operating System :: MacOS :: MacOS X",
-       "Operating System :: Microsoft :: Windows",
-   ]
+    keywords=['python']
 )
