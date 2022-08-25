@@ -12,12 +12,13 @@ class Sheet:
         self.surface = Surface(surface=pygame.image.load(file).convert_alpha())
         handler.map(self.surface)
         self.handler = handler
+        self.frames = 1
 
     def get(self, sprite: 'Sprite'): self.handler.get(sprite)
 
 
 class Sprite:
-    def __init__(self, sprite_reference: [Sheet, str], scale=None, pos: tuple = (0, 0), name="Sprite", layer=0):
+    def __init__(self, sprite_reference: [Sheet, str], scale=None, pos: tuple = (0, 0), name="Sprite", pivot='topleft', layer=0):
         if isinstance(sprite_reference, Sheet):
             self.reference = sprite_reference
             self.size = (self.reference.handler.width, self.reference.handler.height)

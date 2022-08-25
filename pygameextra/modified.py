@@ -10,7 +10,6 @@ class SurfaceException(Exception):
 
 
 class Surface:
-
     def __init__(self, size=(0, 0), layer=0, surface: pygame.Surface = None):
         if surface:
             self.size = surface.get_size()
@@ -53,3 +52,6 @@ class Surface:
     def resize(self, size: tuple):
         self.surface = pygame.transform.scale(self.surface, size)
         self.size = self.surface.get_size()
+
+    def copy(self):
+        return Surface(self.size, self.layer, self.surface.copy())

@@ -4,6 +4,7 @@ This script manages all display functions"""
 import pygame
 from pygameextra.modified import Surface
 import pygameextra.settings as settings
+import pygameextra.recorder as recorder
 import pygameextra.time
 
 # Display MODES
@@ -20,7 +21,7 @@ DISPLAY_FLAG_MAP = {
 # Display Others...
 DISPLAY_DEFAULT_TITLE = "pygameextra window"
 display_reference = Surface
-
+max_size = (700, 700)
 
 # Functions
 def set_caption(title=DISPLAY_DEFAULT_TITLE): pygame.display.set_caption(title)
@@ -49,6 +50,9 @@ def context(display: Surface):
     display_reference = display
 
 
+make_data = []
+
+
 def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int = DISPLAY_MODE_NORMAL):
     """Creates a window that the user can work with
     make(size: tuple, title: str, mode = 0) -> None
@@ -57,6 +61,8 @@ def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int =
         size -- Determines the size of the window
         title -- Determines the title of the window
     """
+    global make_data
+    make_data = [size, title, mode]
     flags = []  # Initiate a flags list
     final_flags = 0  # Initiate a final flags variable
     flags.append(DISPLAY_FLAG_MAP[mode])
@@ -94,3 +100,30 @@ def update(framerate: int = None, area: tuple = None):
 
 def blit(obj, pos=(0, 0), area=None):
     display_reference.stamp(obj, pos, area)
+    if not settings.recording:
+        return
+    if type(obj) == Surface:
+        obj = obj.surface
+    recorder.record(recorder.Blit(obj, pos, area))
+
+
+def get_width():
+    return display_reference.size[0]
+
+
+def get_height():
+    return display_reference.size[1]
+
+
+def get_size():
+    return display_reference.size
+
+
+def get_max():
+    return max_size
+
+
+def backup_details():
+    if make_data[2] == DISPLAY_MODE_RESIZABLE:
+        make_data[0] = display_reference.size
+    return make_data.copy()
