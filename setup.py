@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import codecs
 import os
 
-version = '2.0.0b1'
+version = '2.0.0b2'
 short = 'Pygame. Made easier'
 long = '''Pygame Extra is a mask for pygame, 
 you can easily make complex games and or apps with much less lines then you would of before, 
@@ -31,7 +31,7 @@ setup(
     keywords=['python'],
     entry_points={
         'console_scripts': [
-            'pygameextra-tester = pygameextra_tester.__init__:handle',
+            'pygameextra-tester = pygameextra_tester.__init__:run',
         ],
     }
 )
