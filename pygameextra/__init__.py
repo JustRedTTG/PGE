@@ -7,7 +7,10 @@ from pygameextra.image import *
 from pygameextra.sheet_handlers import *
 from pygameextra.sprite import *
 from pygameextra.modified import *
+from pygameextra.version import get as get_version
 from pygameextra import event, time, fill, mouse, settings, colors, draw, math, text, button, rect
+
+__version__ = get_version()
 
 
 def init(display_init_size: tuple = None):

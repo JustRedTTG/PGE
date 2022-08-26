@@ -1,8 +1,17 @@
 from pygameextra import draw, mouse, math, display, settings, recorder
 from pygameextra.rect import Rect
+from pygameextra.text import Text
 
 
-def rect(area: tuple, inactive_color: tuple, active_color: tuple, text=None, action=None, data=None):
+def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
+    if disabled:
+        if type(disabled) == bool:
+            draw.rect(active_color, area)
+        else:
+            draw.rect(disabled, area)
+        text.rect.center = math.center(area)
+        text.display()
+        return
     mouse_rect = Rect(*mouse.pos(), 1, 1)
     button_rect = Rect(*area)
     if button_rect.colliderect(mouse_rect):

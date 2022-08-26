@@ -1,9 +1,8 @@
-import random
-
+import pygameextra.version
 import pygameextra as pe
 from pygameextra.debug import FreeMode
 from pygameextra.fpslogger import Logger
-
+print(pe.__version__)
 pe.init()
 
 pe.display.make((250, 250), "Cool", pe.display.DISPLAY_MODE_RESIZABLE)

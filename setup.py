@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import codecs
 import os
 
-VERSION = '2.0.0b0'
+version = '2.0.0b1'
 short = 'Pygame. Made easier'
 long = '''Pygame Extra is a mask for pygame, 
 you can easily make complex games and or apps with much less lines then you would of before, 
@@ -15,15 +15,23 @@ github: https://github.com/JustRedTTG/PGE'''
 # Setting up
 setup(
     name="pygameextra",
-    version=VERSION,
+    version=version,
     author="Red",
     author_email="redtonehair@gmail.com",
     description=short,
     long_description_content_type="text/markdown",
     long_description=long,
-    packages=['pygameextra'],
+    packages=['pygameextra', 'pygameextra_tester'],
     install_requires=['pygame'],
-    package_data={'pygameextra': ['font.ttf']
-    },
-    keywords=['python']
+    package_data={'pygameextra': ['font.ttf'], 'pygameextra_tester': [
+        'columns.png', 'rows.png',
+        'Xbutton.png', 'Ybutton.png',
+        'mario_01.png'
+    ]},
+    keywords=['python'],
+    entry_points={
+        'console_scripts': [
+            'pygameextra-tester = pygameextra_tester.__init__:handle',
+        ],
+    }
 )
