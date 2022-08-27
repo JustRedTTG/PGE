@@ -67,7 +67,7 @@ sT = 50  # Set slider variable
 test = ""
 testall = 0
 testdrop = -100
-lerplength = 100
+lerplength = .5
 
 
 # Button function
@@ -160,11 +160,11 @@ def run():
                     if s[1]+y < 250:
                         y += 1
                 pe.display.make((s[0]+x, s[1]+y), "PGE Testing Utility", 1)
-            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt[10], set_lerplength, lerplength-10)
-            bt[11].text = str(lerplength)
+            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt[10], set_lerplength, lerplength-.01)
+            bt[11].text = f'{lerplength:.3f}'
             bt[11].init()
             bt[11].display()
-            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt[9], set_lerplength, lerplength+10)
+            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt[9], set_lerplength, lerplength+.01)
             mp = pe.mouse.pos()
             lerp1 = pe.math.lerp((0, 0), mp, lerplength)
             lerp2 = pe.math.lerp((pe.display.get_width(), 0), mp, lerplength)
