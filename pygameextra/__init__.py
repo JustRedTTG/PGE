@@ -45,3 +45,7 @@ def start_recording():
 def stop_recording():
     settings.recording = False
     settings.recording_data[0] = display.display_reference.size
+    if settings.debugger:
+        if settings.debugger.reactivate:
+            settings.debugger.reactivate = False
+            start_debug()
