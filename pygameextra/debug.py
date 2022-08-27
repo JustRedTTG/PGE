@@ -6,6 +6,7 @@ from pygameextra.rect import Rect
 class Debugger:
     log = None
     active = True
+    reactivate = False
     target = None
     display_backup = None
     draggable = None
@@ -100,11 +101,12 @@ class FreeInteractMode(FreeMode):
                 if button_rect.colliderect(mouse_rect):
                     draw.rect(colors.green, area, 2)
                     if item.action and mouse.clicked()[0]:
-                        if item.data == None:
+                        if item.data is None:
                             item.action()
                         else:
                             item.action(item.data)
                         self.active = False
+                        self.reactivate = True
                 else:
                     draw.rect(colors.black, area, 3)
                     draw.rect(colors.red, area, 1)

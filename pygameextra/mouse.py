@@ -1,5 +1,7 @@
 import pygame
 from pygame.cursors import arrow, diamond, broken_x, tri_left, tri_right
+from pygameextra import settings
+
 
 def hide():
     pygame.mouse.set_visible(False)
@@ -14,11 +16,11 @@ def icon(icon: pygame.cursors.Cursor = arrow):
 
 
 def pos():
-    return pygame.mouse.get_pos()
+    return settings.mouse_position or pygame.mouse.get_pos()
 
 
 def clicked():
-    return pygame.mouse.get_pressed()
+    return settings.mouse_clicked or pygame.mouse.get_pressed()
 
 
 class Draggable:

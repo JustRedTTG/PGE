@@ -87,6 +87,8 @@ def update(framerate: int = None, area: tuple = None):
     Parameters:
         framerate -- Sets the FPS of your rendering
         area -- The area of the display that should be updated. None for the entire display"""
+    if settings.debugger and settings.debugger.reactivate:
+        return
     if not area:
         pygame.display.flip()  # Flip the buffers to display the working buffer to the screen
     else:

@@ -3,3 +3,5 @@ auto_fps = True
 debugger = None
 recording = False
 recording_data = []
+mouse_position = None
+mouse_clicked = None
