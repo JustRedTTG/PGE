@@ -75,6 +75,7 @@ class Debugger:
         self.after_update()
         display.update(60)
 
+
 class FreeMode(Debugger):
     def before_run(self):
         self.target = recorder.reconstruct(settings.recording_data)
