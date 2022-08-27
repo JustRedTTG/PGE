@@ -1,7 +1,9 @@
 import pygame
 
+
 def center(rect: tuple):
     return rect[0]+rect[2]*.5, rect[1]+rect[3]*.5
+
 
 def lerp(point_a, point_b, length):
     a = pygame.math.Vector2(point_a)
@@ -14,3 +16,11 @@ def lerp(point_a, point_b, length):
     something *= length
     destination = a + something
     return destination
+
+
+def dist(point_a, point_b):
+    pass
+
+
+def perlin_noise():
+    pass
