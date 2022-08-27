@@ -114,7 +114,14 @@ def check_boundary(item):
     return 0, 0, 1, 1
 
 
+def sorter(item):
+    if type(item) == display.display_reference.size:
+        return 0
+    return 1
+
+
 def reconstruct(data: list):
+    data.sort(key=sorter)
     rect = (0, 0, *data[0])
     size = data[0]
     del data[0]
