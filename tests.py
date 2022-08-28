@@ -4,10 +4,14 @@ import pygameextra as pe
 from pygameextra import settings
 from pygameextra.debug import FreeMode
 from pygameextra.fpslogger import Logger
-print(pe.__version__)
+if pe.version.VERSION == '2.0.0' and pe.version.revision >= 4:
+    pass
+else:
+    print('Please use 2.0.0b4 or later')
+    exit()
 pe.init()
 
-pe.display.make((500, 500), "Cool", pe.display.DISPLAY_MODE_RESIZABLE)
+pe.display.make((700, 700), "Cool", pe.display.DISPLAY_MODE_RESIZABLE)
 
 log = Logger(size=20)
 pe.settings.debugger = FreeMode()
@@ -48,7 +52,7 @@ class Cube:
 cubes = []
 x = 0
 y = 0
-ligma = 50
+ligma = 10
 ranging = ligma ** 2
 
 
@@ -67,11 +71,23 @@ for i in range(ligma):
     x += 10
     y = 0
 
+points = []
+
+x, y = 0, 0
+d = 3
+for _ in range(d+1):
+    for _ in range(d+1):
+        points.append((x, y))
+        x += 700/d
+    x = 0
+    y += 700/d
+
+
 while True:
     for pe.event.c in pe.event.get():
         pe.event.quitcheckauto()
     pe.start_recording()
-    pe.fill.full(pe.colors.verydarkgray)
+    pe.fill.transparency(pe.colors.black, 1)
 
     for cube in cubes:
         cube.draw()
@@ -90,8 +106,7 @@ while True:
 
     for cube in cubes:
         if cube.fake: continue
-        cube.target_m((random.randint(0, 500), random.randint(0, 500)))
-
+        cube.target_m(random.choice(points))
     log.render()
     pe.display.update()
     pe.stop_recording()
