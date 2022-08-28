@@ -1,6 +1,7 @@
 import os
 import pygameextra as pe
 from pygameextra.debug import FreeInteractMode
+from pygameextra import settings
 
 pe.init()
 pe.display.make((500, 500), "PGE Testing Utility", 0)
@@ -8,10 +9,10 @@ sp = os.path.dirname(os.path.realpath(__file__))
 
 # Button images
 bX = pe.Image(f"{sp}/Xbutton.png", size=(100, 100), position=(100, 0))
-bX2 = pe.Image(f"{sp}/Xbutton.png", size=(10, 10), position=(100, 0))
+bX2 = pe.Image(f"{sp}/Xbutton.png", size=(20, 20), position=(100, 0))
 sX = pe.Image(f"{sp}/Xbutton.png", size=(20, 20), position=(100, 0))
 bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
-bY2 = pe.Image(f"{sp}/Ybutton.png", size=(10, 10), position=(100, 0))
+bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
 s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SHEET_VERTICAL(16, 16)), (250, 250), (0, 0), pivot="topleft")  # Rows sprite
 s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SHEET_HORIZONTAL(32, 32)), (250, 250), (250, 0), pivot="topleft")  # Columns sprite
@@ -41,24 +42,25 @@ s7 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((250, 250, 250, 
 # s7.init()
 
 # Setup some more things...
-bt = [  # Button texts
-    pe.text.quick('Buttons', 15, pe.math.center((0, 200, 100, 50))),
-    pe.text.quick('Sliders', 15, pe.math.center((100, 200, 100, 50))),
-    pe.text.quick('< Back', 15, pe.math.center((0, 0, 100, 50))),
-    pe.text.quick('Sprites', 15, pe.math.center((200, 200, 100, 50))),
-    pe.text.quick('Shapes', 15, pe.math.center((300, 200, 100, 50))),
-    pe.text.quick('Math', 15, pe.math.center((400, 200, 100, 50))),
-    pe.text.quick('Lerp', 15, pe.math.center((0, 200, 100, 50))),
-    pe.text.quick('Center', 15, pe.math.center((100, 200, 100, 50))),
-    pe.text.quick('< Math', 15, pe.math.center((0, 0, 100, 50))),
-    pe.text.quick('+', 15, pe.math.center((275, 200, 50, 50))),
-    pe.text.quick('-', 15, pe.math.center((175, 200, 50, 50))),
-    pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50)))
-]
-bt[8].color = pe.colors.white
-bt[8].init()
-bt[11].color = pe.colors.white
-bt[11].init()
+bt = { # Button texts
+    'button': pe.text.quick('Buttons', 15, pe.math.center((0, 200, 100, 50))),
+    'slider': pe.text.quick('Sliders', 15, pe.math.center((100, 200, 100, 50))),
+    'back': pe.text.quick('< Back', 15, pe.math.center((0, 0, 100, 50))),
+    'sprite': pe.text.quick('Sprites', 15, pe.math.center((200, 200, 100, 50))),
+    'shapes': pe.text.quick('Shapes', 15, pe.math.center((300, 200, 100, 50))),
+    'math': pe.text.quick('Math', 15, pe.math.center((400, 200, 100, 50))),
+    'math_lerp': pe.text.quick('Lerp', 15, pe.math.center((0, 200, 100, 50))),
+    'math_center': pe.text.quick('Center', 15, pe.math.center((100, 200, 100, 50))),
+    'math_dist': pe.text.quick('Distance', 15, pe.math.center((200, 200, 100, 50))),
+    'math_back': pe.text.quick('< Math', 15, pe.math.center((0, 0, 100, 50))),
+    '+': pe.text.quick('+', 15, pe.math.center((275, 200, 50, 50))),
+    '-': pe.text.quick('-', 15, pe.math.center((175, 200, 50, 50))),
+    'lerplength': pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50)))
+}
+bt['math_back'].color = pe.colors.white
+bt['math_back'].init()
+bt['lerplength'].color = pe.colors.white
+bt['lerplength'].init()
 s1.step = 0.1  # Set sprite animation
 s2.step = 0.1  # Set sprite animation
 s2.pingpong = True  # Enable sprite pong
@@ -102,19 +104,21 @@ def run():
             sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0), True, (0, 0, 255))
             sT = pe.slider.normal((125, 150, 250, 15, 20), sX.old, 0, 100, sT, (255, 255, 255), (0, 255, 0), 5, True, (0, 0, 255), 3)
         elif test == "button":
+            midpoint = pe.display.get_width()*.5 - 100
+            midheight = pe.display.get_height()*.5 - 50
             x = 0
             y = 0
-            while x < 49 and y < 49:
+            while x < 99 and y < 99:
                 # bX2.position = (x+150, y+200)
                 # bX2.rect = bX2.object.get_rect(topleft=(x+150, y+200))
                 # bY2.position = (x + 150, y + 200)
                 # bY2.rect = bY2.object.get_rect(topleft=(x + 150, y + 200))
-                pe.button.rect((x+100, y+200, 10, 10), pe.colors.red, pe.colors.green)
-                pe.button.image((x+150, y+200, 10, 10), bX2, bY2)
-                x += 10
-                if x > 49:
+                pe.button.rect((x+midpoint, y+midheight, 20, 20), pe.colors.red, pe.colors.green)
+                pe.button.image((x+midpoint+100, y+midheight, 20, 20), bX2, bY2)
+                x += 20
+                if x > 99:
                     x = 0
-                    y += 10
+                    y += 20
         elif test == "sprite":
             s1.display()
             s2.display()
@@ -133,21 +137,22 @@ def run():
             pe.draw.ellipse(pe.colors.red, (250, 250, 250, 250))
 
         if test == "":
-            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[0], action=set_test, data="button")
-            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[1], action=set_test, data="slider", disabled=pe.colors.gray)
-            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[3], action=set_test, data="sprite", disabled=pe.colors.gray)
-            pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[4], action=set_test, data="shapes")
-            pe.button.rect((400, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[5], action=set_test, data="math")
+            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['button'], action=set_test, data="button")
+            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['slider'], action=set_test, data="slider", disabled=pe.colors.gray)
+            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['sprite'], action=set_test, data="sprite", disabled=pe.colors.gray)
+            pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['shapes'], action=set_test, data="shapes")
+            pe.button.rect((400, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math'], action=set_test, data="math")
         elif test == "math":
-            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[6], action=set_test, data="math_lerp")
-            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt[7], action=set_test, data="math_center")
+            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_lerp'], action=set_test, data="math_lerp")
+            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_center'], action=set_test, data="math_center")
+            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_dist'], action=set_test, data="math_dist")
         if test != "":
             if "math_" in test:
-                pe.button.rect((0, 0, 100, 50), pe.colors.verydarkgray, pe.colors.darkgray, bt[8], action=set_test, data="math")
+                pe.button.rect((0, 0, 100, 50), pe.colors.verydarkgray, pe.colors.darkgray, bt['math_back'], action=set_test, data="math")
             elif test == "testall":
                 pass
             else:
-                pe.button.rect((0, 0, 100, 50), pe.colors.white, pe.colors.lightgray, bt[2], action=set_test, data="")
+                pe.button.rect((0, 0, 100, 50), pe.colors.white, pe.colors.lightgray, bt['back'], action=set_test, data="")
             #
 
         if test == "math_lerp":
@@ -160,28 +165,44 @@ def run():
                     if s[1]+y < 250:
                         y += 1
                 pe.display.make((s[0]+x, s[1]+y), "PGE Testing Utility", 1)
-            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt[10], set_lerplength, lerplength-.01)
-            bt[11].text = f'{lerplength:.3f}'
-            bt[11].init()
-            bt[11].display()
-            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt[9], set_lerplength, lerplength+.01)
+            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_lerplength, lerplength-.01)
+            bt['lerplength'].text = f'{lerplength:.3f}'
+            bt['lerplength'].init()
+            bt['lerplength'].display()
+            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_lerplength, lerplength+.01)
             mp = pe.mouse.pos()
             lerp1 = pe.math.lerp((0, 0), mp, lerplength)
             lerp2 = pe.math.lerp((pe.display.get_width(), 0), mp, lerplength)
             lerp3 = pe.math.lerp((0, pe.display.get_height()), mp, lerplength)
             lerp4 = pe.math.lerp(pe.display.get_size(), mp, lerplength)
 
-            pe.draw.line(pe.colors.red, (0, 0), mp, 5)
-            pe.draw.line(pe.colors.red, (pe.display.get_width(), 0), mp, 5)
-            pe.draw.line(pe.colors.red, (0, pe.display.get_height()), mp, 5)
-            pe.draw.line(pe.colors.red, (pe.display.get_width(), pe.display.get_height()), mp, 5)
+            lerp1max = pe.math.lerp((0, 0), mp, min(1, lerplength))
+            lerp2max = pe.math.lerp((pe.display.get_width(), 0), mp, min(1, lerplength))
+            lerp3max = pe.math.lerp((0, pe.display.get_height()), mp, min(1, lerplength))
+            lerp4max = pe.math.lerp(pe.display.get_size(), mp, min(1, lerplength))
 
-            pe.draw.line(pe.colors.white, (0, 0), lerp1, 5)
-            pe.draw.line(pe.colors.white, (pe.display.get_width(), 0), lerp2, 5)
-            pe.draw.line(pe.colors.white, (0, pe.display.get_height()), lerp3, 5)
-            pe.draw.line(pe.colors.white, (pe.display.get_width(), pe.display.get_height()), lerp4, 5)
+            pe.draw.line(pe.colors.red, (0, 0), mp, 2)
+            pe.draw.line(pe.colors.red, (pe.display.get_width(), 0), mp, 2)
+            pe.draw.line(pe.colors.red, (0, pe.display.get_height()), mp, 2)
+            pe.draw.line(pe.colors.red, (pe.display.get_width(), pe.display.get_height()), mp, 2)
+
+            pe.draw.line(pe.colors.pink, (0, 0), lerp1, 3)
+            pe.draw.line(pe.colors.pink, (pe.display.get_width(), 0), lerp2, 3)
+            pe.draw.line(pe.colors.pink, (0, pe.display.get_height()), lerp3, 3)
+            pe.draw.line(pe.colors.pink, (pe.display.get_width(), pe.display.get_height()), lerp4, 3)
+
+            pe.draw.line(pe.colors.white, (0, 0), lerp1max, 5)
+            pe.draw.line(pe.colors.white, (pe.display.get_width(), 0), lerp2max, 5)
+            pe.draw.line(pe.colors.white, (0, pe.display.get_height()), lerp3max, 5)
+            pe.draw.line(pe.colors.white, (pe.display.get_width(), pe.display.get_height()), lerp4max, 5)
+
         elif test == "math_center":
             pe.draw.circle(pe.colors.white, pe.math.center((0, 0, pe.display.get_width(), pe.display.get_height())), 5, 5)
+        elif test == "math_dist":
+            pe.draw.line(pe.colors.red, (0, 0), pe.mouse.pos(), 2)
+            bt['lerplength'].text = f'{pe.math.dist((0, 0), pe.mouse.pos()):.3f}'
+            bt['lerplength'].init()
+            bt['lerplength'].display()
         pe.display.update(120)
         pe.stop_recording()
         if pe.mouse.clicked()[1]:

@@ -12,6 +12,9 @@ class Debugger:
     draggable = None
     offset = (0, 0)
     offset2 = (0, 0)
+    start_mouse_position = (0, 0)
+    start_enable_spoof = True
+    start_mouse_position_spoof = None
 
     def __init__(self):
         self.make_logger()
@@ -40,7 +43,9 @@ class Debugger:
         self.active = True
 
     def after_run(self):
-        display.make(*self.display_backup)
+        if not self.reactivate:
+            display.make(*self.display_backup)
+        display.display_reference.size = self.display_backup[0]
 
     def after_update(self):
         pass
@@ -59,17 +64,17 @@ class Debugger:
 
         if self.log.count > 1:
             draw.polygon(colors.pge_dark, [
-            (0, display.get_height()),
-            (106, display.get_height()),
-            (53, display.get_height()-43),
-            (0, display.get_height()-43),
-        ], 0)
+                (0, display.get_height()),
+                (106, display.get_height()),
+                (53, display.get_height()-43),
+                (0, display.get_height()-43),
+            ], 0)
             draw.polygon(colors.verydarkgray, [
-            (0, display.get_height()),
-            (100, display.get_height()),
-            (50, display.get_height()-40),
-            (0, display.get_height()-40),
-        ], 0)
+                (0, display.get_height()),
+                (100, display.get_height()),
+                (50, display.get_height()-40),
+                (0, display.get_height()-40),
+            ], 0)
         else:
             fill.transparency(colors.black, 200)
         self.log.render()
@@ -91,7 +96,7 @@ class FreeMode(Debugger):
 
 class FreeInteractMode(FreeMode):
     def after_update(self):
-        mouse_rect = mouse_rect = Rect(*mouse.pos(), 1, 1)
+        mouse_rect = Rect(*mouse.pos(), 1, 1)
         for item in settings.recording_data:
             if type(item) == recorder.Portion:
                 self.offset2 = item.x, item.y

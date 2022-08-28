@@ -15,12 +15,16 @@ def icon(icon: pygame.cursors.Cursor = arrow):
     pygame.mouse.set_cursor(icon)
 
 
-def pos():
-    return settings.mouse_position or pygame.mouse.get_pos()
+def pos(spoof: bool = True):
+    if spoof and settings.enable_spoof:
+        return settings.mouse_position or pygame.mouse.get_pos()
+    return pygame.mouse.get_pos()
 
 
-def clicked():
-    return settings.mouse_clicked or pygame.mouse.get_pressed()
+def clicked(spoof: bool = True):
+    if spoof and settings.enable_spoof:
+        return settings.mouse_clicked or pygame.mouse.get_pressed()
+    return pygame.mouse.get_pressed()
 
 
 class Draggable:
