@@ -165,11 +165,11 @@ def run():
                     if s[1]+y < 250:
                         y += 1
                 pe.display.make((s[0]+x, s[1]+y), "PGE Testing Utility", 1)
-            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_lerplength, lerplength-.01)
-            bt['lerplength'].text = f'{lerplength:.3f}'
+            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_lerplength, lerplength-.1)
+            bt['lerplength'].text = f'{lerplength:.1f}'
             bt['lerplength'].init()
             bt['lerplength'].display()
-            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_lerplength, lerplength+.01)
+            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_lerplength, lerplength+.1)
             mp = pe.mouse.pos()
             lerp1 = pe.math.lerp((0, 0), mp, lerplength)
             lerp2 = pe.math.lerp((pe.display.get_width(), 0), mp, lerplength)
