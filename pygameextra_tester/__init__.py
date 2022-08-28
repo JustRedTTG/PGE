@@ -82,6 +82,7 @@ testdrop = -100
 lerplength = .5
 log = Logger()
 
+
 # Button function
 def set_test(data):
     global test
@@ -105,6 +106,7 @@ def set_lerplength(data):
 testscore = 0
 
 pe.settings.debugger = FreeInteractMode()
+
 
 # Main GAME LOOP
 # noinspection PyTypeChecker
