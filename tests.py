@@ -1,4 +1,3 @@
-import pygameextra.version
 import pygameextra as pe
 from pygameextra.debug import FreeMode
 from pygameextra.fpslogger import Logger

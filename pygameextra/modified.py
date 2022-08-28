@@ -10,6 +10,10 @@ class SurfaceException(Exception):
 
 
 class Surface:
+    surface = None
+    size = None
+    layer = 0
+
     def __init__(self, size=(0, 0), layer=0, surface: pygame.Surface = None):
         if surface:
             self.size = surface.get_size()
@@ -37,7 +41,7 @@ class Surface:
         for i in range(len(sources)):
             sources[i].pos = positions[i]
             sources[i].area = areas[i]
-        sources.sort(layer_sorter)
+        sources.sort(key=layer_sorter)
         for source in sources:
             self.surface.blit(source.surface, source.area, special_flags)
 

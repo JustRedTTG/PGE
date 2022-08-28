@@ -1,4 +1,3 @@
-import pygame
 from pygameextra import settings, colors, display, draw, fill
 from pygameextra.modified import Surface
 
@@ -166,6 +165,7 @@ def reconstruct(data: list):
     draw.rect(colors.pge_light, (*offset, *size), 1)
     settings.recording_data.append(Portion(*offset, *size))
 
+    # noinspection PyTypeChecker
     display.context(old_context)
 
     return surface

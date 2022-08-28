@@ -1,5 +1,6 @@
 import time
 from pygameextra import draw, mouse, math, display, settings, recorder
+from pygameextra.image import Image
 from pygameextra.rect import Rect
 from pygameextra.text import Text
 
@@ -13,6 +14,7 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
         if type(disabled) == bool:
             draw.rect(active_color, area)
         else:
+            # noinspection PyTypeChecker
             draw.rect(disabled, area)
         if text:
             text.rect.center = math.center(area)
@@ -26,7 +28,7 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
         draw.rect(active_color, area)
         if (not settings.button_lock) and action and mouse.clicked()[0]:
             lock()
-            if data != None:
+            if data is not None:
                 action(data)
             else:
                 action()
@@ -40,7 +42,7 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
     text.display()
 
 
-def image(area: tuple, inactive_image: tuple, active_image: tuple, action: any = None, data: any = None, disabled: bool = False):
+def image(area: tuple, inactive_image: Image, active_image: Image, action: any = None, data: any = None, disabled: bool = False):
     if disabled:
         if type(disabled) == bool:
             display.blit(active_image.surface, (
@@ -64,7 +66,7 @@ def image(area: tuple, inactive_image: tuple, active_image: tuple, action: any =
         ))
         if (not settings.button_lock) and action and mouse.clicked()[0]:
             lock()
-            if data != None:
+            if data is not None:
                 action(data)
             else:
                 action()

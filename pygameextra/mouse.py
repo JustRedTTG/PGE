@@ -1,4 +1,5 @@
 import pygame
+# noinspection PyUnresolvedReferences
 from pygame.cursors import arrow, diamond, broken_x, tri_left, tri_right
 from pygameextra import settings
 
@@ -11,8 +12,8 @@ def show():
     pygame.mouse.set_visible(True)
 
 
-def icon(icon: pygame.cursors.Cursor = arrow):
-    pygame.mouse.set_cursor(icon)
+def icon(cursor_icon: pygame.cursors.Cursor = arrow):
+    pygame.mouse.set_cursor(cursor_icon)
 
 
 def pos(spoof: bool = True):

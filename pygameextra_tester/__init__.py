@@ -93,7 +93,9 @@ testscore = 0
 pe.settings.debugger = FreeInteractMode()
 
 # Main GAME LOOP
+# noinspection PyTypeChecker
 def run():
+    global sO, sT
     while True:
         for pe.event.c in pe.event.get():
             pe.event.quitcheckauto()
@@ -101,8 +103,10 @@ def run():
         pe.fill.full(pe.colors.verydarkgray)
 
         if test == "slider":
+            # noinspection PyShadowingNames
             sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0), True, (0, 0, 255))
-            sT = pe.slider.normal((125, 150, 250, 15, 20), sX.old, 0, 100, sT, (255, 255, 255), (0, 255, 0), 5, True, (0, 0, 255), 3)
+            # noinspection PyShadowingNames
+            sT = pe.slider.normal((125, 150, 250, 15, 20), sX, 0, 100, sT, (255, 255, 255), (0, 255, 0), 5, True, (0, 0, 255), 3)
         elif test == "button":
             midpoint = pe.display.get_width()*.5 - 100
             midheight = pe.display.get_height()*.5 - 50
@@ -177,8 +181,11 @@ def run():
             lerp4 = pe.math.lerp(pe.display.get_size(), mp, lerplength)
 
             lerp1max = pe.math.lerp((0, 0), mp, min(1, lerplength))
+            # noinspection PyTypeChecker
             lerp2max = pe.math.lerp((pe.display.get_width(), 0), mp, min(1, lerplength))
+            # noinspection PyTypeChecker
             lerp3max = pe.math.lerp((0, pe.display.get_height()), mp, min(1, lerplength))
+            # noinspection PyTypeChecker
             lerp4max = pe.math.lerp(pe.display.get_size(), mp, min(1, lerplength))
 
             pe.draw.line(pe.colors.red, (0, 0), mp, 2)

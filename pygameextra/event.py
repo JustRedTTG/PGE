@@ -7,7 +7,7 @@ import pygameextra.settings as settings
 import pygameextra.display as display
 
 c = pygame.event.Event
-event_buffer = None
+event_buffer = []
 
 
 def Pquit():

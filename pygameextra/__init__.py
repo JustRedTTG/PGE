@@ -1,6 +1,5 @@
 """PYGAME EXTRA __INIT__"""
 
-import os
 # noinspection PyUnresolvedReferences
 from pygameextra.pygame import pygame
 from pygameextra.image import *

@@ -16,7 +16,7 @@ def rect(color: tuple, area: tuple, w: int = 0):
     recorder.record(recorder.DrawRect(color, area, w))
 
 
-def circle(color: tuple, pos: tuple, radius: tuple, w: int = 0):
+def circle(color: tuple, pos: tuple, radius: int, w: int = 0):
     pygame.draw.circle(display.display_reference.surface, color, pos, radius, w)
     if not settings.recording:
         return

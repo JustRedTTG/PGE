@@ -13,4 +13,5 @@ def init():
 def tick(fps: int = None):
     if tickBlock:
         settings.auto_fps = False
+    # noinspection PyUnresolvedReferences
     clock.tick(fps or framerate or 0)

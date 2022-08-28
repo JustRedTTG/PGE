@@ -1,4 +1,4 @@
-from pygameextra import display, fill, draw, image, sprite, settings, colors, event, mouse, recorder, button
+from pygameextra import display, fill, draw, settings, colors, event, mouse, recorder, button
 from pygameextra.fpslogger import Logger
 from pygameextra.rect import Rect
 
@@ -27,6 +27,7 @@ class Debugger:
         display.make((min(self.target.size[0]*2, mon_size[0]), min(self.target.size[1]*2, mon_size[1])), 'DEBUG', display.DISPLAY_MODE_RESIZABLE)
 
     def before_run(self):
+        # noinspection PyArgumentList
         self.target = display.display_reference.copy()
         self.display_backup = display.backup_details()
         self.setup_display()
