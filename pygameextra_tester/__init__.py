@@ -1,6 +1,7 @@
 import os
 import pygameextra as pe
 from pygameextra.debug import FreeInteractMode
+from pygameextra.fpslogger import Logger
 from pygameextra import settings
 
 pe.init()
@@ -70,15 +71,19 @@ test = ""
 testall = 0
 testdrop = -100
 lerplength = .5
-
+log = Logger()
 
 # Button function
 def set_test(data):
     global test
     test = data
     if "math_" in data:
+        settings.button_timeout_time = .03
+        settings.button_lock_hold = False
         pe.display.make((500, 500), "PGE Testing Utility", 1)
     else:
+        settings.button_timeout_time = .1
+        settings.button_lock_hold = True
         pe.display.make((500, 500), "PGE Testing Utility", 0)
 
 
@@ -210,6 +215,7 @@ def run():
             bt['lerplength'].text = f'{pe.math.dist((0, 0), pe.mouse.pos()):.3f}'
             bt['lerplength'].init()
             bt['lerplength'].display()
+        log.render()
         pe.display.update(120)
         pe.stop_recording()
         if pe.mouse.clicked()[1]:
