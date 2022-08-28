@@ -33,6 +33,9 @@ s6.size = 0.05
 
 s7 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((250, 250, 250, 250)), 90, pivot="center")  # Rotated sprite
 
+mouse_icon = pe.Image(f'{sp}/mouse_middle.png', (50, 50))
+debug_icon = pe.Image(f'{sp}/debug_icon.png', (50, 50))
+
 # Init sprites
 # s1.init()
 # s2.init()
@@ -56,12 +59,18 @@ bt = { # Button texts
     'math_back': pe.text.quick('< Math', 15, pe.math.center((0, 0, 100, 50))),
     '+': pe.text.quick('+', 15, pe.math.center((275, 200, 50, 50))),
     '-': pe.text.quick('-', 15, pe.math.center((175, 200, 50, 50))),
-    'lerplength': pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50)))
+    'lerplength': pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50))),
+    'debug_label': pe.text.quick("Open Debug", 15, pe.math.center((400, 440, 90, 50))),
+    'debug_close': pe.text.quick("Close Debug", 15, pe.math.center((400, 440, 90, 50)))
 }
 bt['math_back'].color = pe.colors.white
 bt['math_back'].init()
 bt['lerplength'].color = pe.colors.white
 bt['lerplength'].init()
+bt['debug_label'].color = pe.colors.white
+bt['debug_label'].init()
+bt['debug_close'].color = pe.colors.white
+bt['debug_close'].init()
 s1.step = 0.1  # Set sprite animation
 s2.step = 0.1  # Set sprite animation
 s2.pingpong = True  # Enable sprite pong
@@ -107,6 +116,13 @@ def run():
         pe.start_recording()
         pe.fill.full(pe.colors.verydarkgray)
 
+        debug_icon.display((350, 440))
+        bt['debug_close'].display()
+
+        settings.recording = False
+        pe.draw.rect(pe.colors.verydarkgray, (350, 440, 150, 60))
+        settings.recording = True
+
         if test == "slider":
             # noinspection PyShadowingNames
             sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0), True, (0, 0, 255))
@@ -151,6 +167,12 @@ def run():
             pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['sprite'], action=set_test, data="sprite", disabled=pe.colors.gray)
             pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['shapes'], action=set_test, data="shapes")
             pe.button.rect((400, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math'], action=set_test, data="math")
+
+            settings.recording = False
+            mouse_icon.display((350, 440))
+            bt['debug_label'].display()
+            settings.recording = True
+
         elif test == "math":
             pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_lerp'], action=set_test, data="math_lerp")
             pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_center'], action=set_test, data="math_center")

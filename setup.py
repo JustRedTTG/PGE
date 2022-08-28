@@ -24,7 +24,8 @@ setup(
     package_data={'pygameextra': ['font.ttf'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
         'Xbutton.png', 'Ybutton.png',
-        'mario_01.png'
+        'mario_01.png',
+        'debug_icon.png', 'mouse_middle.png'
     ]},
     keywords=['python'],
     entry_points={
