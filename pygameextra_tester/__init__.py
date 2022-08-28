@@ -1,6 +1,7 @@
 import os
 import pygameextra as pe
 from pygameextra.debug import FreeInteractMode
+from pygameextra import settings
 
 pe.init()
 pe.display.make((500, 500), "PGE Testing Utility", 0)
@@ -187,7 +188,9 @@ def run():
         pe.display.update(120)
         pe.stop_recording()
         if pe.mouse.clicked()[1]:
+            print('before:', settings.mouse_position, settings.enable_spoof)
             pe.start_debug()
+            print('after:', settings.mouse_position, settings.enable_spoof)
 
 
 if __name__ == '__main__':

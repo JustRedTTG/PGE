@@ -5,3 +5,4 @@ recording = False
 recording_data = []
 mouse_position = None
 mouse_clicked = None
+enable_spoof = True
