@@ -1,6 +1,11 @@
+import time
 from pygameextra import draw, mouse, math, display, settings, recorder
 from pygameextra.rect import Rect
 from pygameextra.text import Text
+
+
+def lock():
+    settings.button_lock = time.time()
 
 
 def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
@@ -9,14 +14,18 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
             draw.rect(active_color, area)
         else:
             draw.rect(disabled, area)
-        text.rect.center = math.center(area)
-        text.display()
+        if text:
+            text.rect.center = math.center(area)
+            text.display()
+        if settings.recording:
+            recorder.record(recorder.Button(area, action, data))
         return
     mouse_rect = Rect(*mouse.pos(), 1, 1)
     button_rect = Rect(*area)
     if button_rect.colliderect(mouse_rect):
         draw.rect(active_color, area)
-        if action and mouse.clicked()[0]:
+        if (not settings.button_lock) and action and mouse.clicked()[0]:
+            lock()
             if data != None:
                 action(data)
             else:
@@ -31,7 +40,21 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
     text.display()
 
 
-def image(area: tuple, inactive_image: tuple, active_image: tuple, action=None, data=None):
+def image(area: tuple, inactive_image: tuple, active_image: tuple, action: any = None, data: any = None, disabled: bool = False):
+    if disabled:
+        if type(disabled) == bool:
+            display.blit(active_image.surface, (
+                area[0] + area[2] * .5 - active_image.size[0] * .5,
+                area[1] + area[3] * .5 - active_image.size[1] * .5
+            ))
+        else:
+            display.blit(inactive_image.surface, (
+                area[0] + area[2] * .5 - inactive_image.size[0] * .5,
+                area[1] + area[3] * .5 - inactive_image.size[1] * .5
+            ))
+        if settings.recording:
+            recorder.record(recorder.Button(area, action, data))
+        return
     mouse_rect = Rect(*mouse.pos(), 1, 1)
     button_rect = Rect(*area)
     if button_rect.colliderect(mouse_rect):
@@ -39,7 +62,8 @@ def image(area: tuple, inactive_image: tuple, active_image: tuple, action=None, 
             area[0] + area[2]*.5 - active_image.size[0]*.5,
             area[1] + area[3]*.5 - active_image.size[1]*.5
         ))
-        if action and mouse.clicked()[0]:
+        if (not settings.button_lock) and action and mouse.clicked()[0]:
+            lock()
             if data != None:
                 action(data)
             else:

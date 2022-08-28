@@ -9,10 +9,10 @@ sp = os.path.dirname(os.path.realpath(__file__))
 
 # Button images
 bX = pe.Image(f"{sp}/Xbutton.png", size=(100, 100), position=(100, 0))
-bX2 = pe.Image(f"{sp}/Xbutton.png", size=(10, 10), position=(100, 0))
+bX2 = pe.Image(f"{sp}/Xbutton.png", size=(20, 20), position=(100, 0))
 sX = pe.Image(f"{sp}/Xbutton.png", size=(20, 20), position=(100, 0))
 bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
-bY2 = pe.Image(f"{sp}/Ybutton.png", size=(10, 10), position=(100, 0))
+bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
 s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SHEET_VERTICAL(16, 16)), (250, 250), (0, 0), pivot="topleft")  # Rows sprite
 s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SHEET_HORIZONTAL(32, 32)), (250, 250), (250, 0), pivot="topleft")  # Columns sprite
@@ -104,19 +104,21 @@ def run():
             sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0), True, (0, 0, 255))
             sT = pe.slider.normal((125, 150, 250, 15, 20), sX.old, 0, 100, sT, (255, 255, 255), (0, 255, 0), 5, True, (0, 0, 255), 3)
         elif test == "button":
+            midpoint = pe.display.get_width()*.5 - 100
+            midheight = pe.display.get_height()*.5 - 50
             x = 0
             y = 0
-            while x < 49 and y < 49:
+            while x < 99 and y < 99:
                 # bX2.position = (x+150, y+200)
                 # bX2.rect = bX2.object.get_rect(topleft=(x+150, y+200))
                 # bY2.position = (x + 150, y + 200)
                 # bY2.rect = bY2.object.get_rect(topleft=(x + 150, y + 200))
-                pe.button.rect((x+100, y+200, 10, 10), pe.colors.red, pe.colors.green)
-                pe.button.image((x+150, y+200, 10, 10), bX2, bY2)
-                x += 10
-                if x > 49:
+                pe.button.rect((x+midpoint, y+midheight, 20, 20), pe.colors.red, pe.colors.green)
+                pe.button.image((x+midpoint+100, y+midheight, 20, 20), bX2, bY2)
+                x += 20
+                if x > 99:
                     x = 0
-                    y += 10
+                    y += 20
         elif test == "sprite":
             s1.display()
             s2.display()
@@ -174,23 +176,37 @@ def run():
             lerp3 = pe.math.lerp((0, pe.display.get_height()), mp, lerplength)
             lerp4 = pe.math.lerp(pe.display.get_size(), mp, lerplength)
 
-            pe.draw.line(pe.colors.red, (0, 0), mp, 5)
-            pe.draw.line(pe.colors.red, (pe.display.get_width(), 0), mp, 5)
-            pe.draw.line(pe.colors.red, (0, pe.display.get_height()), mp, 5)
-            pe.draw.line(pe.colors.red, (pe.display.get_width(), pe.display.get_height()), mp, 5)
+            lerp1max = pe.math.lerp((0, 0), mp, min(1, lerplength))
+            lerp2max = pe.math.lerp((pe.display.get_width(), 0), mp, min(1, lerplength))
+            lerp3max = pe.math.lerp((0, pe.display.get_height()), mp, min(1, lerplength))
+            lerp4max = pe.math.lerp(pe.display.get_size(), mp, min(1, lerplength))
 
-            pe.draw.line(pe.colors.white, (0, 0), lerp1, 5)
-            pe.draw.line(pe.colors.white, (pe.display.get_width(), 0), lerp2, 5)
-            pe.draw.line(pe.colors.white, (0, pe.display.get_height()), lerp3, 5)
-            pe.draw.line(pe.colors.white, (pe.display.get_width(), pe.display.get_height()), lerp4, 5)
+            pe.draw.line(pe.colors.red, (0, 0), mp, 2)
+            pe.draw.line(pe.colors.red, (pe.display.get_width(), 0), mp, 2)
+            pe.draw.line(pe.colors.red, (0, pe.display.get_height()), mp, 2)
+            pe.draw.line(pe.colors.red, (pe.display.get_width(), pe.display.get_height()), mp, 2)
+
+            pe.draw.line(pe.colors.pink, (0, 0), lerp1, 3)
+            pe.draw.line(pe.colors.pink, (pe.display.get_width(), 0), lerp2, 3)
+            pe.draw.line(pe.colors.pink, (0, pe.display.get_height()), lerp3, 3)
+            pe.draw.line(pe.colors.pink, (pe.display.get_width(), pe.display.get_height()), lerp4, 3)
+
+            pe.draw.line(pe.colors.white, (0, 0), lerp1max, 5)
+            pe.draw.line(pe.colors.white, (pe.display.get_width(), 0), lerp2max, 5)
+            pe.draw.line(pe.colors.white, (0, pe.display.get_height()), lerp3max, 5)
+            pe.draw.line(pe.colors.white, (pe.display.get_width(), pe.display.get_height()), lerp4max, 5)
+
         elif test == "math_center":
             pe.draw.circle(pe.colors.white, pe.math.center((0, 0, pe.display.get_width(), pe.display.get_height())), 5, 5)
+        elif test == "math_dist":
+            pe.draw.line(pe.colors.red, (0, 0), pe.mouse.pos(), 2)
+            bt['lerplength'].text = f'{pe.math.dist((0, 0), pe.mouse.pos()):.3f}'
+            bt['lerplength'].init()
+            bt['lerplength'].display()
         pe.display.update(120)
         pe.stop_recording()
         if pe.mouse.clicked()[1]:
-            print('before:', settings.mouse_position, settings.enable_spoof)
             pe.start_debug()
-            print('after:', settings.mouse_position, settings.enable_spoof)
 
 
 if __name__ == '__main__':

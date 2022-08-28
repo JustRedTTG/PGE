@@ -24,27 +24,14 @@ def init(display_init_size: tuple = None):
 def start_debug(delete_after: bool = False, reactivate: bool = False):
     if not settings.debugger:
         return
-<<<<<<< Updated upstream
-    if not settings.debugger.reactivate:
-        backup = mouse.pos(), mouse.clicked()
-    else:
-        backup = settings.mouse_position, settings.mouse_clicked
-
-    settings.mouse_position = None
-    settings.mouse_clicked = None
-
-=======
     if not reactivate:
         settings.debugger.start_mouse_position = mouse.pos()
         settings.debugger.start_enable_spoof = settings.enable_spoof
         settings.debugger.start_mouse_position_spoof = settings.mouse_position
     settings.enable_spoof = False
->>>>>>> Stashed changes
     settings.debugger.before_run()
     while settings.debugger.active:
         settings.debugger.update()
-    if settings.debugger.reactivate:
-        settings.mouse_position, settings.mouse_clicked = backup
     settings.debugger.after_run()
     if settings.debugger.reactivate:
         settings.enable_spoof = True
@@ -72,8 +59,4 @@ def stop_recording():
     if settings.debugger:
         if settings.debugger.reactivate:
             settings.debugger.reactivate = False
-<<<<<<< Updated upstream
-            start_debug()
-=======
             start_debug(reactivate = True)
->>>>>>> Stashed changes

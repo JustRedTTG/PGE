@@ -2,6 +2,7 @@
 This script manages all event actions"""
 
 import pygame
+import time
 import pygameextra.settings as settings
 import pygameextra.display as display
 
@@ -19,6 +20,16 @@ def resizeCheck():
     return c.type == pygame.WINDOWRESIZED
 
 
+def buttonLocking():
+    if settings.button_lock:
+        if time.time()-settings.button_lock >= settings.button_timeout_time:
+            if settings.button_lock_hold:
+                if not pygame.mouse.get_pressed()[0]:
+                    settings.button_lock = None
+            else:
+                settings.button_lock = None
+
+
 def resizeCheckAuto():
     info = resizeCheck()
     if info:
@@ -29,6 +40,7 @@ def resizeCheckAuto():
 def rundown():
     global c, event_buffer
     if not settings.enable_rundown: return
+    buttonLocking()
     for c in event_buffer:
         resizeCheckAuto()
 
