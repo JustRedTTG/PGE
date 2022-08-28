@@ -1,4 +1,4 @@
-from pygameextra import display, fill, draw, image, sprite, settings, colors, event, mouse, recorder
+from pygameextra import display, fill, draw, image, sprite, settings, colors, event, mouse, recorder, button
 from pygameextra.fpslogger import Logger
 from pygameextra.rect import Rect
 
@@ -105,7 +105,8 @@ class FreeInteractMode(FreeMode):
                 button_rect = Rect(*area)
                 if button_rect.colliderect(mouse_rect):
                     draw.rect(colors.green, area, 2)
-                    if item.action and mouse.clicked()[0]:
+                    if (not settings.button_lock) and item.action and mouse.clicked()[0]:
+                        button.lock()
                         if item.data is None:
                             item.action()
                         else:
