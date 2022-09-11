@@ -33,6 +33,7 @@ def clicked(spoof: bool = True):
 class Draggable:
     start_pos = (0, 0)
     active = False
+    lock = False
     pos = (0, 0)
     area = (0, 0)
     rect = None
@@ -45,6 +46,7 @@ class Draggable:
     def __init__(self, position: tuple, area: tuple = None):
         self.pos = position
         self.area = area
+        self.lock = False
         self.make_rect()
 
     def calculate(self):
@@ -54,6 +56,8 @@ class Draggable:
         return new_pos[0] + difference[0], new_pos[1] + difference[1]
 
     def check(self):
+        if self.lock:
+            return False, self.pos
         self.make_rect()
         if self.rect:
             mouserect = Rect(*pos(), 1, 1)
@@ -70,5 +74,6 @@ class Draggable:
         elif not clicked()[0] and self.active:
             self.active = False
             self.pos = self.calculate()
+
         self.ltic = clicked()[0]
         return False, self.pos

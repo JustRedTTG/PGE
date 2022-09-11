@@ -27,6 +27,7 @@ def start_debug(delete_after: bool = False, reactivate: bool = False):
         settings.debugger.start_mouse_position = mouse.pos()
         settings.debugger.start_enable_spoof = settings.enable_spoof
         settings.debugger.start_mouse_position_spoof = settings.mouse_position
+    settings.debugger.reactivate_init = reactivate
     settings.enable_spoof = False
     settings.debugger.before_run()
     while settings.debugger.active:
@@ -58,4 +59,4 @@ def stop_recording():
     if settings.debugger:
         if settings.debugger.reactivate:
             settings.debugger.reactivate = False
-            start_debug(reactivate = True)
+            start_debug(reactivate=True)
