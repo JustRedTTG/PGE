@@ -4,6 +4,7 @@ import pygame
 import pygameextra.time
 import pygameextra.display
 import pygameextra.colors as colors
+import pygameextra.recorder as recorder
 
 location = os.path.dirname(os.path.realpath(__file__))
 
@@ -24,6 +25,7 @@ class Logger:
         self.renderTime = time.time() - 2
 
     def render(self):
+        recorder.comment(f"FPS logger : {self}")
         if time.time()-self.renderTime > 1:
             fps = self.clock.get_fps()
             text = str(int(fps) or 'Pygame Extra - logger') + (f' / {int(self.total/self.count)}' if fps > 0 else '')
@@ -35,6 +37,7 @@ class Logger:
         pygameextra.display.blit(self.surface, self.pos or (
             10, pygameextra.display.get_height()-10-self.font.get_height()
         ))
+        recorder.padding_comment()
 
     def resetwatch(self, label: str = 'stopwatch'):
         self.watch[label] = time.time()

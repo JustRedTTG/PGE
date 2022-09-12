@@ -14,6 +14,7 @@ pe.init()
 pe.display.make((700, 700), "Cool", pe.display.DISPLAY_MODE_RESIZABLE)
 
 log = Logger(size=20)
+log.render()
 pe.settings.debugger = FreeMode()
 settings.button_timeout_time = 0
 settings.button_lock_hold = False
@@ -42,12 +43,12 @@ class Cube:
                 self.fake = None
                 self.click = None
             else:
-                self.fake = pe.math.lerp(self.fake, self.target, .1)
+                self.fake = pe.math.lerp(self.fake, self.target, (1/pe.math.dist(self.fake, self.target))*10)
         return mov
 
     def target_m(self, place):
         self.target = place
-        self.fake = (self.loc[0]+2, self.loc[1]+2)
+        self.fake = (self.loc[0], self.loc[1])
 
 cubes = []
 x = 0
@@ -60,21 +61,22 @@ def normalize(start = 0, end = 0, fitmin = 0, fitmax = 255, value = 0):
     n = (value - start) / (end - start)
     return fitmin + n * (fitmax - fitmin)
 
+s = 2
 
 for i in range(ligma):
     for i1 in range(ligma):
         r = normalize(0, ranging, 100, 255, i*i1)
         g = normalize(0, ranging, 50, 100, i*i1)
         b = normalize(0, ranging, 60, 255, i*i1)
-        cubes.append(Cube((10, 10), (x, y), (r, g, b)))
-        y += 10
-    x += 10
+        cubes.append(Cube((s, s), (x, y), (r, g, b)))
+        y += s
+    x += s
     y = 0
 
 points = []
 
 x, y = 0, 0
-d = 3
+d = 9
 for _ in range(d+1):
     for _ in range(d+1):
         points.append((x, y))
@@ -82,12 +84,15 @@ for _ in range(d+1):
     x = 0
     y += 700/d
 
+transI = 0
 
 while True:
     for pe.event.c in pe.event.get():
         pe.event.quitcheckauto()
-    pe.start_recording()
-    pe.fill.transparency(pe.colors.black, 1)
+    #pe.start_recording()
+    if transI >= 1:
+        pe.fill.transparency(pe.colors.black, 1)
+        transI = 0
 
     for cube in cubes:
         cube.draw()
@@ -107,8 +112,10 @@ while True:
     for cube in cubes:
         if cube.fake: continue
         cube.target_m(random.choice(points))
+    pe.draw.rect(pe.colors.black, (10, pe.display.get_height() - 10 - log.font.get_height(), *log.surface.get_size()))
     log.render()
     pe.display.update()
-    pe.stop_recording()
+    #pe.stop_recording()
     if pe.mouse.clicked()[2]:
         pe.start_debug()
+    transI += 1

@@ -21,7 +21,7 @@ class Surface:
             self.layer = layer
         else:
             self.size = size
-            self.surface = pygame.Surface(size)
+            self.surface = pygame.Surface(size,pygame.SRCALPHA)
             self.layer = layer
         self.area = None  # Used by stamps function
         self.pos = None  # Used by stamps function

@@ -15,8 +15,9 @@ sX = pe.Image(f"{sp}/Xbutton.png", size=(20, 20), position=(100, 0))
 bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
 bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
-s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SHEET_VERTICAL(16, 16)), (250, 250), (0, 0), pivot="topleft")  # Rows sprite
-s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SHEET_HORIZONTAL(32, 32)), (250, 250), (250, 0), pivot="topleft")  # Columns sprite
+# Sprite sheet sprites
+s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16)), (250, 250), (0, 0), pivot="topleft")  # Rows sprite
+s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32)), (250, 250), (250, 0), pivot="topleft")  # Columns sprite
 
 # Resized sprites
 s3 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((0, 250, 125, 125)))  # Resized sprite 1
@@ -46,12 +47,13 @@ debug_icon = pe.Image(f'{sp}/debug_icon.png', (50, 50))
 # s7.init()
 
 # Setup some more things...
-bt = { # Button texts
+bt = {  # Button texts
     'button': pe.text.quick('Buttons', 15, pe.math.center((0, 200, 100, 50))),
     'slider': pe.text.quick('Sliders', 15, pe.math.center((100, 200, 100, 50))),
     'back': pe.text.quick('< Back', 15, pe.math.center((0, 0, 100, 50))),
     'sprite': pe.text.quick('Sprites', 15, pe.math.center((200, 200, 100, 50))),
     'shapes': pe.text.quick('Shapes', 15, pe.math.center((300, 200, 100, 50))),
+    'mapping': pe.text.quick('Mapping', 15, pe.math.center((300, 250, 100, 50))),
     'math': pe.text.quick('Math', 15, pe.math.center((400, 200, 100, 50))),
     'math_lerp': pe.text.quick('Lerp', 15, pe.math.center((0, 200, 100, 50))),
     'math_center': pe.text.quick('Center', 15, pe.math.center((100, 200, 100, 50))),
@@ -71,9 +73,9 @@ bt['debug_label'].color = pe.colors.white
 bt['debug_label'].init()
 bt['debug_close'].color = pe.colors.white
 bt['debug_close'].init()
-s1.step = 0.1  # Set sprite animation
-s2.step = 0.1  # Set sprite animation
-s2.pingpong = True  # Enable sprite pong
+s1.speed = .1  # Set sprite animation
+s2.speed = .2  # Set sprite animation
+s2.pong = True  # Enable sprite pong
 sO = 50  # Set slider variable
 sT = 50  # Set slider variable
 test = ""
@@ -88,7 +90,7 @@ def set_test(data):
     global test
     test = data
     if "math_" in data:
-        settings.button_timeout_time = .03
+        settings.button_timeout_time = .2
         settings.button_lock_hold = False
         pe.display.make((500, 500), "PGE Testing Utility", 1)
     else:
@@ -147,13 +149,24 @@ def run():
                     x = 0
                     y += 20
         elif test == "sprite":
+            pe.comment('Sprites')
             s1.display()
             s2.display()
-            s3.display()
-            s4.display()
-            s5.display()
-            s6.display()
-            s7.display()
+            pe.padding_comment()
+            # s3.display()
+            # s4.display()
+            # s5.display()
+            # s6.display()
+            # s7.display()
+        elif test == "mapping":
+            pe.display.blit(s1.reference.surface, (202, 218))
+            for id in list(s1.reference.handler.mapping):
+                rect = s1.reference.handler.mapping[id]
+                pe.draw.rect(pe.colors.red, (rect[0] + 202, rect[1] + 218, rect[2], rect[3]), 1)
+            pe.display.blit(s2.reference.surface, (122, 250))
+            for id in list(s2.reference.handler.mapping):
+                rect = s2.reference.handler.mapping[id]
+                pe.draw.rect(pe.colors.green, (rect[0] + 122, rect[1] + 250, rect[2], rect[3]), 1)
         elif test == "shapes":
             pe.draw.circle(pe.colors.red, (125, 125), 50, 5)
             pe.draw.circle(pe.colors.aqua, (125, 125), 40, 0)
@@ -166,7 +179,8 @@ def run():
         if test == "":
             pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['button'], action=set_test, data="button")
             pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['slider'], action=set_test, data="slider", disabled=pe.colors.gray)
-            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['sprite'], action=set_test, data="sprite", disabled=pe.colors.gray)
+            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['sprite'], action=set_test, data="sprite")
+            pe.button.rect((200, 250, 100, 50), pe.colors.white, pe.colors.lightgray, bt['mapping'], action=set_test, data="mapping")
             pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['shapes'], action=set_test, data="shapes")
             pe.button.rect((400, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math'], action=set_test, data="math")
 
@@ -185,6 +199,7 @@ def run():
             elif test == "testall":
                 pass
             else:
+                pass
                 pe.button.rect((0, 0, 100, 50), pe.colors.white, pe.colors.lightgray, bt['back'], action=set_test, data="")
             #
 

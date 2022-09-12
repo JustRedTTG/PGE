@@ -169,3 +169,12 @@ def reconstruct(data: list):
     display.context(old_context)
 
     return surface
+
+
+def comment(string: str = "Blank comment."):
+    if settings.recording:
+        settings.recording_data.append(string)
+
+
+def padding_comment():
+    comment('^========^')
