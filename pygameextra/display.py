@@ -71,6 +71,7 @@ def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int =
         final_flags = final_flags | item  # Combine all the flags into the final flags variable
     dis = pygame.display.set_mode(size, final_flags)  # Create the display surface
     dis = Surface(surface=dis, layer=-1)
+    dis.display_tag = True
 
 
     set_caption(title)
@@ -107,7 +108,8 @@ def blit(obj, pos=(0, 0), area=None):
         return
     if type(obj) == Surface:
         obj = obj.surface
-    recorder.record(recorder.Blit(obj, pos, area))
+    if display_reference.display_tag:
+        recorder.record(recorder.Blit(obj, pos, area))
 
 
 def get_width():

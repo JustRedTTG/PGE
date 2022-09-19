@@ -13,3 +13,7 @@ def dist(point_a: tuple, point_b: tuple):
 
 def lerp(point_a: tuple, point_b: tuple, length: [int, float]):
     return point_a[0] + length * (point_b[0] - point_a[0]), point_a[1] + length * (point_b[1] - point_a[1])
+
+
+def lerp_legacy(point_a: tuple, point_b: tuple, length: [int, float]):
+    return lerp(point_a, point_b, length / dist(point_a, point_b))

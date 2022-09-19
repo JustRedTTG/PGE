@@ -13,6 +13,7 @@ class Surface:
     surface = None
     size = None
     layer = 0
+    display_tag = False
 
     def __init__(self, size=(0, 0), layer=0, surface: pygame.Surface = None):
         if surface:
