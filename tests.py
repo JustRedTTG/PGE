@@ -53,7 +53,7 @@ class Cube:
 cubes = []
 x = 0
 y = 0
-ligma = 10
+ligma = 20
 ranging = ligma ** 2
 
 
@@ -65,9 +65,9 @@ s = 2
 
 for i in range(ligma):
     for i1 in range(ligma):
-        r = normalize(0, ranging, 100, 255, i*i1)
-        g = normalize(0, ranging, 50, 100, i*i1)
-        b = normalize(0, ranging, 60, 255, i*i1)
+        r = normalize(0, ligma, 50, 255, i1)
+        g = normalize(0, ranging, 0, 255, i*i1)
+        b = normalize(0, ligma, 0, 255, i)
         cubes.append(Cube((s, s), (x, y), (r, g, b)))
         y += s
     x += s
@@ -76,7 +76,7 @@ for i in range(ligma):
 points = []
 
 x, y = 0, 0
-d = 9
+d = 4
 for _ in range(d+1):
     for _ in range(d+1):
         points.append((x, y))
