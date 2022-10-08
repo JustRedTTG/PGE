@@ -58,5 +58,14 @@ class Surface:
         self.surface = pygame.transform.scale(self.surface, size)
         self.size = self.surface.get_size()
 
-    def copy(self):
+    def copy(self) -> 'Surface':
         return Surface(self.size, self.layer, self.surface.copy())
+
+    def get_at(self, x_y: tuple) -> tuple:
+        return self.surface.get_at(x_y)
+
+    def set_at(self, x_y: tuple, color: tuple) -> None:
+        return self.surface.set_at(x_y, color)
+
+    def set_alpha(self, alpha: int, flags: int = 0) -> None:
+        return self.surface.set_alpha(alpha, flags)

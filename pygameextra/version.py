@@ -1,5 +1,5 @@
 VERSION = '2.0.0'
-revision = 5
+revision = 6
 beta = True
 
 
