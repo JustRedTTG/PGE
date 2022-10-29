@@ -69,3 +69,9 @@ class Surface:
 
     def set_alpha(self, alpha: int, flags: int = 0) -> None:
         return self.surface.set_alpha(alpha, flags)
+
+
+def transparent_surface(area: tuple, alpha: int):
+    new_surface = Surface(area)
+    new_surface.set_alpha(alpha)
+    return new_surface

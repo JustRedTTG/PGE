@@ -9,10 +9,10 @@ def line(color: tuple, pos_a: tuple, pos_b: tuple, w: int = 0, display_work: Sur
         return
     recorder.record(recorder.DrawLine(color, pos_a, pos_b, w))
 
+
 def rect(color: tuple, area: tuple, w: int = 0, display_work: Surface = None, edge_rounding: int = -1, edge_rounding_top_right: int = -1, edge_rounding_top_left: int = -1, edge_rounding_bottom_right: int = -1, edge_rounding_bottom_left: int = -1) -> None:
     if len(color) > 3:
-        new_surface = Surface((area[2], area[3]))
-        new_surface.set_alpha(color[3])
+        new_surface = transparent_surface((area[2], area[3]), color[3])
         rect((color[0], color[1], color[2]), (0, 0, area[2], area[3]), w, new_surface, edge_rounding, edge_rounding_top_right, edge_rounding_top_left, edge_rounding_bottom_right, edge_rounding_bottom_left)
         display_work = display_work if display_work else display.display_reference
         display_work.stamp(new_surface, (area[0], area[1]))
@@ -30,6 +30,12 @@ def rect(color: tuple, area: tuple, w: int = 0, display_work: Surface = None, ed
 
 
 def circle(color: tuple, pos: tuple, radius: int, w: int = 0, display_work: Surface = None) -> None:
+    if len(color) > 3:
+        new_surface = transparent_surface((radius * 2, radius * 2), color[3])
+        circle((color[0], color[1], color[2]), (radius, radius), radius, w, new_surface)
+        display_work = display_work if display_work else display.display_reference
+        display_work.stamp(new_surface, (pos[0] - radius, pos[1] - radius))
+        return
     pygame.draw.circle(display_work.surface if display_work else display.display_reference.surface, color, pos, radius, w, )
     if not settings.recording:
         return

@@ -13,7 +13,6 @@ class Sheet:
         handler.map(self.surface)
         self.handler = handler
         self.frames = len(self.handler.mapping)
-        print(self.frames)
 
     def get(self, sprite: 'Sprite'): return self.handler.get(sprite)
 

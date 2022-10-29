@@ -55,7 +55,7 @@ class Debugger:
 
     def update(self):
         for event.c in event.get():
-            if event.quitcheck():
+            if event.quitCheck():
                 self.active = False
         fill.full(colors.verydarkgray)
         fill.interlace(colors.pge_light, max(int(display.get_width()*.03), 3))

@@ -116,7 +116,7 @@ def run():
     global sO, sT
     while True:
         for pe.event.c in pe.event.get():
-            pe.event.quitcheckauto()
+            pe.event.quitCheckAuto()
         pe.start_recording()
         pe.fill.full(pe.colors.verydarkgray)
 

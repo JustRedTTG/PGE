@@ -16,7 +16,6 @@ def Pquit():
 
 
 def resizeCheck():
-    global c
     return c.type == pygame.WINDOWRESIZED
 
 
@@ -52,7 +51,7 @@ def get():
     return event_buffer
 
 
-def quitcheck():
+def quitCheck():
     global c
     """quitcheck() -> Bool
     Checks if the window was attempted to be closed and returns a bool accordingly
@@ -60,12 +59,12 @@ def quitcheck():
     return c.type == pygame.QUIT
 
 
-def quitcheckauto():
+def quitCheckAuto():
     global c
     """quitcheckauto() -> None
     Checks if the window has been closed and automatically quits the program
     """
-    if quitcheck():
+    if quitCheck():
         Pquit()
 
 

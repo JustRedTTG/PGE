@@ -9,6 +9,7 @@ from pygameextra.modified import *
 from pygameextra.version import get as get_version
 from pygameextra import event, time, fill, mouse, settings, colors, draw, math, text, button, rect
 from pygameextra.recorder import comment, padding_comment
+from pygameextra.event import Pquit
 
 __version__ = get_version()
 

@@ -4,6 +4,7 @@ import pygame
 from pygame.cursors import arrow, diamond, broken_x, tri_left, tri_right
 from pygameextra.rect import Rect
 from pygameextra import settings
+from pygameextra import fingersupport
 
 
 def hide():
@@ -34,6 +35,7 @@ class Draggable:
     start_pos = (0, 0)
     active = False
     lock = False
+    scale_support = False
     pos = (0, 0)
     area = (0, 0)
     rect = None
@@ -43,10 +45,11 @@ class Draggable:
         if self.area:
             self.rect = Rect(*self.pos, *self.area)
 
-    def __init__(self, position: tuple, area: tuple = None):
+    def __init__(self, position: tuple, area: tuple = None, scale_support: bool = False):
         self.pos = position
         self.area = area
         self.lock = False
+        self.scale_support = scale_support
         self.make_rect()
 
     def calculate(self):
@@ -56,8 +59,15 @@ class Draggable:
         return new_pos[0] + difference[0], new_pos[1] + difference[1]
 
     def check(self):
+        """check(self) -> bool, tuple
+        This function will check if the draggable is being moved and where it is"""
         if self.lock:
             return False, self.pos
+
+        if self.scale_support and len(fingersupport.fingers) > 1:
+            return self.scale_handle()
+
+
         self.make_rect()
         if self.rect:
             mouserect = Rect(*pos(), 1, 1)
@@ -76,4 +86,9 @@ class Draggable:
             self.pos = self.calculate()
 
         self.ltic = clicked()[0]
+        return False, self.pos
+
+
+    def scale_handle(self):
+
         return False, self.pos
