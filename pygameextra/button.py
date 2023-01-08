@@ -9,7 +9,7 @@ def lock():
     settings.button_lock = time.time()
 
 
-def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
+def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None, hover_data: any = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
     if disabled:
         if type(disabled) == bool:
             draw.rect(active_color, area)
@@ -32,6 +32,13 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
                 action(data)
             else:
                 action()
+
+        if (not settings.button_lock) and hover_action:
+            lock()
+            if hover_data is not None:
+                hover_action(hover_data)
+            else:
+                hover_action()
     else:
         draw.rect(inactive_color, area)
     if settings.recording:
