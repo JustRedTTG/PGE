@@ -20,13 +20,13 @@ class PanAndZoomChunks:
 
     def __init__(
             self,
-            get_function = lambda x, y, pnz: f'chunk at ({x}, {y})',
-            visualization_function = lambda chunk, px, py, cx, cy, pnz: print(f'visualization of {chunk}'),
-            lazy_visualization_function = lambda chunk, px, py, cx, cy, pnz: print(f'lazy visualization of {chunk}'),
-            movement_function = lambda old_x, old_y, new_x, new_y, pnz: print(f'moved from ({old_x}, {old_y}) to ({new_x}, {new_y})'),
-            pre_init_function = lambda x, y, w, h, pnz: print('\n\nPNZC'),
-            mid_pre_init_function = lambda x, y, w, h, pnz: print('stopping...'),
-            lazy_pre_init_function = lambda x, y, w, h, pnz: print('move...'),
+            get_function = lambda x, y, pnz: (x, y),
+            visualization_function = lambda chunk, px, py, cx, cy, pnz: 0,
+            lazy_visualization_function = lambda chunk, px, py, cx, cy, pnz: 0,
+            movement_function = lambda old_x, old_y, new_x, new_y, pnz: 0,
+            pre_init_function = lambda x, y, w, h, pnz: 0,
+            mid_pre_init_function = lambda x, y, w, h, pnz: 0,
+            lazy_pre_init_function = lambda x, y, w, h, pnz: 0,
             zoom: int = 1,
             size_per_chunk: tuple[int, int] = (50, 50),
             drag_speed: float = .01
