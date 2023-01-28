@@ -90,11 +90,11 @@ def set_test(data):
     global test
     test = data
     if "math_" in data:
-        settings.button_timeout_time = .2
+        settings.button_lock_timeout_time = .2
         settings.button_lock_hold = False
         pe.display.make((500, 500), "PGE Testing Utility", 1)
     else:
-        settings.button_timeout_time = .1
+        settings.button_lock_timeout_time = .1
         settings.button_lock_hold = True
         pe.display.make((500, 500), "PGE Testing Utility", 0)
 

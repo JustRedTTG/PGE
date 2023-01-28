@@ -27,20 +27,20 @@ def start_debug(delete_after: bool = False, reactivate: bool = False):
         return
     if not reactivate:
         settings.debugger.start_mouse_position = mouse.pos()
-        settings.debugger.start_enable_spoof = settings.enable_spoof
-        settings.debugger.start_mouse_position_spoof = settings.mouse_position
+        settings.debugger.start_enable_spoof = settings.spoof_enabled
+        settings.debugger.start_mouse_position_spoof = settings.spoof_mouse_position
     settings.debugger.reactivate_init = reactivate
-    settings.enable_spoof = False
+    settings.spoof_enabled = False
     settings.debugger.before_run()
     while settings.debugger.active:
         settings.debugger.update()
     settings.debugger.after_run()
     if settings.debugger.reactivate:
-        settings.enable_spoof = True
-        settings.mouse_position = settings.debugger.start_mouse_position
+        settings.spoof_enabled = True
+        settings.spoof_mouse_position = settings.debugger.start_mouse_position
     else:
-        settings.enable_spoof = settings.debugger.start_enable_spoof
-        settings.mouse_position = settings.debugger.start_mouse_position_spoof
+        settings.spoof_enabled = settings.debugger.start_enable_spoof
+        settings.spoof_mouse_position = settings.debugger.start_mouse_position_spoof
 
     if delete_after:
         del settings.debugger

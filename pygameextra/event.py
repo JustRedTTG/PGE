@@ -21,13 +21,17 @@ def resizeCheck() -> bool:
 
 def buttonLocking() -> None:
     if settings.button_lock:
-        if time.time()-settings.button_lock >= settings.button_timeout_time:
+        if time.time()-settings.button_lock >= settings.button_lock_timeout_time:
             if settings.button_lock_hold:
-                #TODO: potential optimization avaliable
+                #TODO: potential optimization available
                 if not pygame.mouse.get_pressed()[0]:
                     settings.button_lock = None
             else:
                 settings.button_lock = None
+def hoverLocking() -> None:
+    if settings.hover_lock:
+        if time.time()-settings.hover_lock >= settings.hover_lock_timeout_time:
+            settings.hover_lock = None
 
 
 def resizeCheckAuto() -> None:
@@ -39,8 +43,9 @@ def resizeCheckAuto() -> None:
 
 def rundown() -> None:
     global c, event_buffer
-    if not settings.enable_rundown: return
+    if not settings.rundown_enabled: return
     buttonLocking()
+    hoverLocking()
     for c in event_buffer:
         resizeCheckAuto()
 

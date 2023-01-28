@@ -20,53 +20,52 @@ def icon(cursor_icon: pygame.cursors.Cursor = arrow):
 
 
 def pos(spoof: bool = True):
-    if spoof and settings.enable_spoof:
-        return settings.mouse_position or pygame.mouse.get_pos()
+    if spoof and settings.spoof_enabled:
+        return settings.spoof_mouse_position or pygame.mouse.get_pos()
     return pygame.mouse.get_pos()
 
 
 def clicked(spoof: bool = True):
-    if spoof and settings.enable_spoof:
-        return settings.mouse_clicked or pygame.mouse.get_pressed()
+    if spoof and settings.spoof_enabled:
+        return settings.spoof_mouse_clicked or pygame.mouse.get_pressed()
     return pygame.mouse.get_pressed()
 
 
 class Draggable:
-    start_pos = (0, 0)
-    active = False
-    lock = False
-    scale_support = False
-    pos = (0, 0)
-    area = (0, 0)
-    rect = None
-    ltic = False
+    start_pos: tuple[int, int]
+    active: bool
+    lock: bool
+    scale_support: bool
+    pos: tuple[int, int]
+    area: [tuple[int, int], None]
+    rect: pygame.Rect
+    ltic: bool
+    move_multiplier: float
 
     def make_rect(self):
         if self.area:
             self.rect = Rect(*self.pos, *self.area)
 
-    def __init__(self, position: tuple, area: tuple = None, scale_support: bool = False):
+    def __init__(self, position: tuple[int, int], area: [tuple[int, int], None] = None, move_multiplier: [float, int] = 1):
         self.pos = position
         self.area = area
         self.lock = False
-        self.scale_support = scale_support
         self.make_rect()
+        self.rect = None
+        self.active = False
+        self.move_multiplier = move_multiplier
 
     def calculate(self):
         new_pos = self.pos
         current_pos = pos()
         difference = (current_pos[0] - self.start_pos[0], current_pos[1] - self.start_pos[1])
-        return new_pos[0] + difference[0], new_pos[1] + difference[1]
+        return new_pos[0] + difference[0] * self.move_multiplier, new_pos[1] + difference[1] * self.move_multiplier
 
     def check(self):
         """check(self) -> bool, tuple
         This function will check if the draggable is being moved and where it is"""
         if self.lock:
             return False, self.pos
-
-        if self.scale_support and len(fingersupport.fingers) > 1:
-            return self.scale_handle()
-
 
         self.make_rect()
         if self.rect:
@@ -86,9 +85,4 @@ class Draggable:
             self.pos = self.calculate()
 
         self.ltic = clicked()[0]
-        return False, self.pos
-
-
-    def scale_handle(self):
-
         return False, self.pos

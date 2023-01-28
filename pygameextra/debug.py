@@ -98,7 +98,7 @@ class FreeMode(Debugger):
             self.draggable = mouse.Draggable(self.offset)
             settings.button_lock = False
         else:
-            button.lock()
+            button.button_lock()
 
 
 class FreeInteractMode(FreeMode):
@@ -123,7 +123,7 @@ class FreeInteractMode(FreeMode):
                     draw.rect(colors.green, area, 2)
                     self.draggable.lock = True
                     if (not settings.button_lock) and item.action and mouse.clicked(False)[0]:
-                        button.lock()
+                        button.button_lock()
                         if item.data is None:
                             item.action()
                         else:

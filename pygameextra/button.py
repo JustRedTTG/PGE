@@ -5,8 +5,14 @@ from pygameextra.rect import Rect
 from pygameextra.text import Text
 
 
-def lock():
+def button_lock():
+    if not settings.button_lock_enabled: return
     settings.button_lock = time.time()
+
+
+def hover_lock():
+    if not settings.hover_lock_enabled: return
+    settings.hover_lock = time.time()
 
 
 def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None, hover_data: any = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
@@ -27,14 +33,14 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
     if button_rect.colliderect(mouse_rect):
         draw.rect(active_color, area)
         if (not settings.button_lock) and action and mouse.clicked()[0]:
-            lock()
+            button_lock()
             if data is not None:
                 action(data)
             else:
                 action()
 
-        if (not settings.button_lock) and hover_action:
-            lock()
+        if (not settings.hover_lock) and hover_action:
+            hover_lock()
             if hover_data is not None:
                 hover_action(hover_data)
             else:
@@ -72,7 +78,7 @@ def image(area: tuple, inactive_image: Image, active_image: Image, action: any =
             area[1] + area[3]*.5 - active_image.size[1]*.5
         ))
         if (not settings.button_lock) and action and mouse.clicked()[0]:
-            lock()
+            button_lock()
             if data is not None:
                 action(data)
             else:

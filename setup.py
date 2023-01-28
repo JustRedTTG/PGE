@@ -1,7 +1,7 @@
 from setuptools import setup
 
-version = '2.0.0b8'
-short = 'Pygame. Made easier'
+version = '2.0.0b9'
+short = 'Pygame. Made easier.'
 long = '''Pygame Extra is a mask for pygame, 
 you can easily make complex games and or apps with much less lines then you would of before, 
 Pygame Extra makes coding easier. 

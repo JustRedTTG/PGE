@@ -17,7 +17,7 @@ pe.display.make((700, 600), "Cool", pe.display.DISPLAY_MODE_RESIZABLE)
 log = Logger(size=20)
 log.render()
 pe.settings.debugger = FreeMode()
-settings.button_timeout_time = 0
+settings.button_lock_timeout_time = 0
 settings.button_lock_hold = False
 
 draggable = pe.mouse.Draggable((5, 5), (150, 150), True)
