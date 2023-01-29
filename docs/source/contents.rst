@@ -5,3 +5,4 @@ Table of Contents
     :maxdepth: 100000
 
     index
+    getting-started
