@@ -6,3 +6,4 @@ Table of Contents
 
     index
     getting-started
+    drawing
