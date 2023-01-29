@@ -12,11 +12,12 @@ Let's look at the syntax of drawing a line
 
 .. code-block:: python
 
-    pygameextra.draw.line(color, pos, w)
+    pygameextra.draw.line(color, start_pos, end_pos, w)
 Now let's take a closer look at the syntax
 
 * color - the line color
-* pos - the position of the line aka ``(StartX,StartY,EndX,EndY)``
+* start_pos - the stating position of the line ``(StartX, StartY)``
+* end_pos - the ending position of the line ``(EndX, EndY)``
 * w - the line width
 * update(optional) - setting this to false will disable the automatic screen update
 * layer - the layer on witch to put the line
@@ -30,7 +31,7 @@ Let's look at the syntax of drawing a rect aka a rectangle
 
 .. code-block:: python
 
-    pygameextra.draw.rect(color, rect, w, update=True, layer=0)
+    pygameextra.draw.rect(color, rect, w)
 Now let's take a closer look at the syntax
 
 * color - the rect / rect line color
@@ -47,12 +48,12 @@ Let's look at the syntax of drawing a circle
 
 .. code-block:: python
 
-    pygameextra.draw.circle(color, pos, size, w)
+    pygameextra.draw.circle(color, pos, radius, w)
 Now let's take a closer look at the syntax
 
 * color - the circle color
 * pos - the center position of the circle
-* size - the size / radius of the circle
+* radius - the radius of the circle from the center
 * w (no fill) - setting this to be larger than 0 will make a line circle
 * w (with fill) - setting this to 0 will make a filled circle
 
