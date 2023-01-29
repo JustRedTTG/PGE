@@ -10,7 +10,10 @@ from pygameextra import anim, popup
 from pygameextra.filemanage import folder, check
 from pygameextra.group import group
 from pygameextra.roundrect import rect as roundrect
-pe_values, rect, pivot, color = None, None, None, None # Nill variables
+from pygameextra.rect import rect
+import pygameextra.values as pe_values
+import pygameextra.pivot as pivot
+import pygameextra.colors as color
 NoneText, display_a, display_size, eventsl, scriptpath, slider_image = None, None, None, None, None, None # Nill variables
 
 
@@ -24,23 +27,11 @@ for x in range(0,17):
 
 # DEVELOPER OPTIONS!
 __version__ = "1.6.5.3" # developers, please change this accordingly when developing!
-modified = True # developers, please set this to True when developing!
+modified = False # developers, please set this to True when developing!
 # DEVELOPER OPTIONS!
 
-def preinit():
-    """preinit() -> None
-    Imports important functions to prepare for init
-    """
-    global pe_values, pivot, color
-    # IMPORTING Pygame Extra sub-modules
-    import pygameextra.values as pe_values
-    import pygameextra.rect as rect
-    rect.pygame = pygame
-    rect = rect.rect
-    import pygameextra.pivot
-    import pygameextra.colors as color
 
-preinit()
+
 
 def init():
     """init() -> None
@@ -390,7 +381,7 @@ class text:
             Quickly makes a large text object
             """
             return text.quick.make(texts, 40, pos, layer = layer)
-    def display(Text : make.Text, update : bool = True):
+    def display(Text, update : bool = True):
         """display(Text_Object) -> None
         Displays a text object
         """
@@ -453,7 +444,7 @@ class mouse:
 
 
 class button:
-    def rect(rect : tuple, ic : tuple, ac : tuple, Text : text.make.Text = NoneText, action = None, data : tuple = None, tmp : bool = True, update : bool = True, layer : int = 0, enableLock : bool = True):
+    def rect(rect : tuple, ic : tuple, ac : tuple, Text = NoneText, action = None, data : tuple = None, tmp : bool = True, update : bool = True, layer : int = 0, enableLock : bool = True):
         """rect(rect, color_idle, color_active, Text_Object, action, data -> None
         Draws a rectanular colored button (optionally with text)
         """
