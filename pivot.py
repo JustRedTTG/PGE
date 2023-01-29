@@ -1,4 +1,5 @@
 """Pivot names"""
+
 topleft = "topleft"
 topright = "topright"
 top = "top"
