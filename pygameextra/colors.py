@@ -1,7 +1,7 @@
 """colors"""
 
 # RGB
-lightred(200, 0, 0)
+lightred = (200, 0, 0)
 red = (255, 0, 0)
 darkred = (155, 0, 0)
 verydarkred = (55, 0, 0)
