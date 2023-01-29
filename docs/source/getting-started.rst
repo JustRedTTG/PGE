@@ -14,12 +14,10 @@ Let's get started by making a simple game loop, this loop will run our game code
     pe.display.make((500, 500), 'My Game')
     while True:
       for pe.event.c in pe.event.get():
-        pe.event.quitcheckauto()
+        pe.event.quitCheckAuto()
       print("Game Code")
-    pe.quit()
-    quit()
 
-Running this will make a 500 x 500 display called "My Game" and close once the "X"(close) is clicked.
+Running this will make a 500 x 500 display called "My Game" and close once the "X" (close) is clicked.
 
 .. image:: _static/docs01.png
     :align: center
@@ -36,7 +34,7 @@ For that we simply use the method:
 
   fill.full(color, update=True, layer=0)
 
-Here we have two options we can either manually set the color or use "``pe.color``".
+Here we have two options we can either manually set the color or use "``pygameextra.colors``".
 
 .. code-block:: python
 
@@ -44,23 +42,23 @@ Here we have two options we can either manually set the color or use "``pe.color
     pe.display.make((500, 500), 'My Game')
     while True:
       for pe.event.c in pe.event.get():
-        pe.event.quitcheckauto()
-      pe.fill.full(pe.color.white)
-    pe.quit()
-    quit()
+        pe.event.quitCheckAuto()
+      pe.fill.full(pe.colors.white)
+      pe.display.update()
     
 .. image:: _static/docs02.png
     :align: left
     
 As you can see white is filling the entire screen. This is the basic things you need to know when starting to use Pygame Extra.
+Note: you have to update the display for all your rendering to show up on the screen!
 
 Maximum Frames Per Second
 -------------------------
 
-When making a game / program it's important to have a stable frame-rate, we can set the max frames per second by using the following command:
+When making a game / program it's important to have a stable frame-rate, we can set the max frames per second while updating the display:
 
 .. code-block:: python
     
-    pe.time.tick(MaxFPS)
+    pe.display.update(max_fps)
     
 This will limit the game / program to a maximum frame-rate, we can't tell the game what the minimum frame-rate has to be, that depends on the user's machine.
