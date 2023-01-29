@@ -21,7 +21,7 @@ setup(
     description=short,
     long_description_content_type="text/markdown",
     long_description=long,
-    packages=['pygameextra', 'pygameextra_tester'],
+    packages=['pygameextra'],
     install_requires=['pygame'],
     package_data={'pygameextra': ['font.ttf'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
@@ -29,9 +29,4 @@ setup(
         'mario_01.png'
     ]},
     keywords=['python'],
-    entry_points={
-        'console_scripts': [
-            'pygameextra-tester = pygameextra_tester.__init__:run',
-        ],
-    }
 )
