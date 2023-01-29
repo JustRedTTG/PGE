@@ -11,6 +11,7 @@ Let's get started by making a simple game loop, this loop will run our game code
 .. code-block:: python
 
     import pygameextra as pe
+    pe.init() # Do not forget to do this!
     pe.display.make((500, 500), 'My Game')
     while True:
         for pe.event.c in pe.event.get():
@@ -39,6 +40,7 @@ Here we have two options we can either manually set the color or use "``pygameex
 .. code-block:: python
 
     import pygameextra as pe
+    pe.init()
     pe.display.make((500, 500), 'My Game')
     while True:
         for pe.event.c in pe.event.get():
