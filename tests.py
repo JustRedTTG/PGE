@@ -26,7 +26,8 @@ while True:
     for pe.event.c in pe.event.get():
         pe.event.quitCheckAuto()
         fingersupport.handle_finger_events()
-    pe.fill.full(pe.colors.black)
+    # pe.fill.full(pe.colors.verydarkgray)
+    pe.fill.full(pe.colors.white)
 
     pe.start_recording()
 
