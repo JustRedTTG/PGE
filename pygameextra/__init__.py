@@ -6,10 +6,10 @@ from pygameextra.install import install, requests, pygame, system
 from pygameextra.save import *
 import pygameextra.settings as Settings
 import math as mathy
-from libraries import anim, popup
-from libraries.filemanage import folder, check
-from libraries.group import group
-from libraries.roundrect import rect as roundrect
+from pygameextra import anim, popup
+from pygameextra.filemanage import folder, check
+from pygameextra.group import group
+from pygameextra.roundrect import rect as roundrect
 pe_values, rect, pivot, color = None, None, None, None # Nill variables
 NoneText, display_a, display_size, eventsl, scriptpath, slider_image = None, None, None, None, None, None # Nill variables
 
