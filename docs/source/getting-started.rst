@@ -13,9 +13,9 @@ Let's get started by making a simple game loop, this loop will run our game code
     import pygameextra as pe
     pe.display.make((500, 500), 'My Game')
     while True:
-      for pe.event.c in pe.event.get():
-        pe.event.quitCheckAuto()
-      print("Game Code")
+        for pe.event.c in pe.event.get():
+            pe.event.quitCheckAuto()
+        print("Game Code")
 
 Running this will make a 500 x 500 display called "My Game" and close once the "X" (close) is clicked.
 
@@ -41,10 +41,10 @@ Here we have two options we can either manually set the color or use "``pygameex
     import pygameextra as pe
     pe.display.make((500, 500), 'My Game')
     while True:
-      for pe.event.c in pe.event.get():
-        pe.event.quitCheckAuto()
-      pe.fill.full(pe.colors.white)
-      pe.display.update()
+        for pe.event.c in pe.event.get():
+            pe.event.quitCheckAuto()
+        pe.fill.full(pe.colors.white)
+        pe.display.update()
     
 .. image:: _static/docs02.png
     :align: left
