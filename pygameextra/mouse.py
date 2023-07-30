@@ -30,6 +30,9 @@ def clicked(spoof: bool = True):
         return settings.spoof_mouse_clicked or pygame.mouse.get_pressed()
     return pygame.mouse.get_pressed()
 
+def place(x, y):
+    return pygame.mouse.set_pos([x, y])
+
 
 class Draggable:
     start_pos: tuple[int, int]

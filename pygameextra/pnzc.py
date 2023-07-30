@@ -3,12 +3,13 @@ from typing import Callable
 from pygameextra.mouse import Draggable, fingersupport
 from pygameextra.math import lerp, dist
 
+
 class PanAndZoomChunks:
     get_function: Callable
     visualization_function: Callable
     lazy_visualization_function: Callable
-    movement_function: Callable # TODO: add movement function
-    lazy_movement_function: Callable # TODO: add lazy movement function
+    movement_function: Callable  # TODO: add movement function
+    lazy_movement_function: Callable  # TODO: add lazy movement function
     zooming_function: Callable
     lazy_zooming_function: Callable
     pre_init_function: Callable
@@ -35,15 +36,15 @@ class PanAndZoomChunks:
 
     def __init__(
             self,
-            get_function = lambda x, y, pnz: (x, y),
-            visualization_function = lambda chunk, px, py, cx, cy, pnz: 0,
-            lazy_visualization_function = lambda chunk, px, py, cx, cy, pnz: 0,
-            movement_function = lambda old_x, old_y, new_x, new_y, pnz: 0, # TODO add lazy movement
-            zooming_function = lambda old_w, old_h, old_scale, new_w, new_h, new_scale, pnz: 0,
-            lazy_zooming_function = lambda old_w, old_h, old_scale, new_w, new_h, new_scale, pnz: 0,
-            pre_init_function = lambda x, y, w, h, pnz: 0,
-            mid_pre_init_function = lambda x, y, w, h, pnz: 0,
-            lazy_pre_init_function = lambda x, y, w, h, pnz: 0,
+            get_function=lambda x, y, pnz: (x, y),
+            visualization_function=lambda chunk, px, py, cx, cy, pnz: 0,
+            lazy_visualization_function=lambda chunk, px, py, cx, cy, pnz: 0,
+            movement_function=lambda old_x, old_y, new_x, new_y, pnz: 0,  # TODO add lazy movement
+            zooming_function=lambda old_w, old_h, old_scale, new_w, new_h, new_scale, pnz: 0,
+            lazy_zooming_function=lambda old_w, old_h, old_scale, new_w, new_h, new_scale, pnz: 0,
+            pre_init_function=lambda x, y, w, h, pnz: 0,
+            mid_pre_init_function=lambda x, y, w, h, pnz: 0,
+            lazy_pre_init_function=lambda x, y, w, h, pnz: 0,
             zoom: int = 1,
             size_per_chunk: tuple[int, int] = (50, 50),
             smooth_speed: float = .01,
@@ -51,12 +52,12 @@ class PanAndZoomChunks:
             zoom_speed: float = .01,
             zoom_min: float = .1,
             zoom_max: float = 4
-        ):
+    ):
         self.get_function = get_function
         self.visualization_function = visualization_function
         self.lazy_visualization_function = lazy_visualization_function
         self.movement_function = movement_function
-        #self.lazy_movement_function = lazy_movement_function # TODO: uncomment when lazy movement added
+        # self.lazy_movement_function = lazy_movement_function # TODO: uncomment when lazy movement added
         self.zooming_function = zooming_function
         self.lazy_zooming_function = lazy_zooming_function
         self.pre_init_function = pre_init_function
@@ -76,7 +77,9 @@ class PanAndZoomChunks:
         self.zoom_min = zoom_min
         self.zoom_max = zoom_max
         self.zoom_speed = zoom_speed
-    def get_chunking_size(self): return [int(v * self.zoom) for v in self.chunking_size]
+
+    def get_chunking_size(self):
+        return [int(v * self.zoom) for v in self.chunking_size]
 
     def event(self, x, y, w, h):
         moving, position = self.draggable.check()
@@ -93,24 +96,26 @@ class PanAndZoomChunks:
                 self.zoom_length = dist(*[finger['pos'] for finger in fingersupport.fingers])
                 self.zoom_start = self.zoom
                 self.zoom_start_position = position
-                self.zoom_offset = [zp-zo for zo, zp in zip(position, self.zoom_position)]
+                self.zoom_offset = [zp - zo for zo, zp in zip(position, self.zoom_position)]
                 self.zoom_chunking_size = self.get_chunking_size()
             else:
                 new_zoom_length = dist(*[finger['pos'] for finger in fingersupport.fingers])
-                self.zoom = self.zoom_start + (new_zoom_length-self.zoom_length) * self.zoom_speed
+                self.zoom = self.zoom_start + (new_zoom_length - self.zoom_length) * self.zoom_speed
                 self.zoom = min(self.zoom_max, max(self.zoom_min, self.zoom))
                 self.draggable.pos = [
                     # TODO: Fix shaking
-                    zsp + (zo // self.zoom_start) * (self.zoom_start-self.zoom)
+                    zsp + (zo // self.zoom_start) * (self.zoom_start - self.zoom)
                     for zo, zp, zsp in zip(self.zoom_offset, self.zoom_position, self.zoom_start_position)
                 ]
-                self.lazy_zooming_function(*self.zoom_chunking_size, self.zoom_start, *self.get_chunking_size(), self.zoom, self)
+                self.lazy_zooming_function(*self.zoom_chunking_size, self.zoom_start, *self.get_chunking_size(),
+                                           self.zoom, self)
                 self.drag_smooth = self.draggable.pos
                 lazy = True
                 moving = False
         elif self.zooming:
             self.zooming = False
-            self.lazy_zooming_function(*self.zoom_chunking_size, self.zoom_start, *self.get_chunking_size(), self.zoom, self)
+            self.lazy_zooming_function(*self.zoom_chunking_size, self.zoom_start, *self.get_chunking_size(), self.zoom,
+                                       self)
         if moving:
             self.lazy_pre_init_function(*self.drag_smooth, *cs, self)
             lazy = True
@@ -129,15 +134,15 @@ class PanAndZoomChunks:
             lazy = False
 
         # LOGIC FOR CHUNKS
-        ox, oy = [v % cs[i] - cs[i]*1.5 for i, v in enumerate(self.drag_smooth)]
-        for px in range(x, w+cs[0], cs[0]):
-            for py in range(y, h+cs[1], cs[1]):
+        ox, oy = [v % cs[i] - cs[i] * 1.5 for i, v in enumerate(self.drag_smooth)]
+        for px in range(x, w + cs[0], cs[0]):
+            for py in range(y, h + cs[1], cs[1]):
                 cx, cy = self.get_chunk_at((px, py), cs)
                 chunk = self.get_function(cx, cy, self)
                 if lazy:
-                    self.lazy_visualization_function(chunk, px+ox, py+oy, *cs, self)
+                    self.lazy_visualization_function(chunk, px + ox, py + oy, *cs, self)
                 else:
-                    self.visualization_function(chunk, px+ox, py+oy, *cs, self)
+                    self.visualization_function(chunk, px + ox, py + oy, *cs, self)
 
     def get_chunk_at(self, pos, chunking_size):
         x, y = pos
