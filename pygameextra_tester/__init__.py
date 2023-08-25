@@ -16,8 +16,10 @@ bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
 bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
 # Sprite sheet sprites
-s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16)), (250, 250), (0, 0), pivot="topleft")  # Rows sprite
-s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32)), (250, 250), (250, 0), pivot="topleft")  # Columns sprite
+s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16)), (250, 250), (0, 0),
+               pivot="topleft")  # Rows sprite
+s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32)), (250, 250), (250, 0),
+               pivot="topleft")  # Columns sprite
 
 # Resized sprites
 s3 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((0, 250, 125, 125)))  # Resized sprite 1
@@ -32,7 +34,8 @@ s5.size = 0.1
 s6 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((125, 375, 125, 125)))  # Resized sprite 4
 s6.size = 0.05
 
-s7 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((250, 250, 250, 250)), 90, pivot="center")  # Rotated sprite
+s7 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((250, 250, 250, 250)), 90,
+               pivot="center")  # Rotated sprite
 
 mouse_icon = pe.Image(f'{sp}/mouse_middle.png', (50, 50))
 debug_icon = pe.Image(f'{sp}/debug_icon.png', (50, 50))
@@ -58,10 +61,15 @@ bt = {  # Button texts
     'math_lerp': pe.text.quick('Lerp', 15, pe.math.center((0, 200, 100, 50))),
     'math_center': pe.text.quick('Center', 15, pe.math.center((100, 200, 100, 50))),
     'math_dist': pe.text.quick('Distance', 15, pe.math.center((200, 200, 100, 50))),
+    'math_tsx': pe.text.quick('TSX', 15, pe.math.center((300, 200, 100, 50))),
     'math_back': pe.text.quick('< Math', 15, pe.math.center((0, 0, 100, 50))),
     '+': pe.text.quick('+', 15, pe.math.center((275, 200, 50, 50))),
     '-': pe.text.quick('-', 15, pe.math.center((175, 200, 50, 50))),
     'lerplength': pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50))),
+    'distance': pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50))),
+    'tsx_radius': pe.text.quick("100", 15, pe.math.center((225, 145, 50, 50))),
+    'tsx_segments': pe.text.quick("100", 15, pe.math.center((225, 200, 50, 50))),
+    'tsx_offset': pe.text.quick("100", 15, pe.math.center((225, 255, 50, 50))),
     'debug_label': pe.text.quick("Open Debug", 15, pe.math.center((400, 440, 90, 50))),
     'debug_close': pe.text.quick("Close Debug", 15, pe.math.center((400, 440, 90, 50)))
 }
@@ -69,6 +77,12 @@ bt['math_back'].color = pe.colors.white
 bt['math_back'].init()
 bt['lerplength'].color = pe.colors.white
 bt['lerplength'].init()
+bt['tsx_radius'].color = pe.colors.white
+bt['tsx_radius'].init()
+bt['tsx_segments'].color = pe.colors.white
+bt['tsx_segments'].init()
+bt['tsx_offset'].color = pe.colors.white
+bt['tsx_offset'].init()
 bt['debug_label'].color = pe.colors.white
 bt['debug_label'].init()
 bt['debug_close'].color = pe.colors.white
@@ -82,6 +96,8 @@ test = ""
 testall = 0
 testdrop = -100
 lerplength = .5
+tsx_segments = 100
+tsx = pe.TSX((250, 250), 100)
 log = Logger()
 
 
@@ -89,7 +105,7 @@ log = Logger()
 def set_test(data):
     global test
     test = data
-    if "math_" in data:
+    if "math_" in data and not data == "math_tsx":
         settings.button_lock_timeout_time = .2
         settings.button_lock_hold = False
         pe.display.make((500, 500), "PGE Testing Utility", 1)
@@ -102,6 +118,21 @@ def set_test(data):
 def set_lerplength(data):
     global lerplength
     lerplength = data
+
+
+def set_tsx_radius(data):
+    global tsx
+    tsx.radius = data
+
+
+def set_tsx_segments(data):
+    global tsx_segments
+    tsx_segments = data
+
+
+def set_tsx_offset(data):
+    global tsx
+    tsx.offset = data
 
 
 # Test functions
@@ -129,12 +160,14 @@ def run():
 
         if test == "slider":
             # noinspection PyShadowingNames
-            sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0), True, (0, 0, 255))
+            sO = pe.slider.boxed((125, 100, 250, 15, 20), (255, 0, 0), 0, 100, sO, (0, 0, 255), (0, 0, 0), (0, 255, 0),
+                                 True, (0, 0, 255))
             # noinspection PyShadowingNames
-            sT = pe.slider.normal((125, 150, 250, 15, 20), sX, 0, 100, sT, (255, 255, 255), (0, 255, 0), 5, True, (0, 0, 255), 3)
+            sT = pe.slider.normal((125, 150, 250, 15, 20), sX, 0, 100, sT, (255, 255, 255), (0, 255, 0), 5, True,
+                                  (0, 0, 255), 3)
         elif test == "button":
-            midpoint = pe.display.get_width()*.5 - 100
-            midheight = pe.display.get_height()*.5 - 50
+            midpoint = pe.display.get_width() * .5 - 100
+            midheight = pe.display.get_height() * .5 - 50
             x = 0
             y = 0
             while x < 99 and y < 99:
@@ -142,8 +175,8 @@ def run():
                 # bX2.rect = bX2.object.get_rect(topleft=(x+150, y+200))
                 # bY2.position = (x + 150, y + 200)
                 # bY2.rect = bY2.object.get_rect(topleft=(x + 150, y + 200))
-                pe.button.rect((x+midpoint, y+midheight, 20, 20), pe.colors.red, pe.colors.green)
-                pe.button.image((x+midpoint+100, y+midheight, 20, 20), bX2, bY2)
+                pe.button.rect((x + midpoint, y + midheight, 20, 20), pe.colors.red, pe.colors.green)
+                pe.button.image((x + midpoint + 100, y + midheight, 20, 20), bX2, bY2)
                 x += 20
                 if x > 99:
                     x = 0
@@ -177,12 +210,18 @@ def run():
             pe.draw.ellipse(pe.colors.red, (250, 250, 250, 250))
 
         if test == "":
-            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['button'], action=set_test, data="button")
-            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['slider'], action=set_test, data="slider", disabled=pe.colors.gray)
-            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['sprite'], action=set_test, data="sprite")
-            pe.button.rect((200, 250, 100, 50), pe.colors.white, pe.colors.lightgray, bt['mapping'], action=set_test, data="mapping")
-            pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['shapes'], action=set_test, data="shapes")
-            pe.button.rect((400, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math'], action=set_test, data="math")
+            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['button'], action=set_test,
+                           data="button")
+            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['slider'], action=set_test,
+                           data="slider", disabled=pe.colors.gray)
+            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['sprite'], action=set_test,
+                           data="sprite")
+            pe.button.rect((200, 250, 100, 50), pe.colors.white, pe.colors.lightgray, bt['mapping'], action=set_test,
+                           data="mapping")
+            pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['shapes'], action=set_test,
+                           data="shapes")
+            pe.button.rect((400, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math'], action=set_test,
+                           data="math")
 
             settings.recording = False
             mouse_icon.display((350, 440))
@@ -190,34 +229,43 @@ def run():
             settings.recording = True
 
         elif test == "math":
-            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_lerp'], action=set_test, data="math_lerp")
-            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_center'], action=set_test, data="math_center")
-            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_dist'], action=set_test, data="math_dist")
+            pe.button.rect((0, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_lerp'], action=set_test,
+                           data="math_lerp")
+            pe.button.rect((100, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_center'],
+                           action=set_test, data="math_center")
+            pe.button.rect((200, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_dist'], action=set_test,
+                           data="math_dist")
+            pe.button.rect((300, 200, 100, 50), pe.colors.white, pe.colors.lightgray, bt['math_tsx'], action=set_test,
+                           data="math_tsx")
         if test != "":
             if "math_" in test:
-                pe.button.rect((0, 0, 100, 50), pe.colors.verydarkgray, pe.colors.darkgray, bt['math_back'], action=set_test, data="math")
+                pe.button.rect((0, 0, 100, 50), pe.colors.verydarkgray, pe.colors.darkgray, bt['math_back'],
+                               action=set_test, data="math")
             elif test == "testall":
                 pass
             else:
                 pass
-                pe.button.rect((0, 0, 100, 50), pe.colors.white, pe.colors.lightgray, bt['back'], action=set_test, data="")
+                pe.button.rect((0, 0, 100, 50), pe.colors.white, pe.colors.lightgray, bt['back'], action=set_test,
+                               data="")
             #
 
         if test == "math_lerp":
             if pe.display.get_width() < 325 or pe.display.get_height() < 250:
                 x, y = 0, 0
                 s = pe.display.get_size()
-                while s[0]+x < 325 or s[1]+y < 250:
-                    if s[0]+x < 325:
+                while s[0] + x < 325 or s[1] + y < 250:
+                    if s[0] + x < 325:
                         x += 1
-                    if s[1]+y < 250:
+                    if s[1] + y < 250:
                         y += 1
-                pe.display.make((s[0]+x, s[1]+y), "PGE Testing Utility", 1)
-            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_lerplength, lerplength-.1)
+                pe.display.make((s[0] + x, s[1] + y), "PGE Testing Utility", 1)
+            pe.button.rect((175, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_lerplength,
+                           lerplength - .1)
             bt['lerplength'].text = f'{lerplength:.1f}'
             bt['lerplength'].init()
             bt['lerplength'].display()
-            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_lerplength, lerplength+.1)
+            pe.button.rect((275, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_lerplength,
+                           lerplength + .1)
             mp = pe.mouse.pos()
             lerp1 = pe.math.lerp((0, 0), mp, lerplength)
             lerp2 = pe.math.lerp((pe.display.get_width(), 0), mp, lerplength)
@@ -246,14 +294,38 @@ def run():
             pe.draw.line(pe.colors.white, (pe.display.get_width(), 0), lerp2max, 5)
             pe.draw.line(pe.colors.white, (0, pe.display.get_height()), lerp3max, 5)
             pe.draw.line(pe.colors.white, (pe.display.get_width(), pe.display.get_height()), lerp4max, 5)
-
         elif test == "math_center":
-            pe.draw.circle(pe.colors.white, pe.math.center((0, 0, pe.display.get_width(), pe.display.get_height())), 5, 5)
+            pe.draw.circle(pe.colors.white, pe.math.center((0, 0, pe.display.get_width(), pe.display.get_height())), 5,
+                           5)
         elif test == "math_dist":
             pe.draw.line(pe.colors.red, (0, 0), pe.mouse.pos(), 2)
-            bt['lerplength'].text = f'{pe.math.dist((0, 0), pe.mouse.pos()):.3f}'
-            bt['lerplength'].init()
-            bt['lerplength'].display()
+            bt['distance'].text = f'{pe.math.dist((0, 0), pe.mouse.pos()):.3f}'
+            bt['distance'].init()
+            bt['distance'].display()
+        elif test == "math_tsx":
+            pe.button.rect((100, 145, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_tsx_radius,
+                           tsx.radius - .3)
+            pe.button.rect((100, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_tsx_segments,
+                           max(2, tsx_segments - .1))
+            pe.button.rect((100, 255, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['-'], set_tsx_offset,
+                           tsx.offset - 1)
+            bt['tsx_radius'].text = f'radius {tsx.radius:.1f}'
+            bt['tsx_radius'].init()
+            bt['tsx_radius'].display()
+            bt['tsx_segments'].text = f'segments {int(tsx_segments)}'
+            bt['tsx_segments'].init()
+            bt['tsx_segments'].display()
+            bt['tsx_offset'].text = f'rotation offset {tsx.offset:.1f}'
+            bt['tsx_offset'].init()
+            bt['tsx_offset'].display()
+            pe.button.rect((350, 145, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_tsx_radius,
+                           tsx.radius + .3)
+            pe.button.rect((350, 200, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_tsx_segments,
+                           min(360, tsx_segments + .1))
+            pe.button.rect((350, 255, 50, 50), pe.colors.gray, pe.colors.darkgray, bt['+'], set_tsx_offset,
+                           tsx.offset + 1)
+            gen = (tsx[rotation] for rotation in range(0, 360, max(360 // int(tsx_segments), 1)))
+            pe.draw.polygon(pe.colors.red, list(gen), 2)
         log.render()
         pe.display.update(120)
         pe.stop_recording()

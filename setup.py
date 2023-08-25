@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '2.0.0b9'
+version = '2.0.0a001'
 short = 'Pygame. Made easier.'
 long = '''Pygame Extra is a mask for pygame, 
 you can easily make complex games and or apps with much less lines then you would of before, 
@@ -20,7 +20,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=long,
     packages=['pygameextra', 'pygameextra_tester'],
-    install_requires=['pygame', 'perlin-noise'],
+    install_requires=['pygame', 'numpy'],
     package_data={'pygameextra': ['font.ttf'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
         'Xbutton.png', 'Ybutton.png',

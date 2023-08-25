@@ -102,14 +102,16 @@ def check_boundary(item):
             item.pos[1]+item.radius*.5,
         )
     elif type(item) == DrawPolygon:
-        rect = (0, 0, 1, 1)
+        max_x = -100
+        min_x = 100
+        max_y = -100
+        min_y = 100
         for point in item.points:
-            rect = (
-                min(rect[0], point[0]),
-                min(rect[1], point[1]),
-                max(rect[2], point[0]),
-                max(rect[3], point[1]),
-            )
+            max_x = max(max_x, point[0])
+            min_x = min(min_x, point[0])
+            max_y = max(max_y, point[1])
+            min_y = min(min_y, point[1])
+        return min_x, min_y, max_x-min_x, max_y-min_y
     return 0, 0, 1, 1
 
 
