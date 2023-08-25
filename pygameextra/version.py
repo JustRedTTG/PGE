@@ -1,8 +1,9 @@
 VERSION = '2.0.0'
 revision = 1
-alpha = True
+alpha = False
 beta = False
+release_candidate = True
 
 
 def get():
-    return f'{VERSION}{"b" if beta else "a" if alpha else "."}{revision}'
+    return f'{VERSION}{"b" if beta else "a" if alpha else "rc" if release_candidate else "" }{revision}'
