@@ -1,5 +1,5 @@
-
 registered_smooth_objects = []
+
 
 class Smooth_value:
     value: [tuple[float, ...], float]
@@ -34,6 +34,8 @@ class Smooth_value:
                f"{'[' + ', '.join([str(v.__class__.__name__) for v in self.value]) + ']' if isinstance(self.value, (tuple, list)) else ''}" \
                f">"
 
-    def __repr__(self): return self.value
+    def __repr__(self):
+        return self.value
 
-    def __str__(self): return str(self.__repr__())
+    def __str__(self):
+        return str(self.__repr__())

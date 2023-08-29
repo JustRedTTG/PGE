@@ -9,6 +9,7 @@ class SheetHandler:
     mapping = {}
     offset = (0, 0)
     spacing = (0, 0)
+
     def __init__(self): pass
 
     def map(self, surface): pass

@@ -18,4 +18,3 @@ class TSX:
         x = self.position[0] + self.radius * cos(rotation)
         y = self.position[1] + self.radius * sin(rotation)
         return x, y
-

@@ -25,7 +25,8 @@ class Debugger:
 
     def setup_display(self):
         mon_size = display.get_max()
-        display.make((min(self.target.size[0]*2, mon_size[0]), min(self.target.size[1]*2, mon_size[1])), 'DEBUG', display.DISPLAY_MODE_RESIZABLE)
+        display.make((min(self.target.size[0] * 2, mon_size[0]), min(self.target.size[1] * 2, mon_size[1])), 'DEBUG',
+                     display.DISPLAY_MODE_RESIZABLE)
 
     def before_run(self):
         # noinspection PyArgumentList
@@ -58,7 +59,7 @@ class Debugger:
             if event.quitCheck():
                 self.active = False
         fill.full(colors.verydarkgray)
-        fill.interlace(colors.pge_light, max(int(display.get_width()*.03), 3))
+        fill.interlace(colors.pge_light, max(int(display.get_width() * .03), 3))
         movement, new_pos = self.draggable.check()
 
         self.offset = new_pos
@@ -68,14 +69,14 @@ class Debugger:
             draw.polygon(colors.pge_dark, [
                 (0, display.get_height()),
                 (106, display.get_height()),
-                (53, display.get_height()-43),
-                (0, display.get_height()-43),
+                (53, display.get_height() - 43),
+                (0, display.get_height() - 43),
             ], 0)
             draw.polygon(colors.verydarkgray, [
                 (0, display.get_height()),
                 (100, display.get_height()),
-                (50, display.get_height()-40),
-                (0, display.get_height()-40),
+                (50, display.get_height() - 40),
+                (0, display.get_height() - 40),
             ], 0)
         else:
             fill.transparency(colors.black, 200)
@@ -91,8 +92,8 @@ class FreeMode(Debugger):
         self.setup_display()
         if not self.reactivate_init:
             self.offset = (
-                display.get_width()*.5-self.target.size[0] * .5,
-                display.get_height()*.5-self.target.size[1] * .5
+                display.get_width() * .5 - self.target.size[0] * .5,
+                display.get_height() * .5 - self.target.size[1] * .5
             )
         if not self.reactivate_init:
             self.draggable = mouse.Draggable(self.offset)
@@ -117,7 +118,9 @@ class FreeInteractMode(FreeMode):
                         self.draggable.pos = self.offset
                     self.reactivate_init = False
             elif type(item) == recorder.Button:
-                area = (item.area[0]+self.offset[0]+self.offset2[0], item.area[1]+self.offset[1]+self.offset2[1], item.area[2], item.area[3])
+                area = (
+                item.area[0] + self.offset[0] + self.offset2[0], item.area[1] + self.offset[1] + self.offset2[1],
+                item.area[2], item.area[3])
                 button_rect = Rect(*area)
                 if button_rect.colliderect(mouse_rect):
                     draw.rect(colors.green, area, 2)

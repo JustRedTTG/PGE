@@ -5,6 +5,7 @@ clock = None
 framerate = None
 tickBlock = False
 
+
 def init():
     global clock
     clock = pygame.time.Clock()

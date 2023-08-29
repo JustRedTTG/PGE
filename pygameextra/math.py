@@ -1,10 +1,12 @@
 import math
+
+
 # noinspection PyUnresolvedReferences
 # from perlin_noise import PerlinNoise
 
 
 def center(rect: tuple):
-    return rect[0]+rect[2]*.5, rect[1]+rect[3]*.5
+    return rect[0] + rect[2] * .5, rect[1] + rect[3] * .5
 
 
 def dist(point_a: tuple, point_b: tuple):
@@ -12,7 +14,7 @@ def dist(point_a: tuple, point_b: tuple):
 
 
 def lerp(point_a: tuple, point_b: tuple, length: [int, float]):
-    return (1-length)*point_a[0] + length*point_b[0], (1-length)*point_a[1] + length*point_b[1]
+    return (1 - length) * point_a[0] + length * point_b[0], (1 - length) * point_a[1] + length * point_b[1]
 
 
 def lerp_legacy(point_a: tuple, point_b: tuple, length: [int, float]):

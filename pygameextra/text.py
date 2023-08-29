@@ -4,11 +4,13 @@ from pygameextra import display
 
 location = os.path.dirname(os.path.realpath(__file__))
 
+
 class Text:
     obj = None
     rect = None
 
-    def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = os.path.join(location, 'font.ttf'), font_size: int = 3, position: tuple = (0, 0), colors: [tuple, list] = ((255, 255, 255), None)):
+    def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = os.path.join(location, 'font.ttf'),
+                 font_size: int = 3, position: tuple = (0, 0), colors: [tuple, list] = ((255, 255, 255), None)):
         if type(font) == pygame.font.Font:
             self.font = font
         else:

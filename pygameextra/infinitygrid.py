@@ -1,10 +1,12 @@
 import math
 
+
 def issubclass_safe(*args):
     try:
         return issubclass(*args)
     except TypeError:
         return False
+
 
 class Grid:
     width = 2
@@ -15,7 +17,7 @@ class Grid:
     truth_checker = lambda item: True if item else False
     initiator = None
 
-    def __init__(self, width: int, height: int, initiator: any = None, truth_checker = None):
+    def __init__(self, width: int, height: int, initiator: any = None, truth_checker=None):
         self.width = width
         self.height = height
         self.length = width * height
@@ -33,8 +35,10 @@ class Grid:
         if x_y[0] < 0 or x_y[1] < 0 or x_y[0] > self.width - 1 or x_y[1] > self.height - 1:
             return
         self.array[x_y[0] + (x_y[1] * self.width)] = value
-        if self.truth_checker(value): self.truth_table.add(x_y)
-        else: self.truth_table.discard(x_y)
+        if self.truth_checker(value):
+            self.truth_table.add(x_y)
+        else:
+            self.truth_table.discard(x_y)
         if issubclass(type(value), GridObject) or issubclass_safe(value, GridObject):
             value.x, value.y = x_y
             value.grid = self
@@ -66,16 +70,17 @@ class GridObject:
         self.y = y
 
     def left(self):
-        return self.grid[self.x-1, self.y]
+        return self.grid[self.x - 1, self.y]
 
     def right(self):
-        return self.grid[self.x+1, self.y]
+        return self.grid[self.x + 1, self.y]
 
     def up(self):
-        return self.grid[self.x, self.y-1]
+        return self.grid[self.x, self.y - 1]
 
     def down(self):
-        return self.grid[self.x-1, self.y+1]
+        return self.grid[self.x - 1, self.y + 1]
+
 
 class Inf_grid:
     def __init__(self, default: any = None):
@@ -106,7 +111,7 @@ class Inf_grid:
         x, y = start_x, start_y
         while x < start_x + width:
             while y < start_y + height:
-                snip[x-start_x, y-start_y] = self.get(x, y)
+                snip[x - start_x, y - start_y] = self.get(x, y)
                 y += 1
             y = start_y
             x += 1
@@ -125,4 +130,4 @@ class Inf_grid:
         list_of_y = [x[1] for x in keys]
         start = (min(list_of_x), min(list_of_y))
         end = (max(list_of_x), max(list_of_y))
-        return *start, end[0]-start[0]+1, end[1]-start[1]+1
+        return *start, end[0] - start[0] + 1, end[1] - start[1] + 1

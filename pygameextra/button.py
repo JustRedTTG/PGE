@@ -15,7 +15,8 @@ def hover_lock():
     settings.hover_lock = time.time()
 
 
-def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None, hover_data: any = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
+def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None,
+         hover_data: any = None, action: any = None, data: any = None, disabled: [bool, tuple] = False):
     if disabled:
         if type(disabled) == bool:
             draw.rect(active_color, area)
@@ -55,7 +56,8 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
     text.display()
 
 
-def image(area: tuple, inactive_image: Image, active_image: Image, action: any = None, data: any = None, disabled: bool = False):
+def image(area: tuple, inactive_image: Image, active_image: Image, action: any = None, data: any = None,
+          disabled: bool = False):
     if disabled:
         if type(disabled) == bool:
             display.blit(active_image.surface, (
@@ -74,8 +76,8 @@ def image(area: tuple, inactive_image: Image, active_image: Image, action: any =
     button_rect = Rect(*area)
     if button_rect.colliderect(mouse_rect):
         display.blit(active_image.surface, (
-            area[0] + area[2]*.5 - active_image.size[0]*.5,
-            area[1] + area[3]*.5 - active_image.size[1]*.5
+            area[0] + area[2] * .5 - active_image.size[0] * .5,
+            area[1] + area[3] * .5 - active_image.size[1] * .5
         ))
         if (not settings.button_lock) and action and mouse.clicked()[0]:
             button_lock()
@@ -85,8 +87,8 @@ def image(area: tuple, inactive_image: Image, active_image: Image, action: any =
                 action()
     else:
         display.blit(inactive_image.surface, (
-            area[0] + area[2]*.5 - inactive_image.size[0]*.5,
-            area[1] + area[3]*.5 - inactive_image.size[1]*.5
+            area[0] + area[2] * .5 - inactive_image.size[0] * .5,
+            area[1] + area[3] * .5 - inactive_image.size[1] * .5
         ))
 
     if not settings.recording:

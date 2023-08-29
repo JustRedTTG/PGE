@@ -20,15 +20,16 @@ def icon(cursor_icon: pygame.cursors.Cursor = arrow):
 
 
 def pos(spoof: bool = True):
-    if spoof and settings.spoof_enabled:
+    if settings.spoof_enabled and spoof:
         return settings.spoof_mouse_position or pygame.mouse.get_pos()
     return pygame.mouse.get_pos()
 
 
 def clicked(spoof: bool = True):
-    if spoof and settings.spoof_enabled:
+    if settings.spoof_enabled and spoof:
         return settings.spoof_mouse_clicked or pygame.mouse.get_pressed()
     return pygame.mouse.get_pressed()
+
 
 def place(x, y):
     return pygame.mouse.set_pos([x, y])
@@ -49,7 +50,8 @@ class Draggable:
         if self.area:
             self.rect = Rect(*self.pos, *self.area)
 
-    def __init__(self, position: tuple[int, int], area: [tuple[int, int], None] = None, move_multiplier: [float, int] = 1):
+    def __init__(self, position: tuple[int, int], area: [tuple[int, int], None] = None,
+                 move_multiplier: [float, int] = 1):
         self.pos = position
         self.area = area
         self.lock = False

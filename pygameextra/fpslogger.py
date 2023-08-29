@@ -28,23 +28,26 @@ class Logger:
 
     def render(self):
         recorder.comment(f"FPS logger : {self}")
-        if time.time()-self.renderTime > 1:
+        if time.time() - self.renderTime > 1:
             fps = self.clock.get_fps()
-            text = str(int(fps) or 'Pygame Extra ') + (f' / {int(self.total/self.count)}' if self.count > 0 else ' Loading...')
+            text = str(int(fps) or 'Pygame Extra ') + (
+                f' / {int(self.total / self.count)}' if self.count > 0 else ' Loading...')
             if fps != 0:
                 self.total += fps
                 self.count += 1
                 if self.count > 20:
                     self.total = fps
                     self.count = 1
-            self.surface = self.font.render(text, True, (20, 200, 20) if fps >= self.good else (200, 200, 20) if fps >= self.okay else (200, 20, 20) if fps != 0 else colors.pge_light, None if fps != 0 else colors.pge_dark)
+            self.surface = self.font.render(text, True, (20, 200, 20) if fps >= self.good else (
+            200, 200, 20) if fps >= self.okay else (200, 20, 20) if fps != 0 else colors.pge_light,
+                                            None if fps != 0 else colors.pge_dark)
             back_surface = Surface(self.surface.get_size())
             fill_trans(colors.black, 150, back_surface)
             back_surface.stamp(self.surface)
             self.surface = back_surface
             self.renderTime = time.time()
         pygameextra.display.blit(self.surface, self.pos or (
-            10, pygameextra.display.get_height()-10-self.font.get_height()
+            10, pygameextra.display.get_height() - 10 - self.font.get_height()
         ))
         recorder.padding_comment()
 

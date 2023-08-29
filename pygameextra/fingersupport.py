@@ -4,6 +4,7 @@ import pygame
 
 fingers = []
 
+
 def handle_finger_events(mouse_as_finger: bool = False):
     if event.c.type == pygame.FINGERDOWN:
         fingers.append({

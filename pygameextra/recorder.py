@@ -96,10 +96,10 @@ def check_boundary(item):
         return item.area
     elif type(item) == DrawCircle:
         return (
-            item.pos[0]-item.radius*.5,
-            item.pos[1]-item.radius*.5,
-            item.pos[0]+item.radius*.5,
-            item.pos[1]+item.radius*.5,
+            item.pos[0] - item.radius * .5,
+            item.pos[1] - item.radius * .5,
+            item.pos[0] + item.radius * .5,
+            item.pos[1] + item.radius * .5,
         )
     elif type(item) == DrawPolygon:
         max_x = -100
@@ -111,7 +111,7 @@ def check_boundary(item):
             min_x = min(min_x, point[0])
             max_y = max(max_y, point[1])
             min_y = min(min_y, point[1])
-        return min_x, min_y, max_x-min_x, max_y-min_y
+        return min_x, min_y, max_x - min_x, max_y - min_y
     return 0, 0, 1, 1
 
 
@@ -131,10 +131,10 @@ def reconstruct(data: list):
         rect = (
             min(boundary[0], rect[0]),
             min(boundary[1], rect[1]),
-            max(boundary[0]+boundary[2], rect[2]),
-            max(boundary[1]+boundary[3], rect[3]),
+            max(boundary[0] + boundary[2], rect[2]),
+            max(boundary[1] + boundary[3], rect[3]),
         )
-    final_size = (rect[2]-rect[0], rect[3]-rect[1])
+    final_size = (rect[2] - rect[0], rect[3] - rect[1])
     offset = (-rect[0], -rect[1])
     surface = Surface(final_size)
     old_context = display.display_reference
@@ -142,7 +142,7 @@ def reconstruct(data: list):
 
     for item in data:
         if type(item) == Blit:
-            display.blit(item.obj, (item.pos[0]+offset[0], item.pos[1]+offset[1]), item.area)
+            display.blit(item.obj, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.area)
         elif type(item) == FillFull:
             draw.rect(item.color, (*offset, *size))
         elif type(item) == FillTransparency:
@@ -150,17 +150,20 @@ def reconstruct(data: list):
         elif type(item) == FillInterlace:
             fill.interlace(item.color)
         elif type(item) == DrawLine:
-            draw.line(item.color, (item.pos_a[0]+offset[0], item.pos_a[1]+offset[1]), (item.pos_b[0]+offset[0], item.pos_b[1]+offset[1]), item.w)
+            draw.line(item.color, (item.pos_a[0] + offset[0], item.pos_a[1] + offset[1]),
+                      (item.pos_b[0] + offset[0], item.pos_b[1] + offset[1]), item.w)
         elif type(item) == DrawRect:
-            draw.rect(item.color, (item.area[0]+offset[0], item.area[1]+offset[1], item.area[2], item.area[3]), item.w)
+            draw.rect(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
+                      item.w)
         elif type(item) == DrawEllipse:
-            draw.ellipse(item.color, (item.area[0]+offset[0], item.area[1]+offset[1], item.area[2], item.area[3]), item.w)
+            draw.ellipse(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
+                         item.w)
         elif type(item) == DrawCircle:
-            draw.circle(item.color, (item.pos[0]+offset[0], item.pos[1]+offset[1]), item.radius, item.w)
+            draw.circle(item.color, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.radius, item.w)
         elif type(item) == DrawPolygon:
             points = []
             for point in item.points:
-                points.append((point[0]+offset[0], point[1]+offset[1]))
+                points.append((point[0] + offset[0], point[1] + offset[1]))
             draw.polygon(item.color, points, item.w)
 
     draw.rect(colors.pge_dark, (*offset, *size), 2)

@@ -6,4 +6,4 @@ release_candidate = True
 
 
 def get():
-    return f'{VERSION}{"b" if beta else "a" if alpha else "rc" if release_candidate else "" }{revision}'
+    return f'{VERSION}{"b" if beta else "a" if alpha else "rc" if release_candidate else ""}{revision}'
