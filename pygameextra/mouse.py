@@ -21,9 +21,9 @@ def icon(cursor_icon: pygame.cursors.Cursor = arrow):
 
 def pos(spoof: bool = True):
     position = settings.spoof_mouse_position \
-        if settings.spoof_enabled and spoof \
+        if settings.spoof_enabled and spoof and settings.spoof_mouse_position \
         else pygame.mouse.get_pos()
-    if settings.spoof_enabled and settings.spoof_mouse_offset is not None and spoof:
+    if settings.spoof_enabled and spoof and settings.spoof_mouse_offset is not None:
         position = (position[0] + settings.spoof_mouse_offset[0],
                     position[1] + settings.spoof_mouse_offset[1])
     return position
