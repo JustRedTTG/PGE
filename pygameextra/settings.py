@@ -4,6 +4,7 @@ debugger = None
 recording = False
 recording_data = []
 
+spoof_mouse_offset = None
 spoof_mouse_position = None
 spoof_mouse_clicked = None
 spoof_enabled = True
