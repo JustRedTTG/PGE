@@ -12,7 +12,7 @@ from pygameextra.recorder import comment, padding_comment
 from pygameextra.event import Pquit
 from pygameextra.tsx import TSX
 from pygameextra.floating_methods import *
-from pygameextra.context import Context
+from pygameextra.context import Context, GameContext
 
 __version__ = get_version()
 

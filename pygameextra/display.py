@@ -1,6 +1,6 @@
 """PYGAME EXTRA Display script
 This script manages all display functions"""
-from typing import Union
+from typing import Union, Tuple
 
 import pygame
 from pygameextra.modified import Surface
@@ -123,11 +123,11 @@ def get_height() -> int:
     return display_reference.size[1]
 
 
-def get_size() -> tuple:
+def get_size() -> Tuple[int, int]:
     return display_reference.size
 
 
-def get_max() -> tuple:
+def get_max() -> Tuple[int, int]:
     return max_size
 
 

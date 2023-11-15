@@ -1,10 +1,12 @@
 """PYGAME EXTRA Contexts script
 This script provides contexts which can be used to improve complex scenes"""
+import pygame.event
 
 from pygameextra import colors
 from pygameextra import floating_methods
 from pygameextra import fill
 from pygameextra import display
+from pygameextra import event
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from typing import Union, Tuple
@@ -32,7 +34,6 @@ class Context(ABC):
         self.surface = Surface(self.size)
         if self.area_based:
             self._position = self.FLOAT
-            self.update_float()
         else:
             self.position = self.AREA[:-2]
         self.surface.pos = self.position
@@ -95,7 +96,7 @@ class Context(ABC):
         self._position = value
         self.surface.pos = self._position
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self):
         @context_wrap(self.surface)
         def run():
             return self._loop()
@@ -111,9 +112,53 @@ class Context(ABC):
         if not self.area_based:
             raise AreaBased("Updating the float position is only available for area based contexts")
         float_position = [1 if f > 0 else -1 if f < 0 else 0 for f in self._position]
-        multiplier_position = [f+(-1 if f > 0 else 1) if f != 0 else 0 for f in self._position]
+        multiplier_position = [f + (-1 if f > 0 else 1) if f != 0 else 0 for f in self._position]
 
-        display_position = [s//2 * (1, 2, 0)[f] + (s//2 * m) for s, f, m in zip(display.get_size(), float_position, multiplier_position)]
-        subtraction = [s//2 * (1, 2, 0)[f] + (s//2 * m) for s, f, m in zip(self.size, float_position, multiplier_position)]
+        display_position = [s // 2 * (1, 2, 0)[f] + (s // 2 * m) for s, f, m in
+                            zip(display.get_size(), float_position, multiplier_position)]
+        subtraction = [s // 2 * (1, 2, 0)[f] + (s // 2 * m) for s, f, m in
+                       zip(self.size, float_position, multiplier_position)]
 
         self.surface.pos = tuple((pos - sub for pos, sub in zip(display_position, subtraction)))
+
+
+class GameContext(Context, ABC):
+    TITLE: str = "Game context"
+    MODE: int = display.DISPLAY_MODE_NORMAL
+    FPS: int = None
+
+    def __init__(self):
+        display.make(self.size, self.TITLE, self.MODE)
+        self.surface = display.display_reference
+        self.AREA = (0, 0, *display.get_size())
+        self.area_based = False
+        self._position = (0, 0)
+        while True:
+            self()
+
+    def end_loop(self):
+        display.update(self.FPS)
+
+    def __call__(self):
+        self.events()
+        self.start_loop()
+        self._loop()
+        self.end_loop()
+
+    def handle_event(self, e: pygame.event.Event):
+        if event.quitCheck():
+            self.quit_check()
+
+    def events(self):
+        for event.c in event.get():
+            self.handle_event(event.c)
+
+    def quit_check(self):
+        event.Pquit()
+
+    @property
+    def size(self):
+        if self.AREA is None:
+            self.MODE = display.DISPLAY_MODE_FULLSCREEN
+            return (0, 0)
+        return super().size
