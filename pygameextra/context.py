@@ -32,6 +32,7 @@ class Context(ABC):
         self.surface = Surface(self.size)
         if self.area_based:
             self._position = self.FLOAT
+            self.update_float()
         else:
             self.position = self.AREA[:-2]
         self.surface.pos = self.position
@@ -41,13 +42,15 @@ class Context(ABC):
         pass
 
     def pre_loop(self):
-        fill.full(self.BACKGROUND)
+        if self.BACKGROUND:
+            fill.full(self.BACKGROUND)
 
     def post_loop(self):
         pass
 
     def start_loop(self):
-        self.update_float()
+        if self.area_based:
+            self.update_float()
 
     def end_loop(self):
         display.blit(self.surface, self.surface.pos)
@@ -87,9 +90,9 @@ class Context(ABC):
 
     @position.setter
     def position(self, value):
-        self._position = value
         if self.area_based:
             raise AreaBased("Can't change position in a AREA based context, change FLOAT instead")
+        self._position = value
         self.surface.pos = self._position
 
     def __call__(self, *args, **kwargs):
@@ -105,6 +108,8 @@ class Context(ABC):
         return actual()
 
     def update_float(self):
+        if not self.area_based:
+            raise AreaBased("Updating the float position is only available for area based contexts")
         float_position = [1 if f > 0 else -1 if f < 0 else 0 for f in self._position]
         multiplier_position = [f+(-1 if f > 0 else 1) if f != 0 else 0 for f in self._position]
 
