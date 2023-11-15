@@ -135,3 +135,22 @@ def backup_details():
     if make_data[2] == DISPLAY_MODE_RESIZABLE:
         make_data[0] = display_reference.size
     return make_data.copy()
+
+
+def context_wrap(surface, catch_error: bool = False):
+    def _context_wrap(func):
+        def wrap(*args, **kwargs):
+            _backup = display_reference
+            context(surface)
+            if catch_error:
+                try:
+                    func(*args, **kwargs)
+                except:
+                    pass
+            else:
+                func(*args, **kwargs)
+            context(_backup)
+
+        return wrap
+
+    return _context_wrap

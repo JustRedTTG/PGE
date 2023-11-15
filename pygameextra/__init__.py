@@ -11,6 +11,8 @@ from pygameextra import event, time, fill, mouse, settings, colors, draw, math, 
 from pygameextra.recorder import comment, padding_comment
 from pygameextra.event import Pquit
 from pygameextra.tsx import TSX
+from pygameextra.floating_methods import *
+from pygameextra.context import Context
 
 __version__ = get_version()
 
