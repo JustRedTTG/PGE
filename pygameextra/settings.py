@@ -17,3 +17,5 @@ button_lock_hold = True  # Holding the button will keep it locked
 hover_lock_timeout_time = .1  # The hover locking timeout
 hover_lock = None  # The hover locking variable
 hover_lock_enabled = False  # Enable hover locking
+
+game_context = None

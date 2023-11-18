@@ -7,6 +7,7 @@ from pygameextra import floating_methods
 from pygameextra import fill
 from pygameextra import display
 from pygameextra import event
+from pygameextra import settings
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from typing import Union, Tuple
@@ -133,11 +134,24 @@ class GameContext(Context, ABC):
         self.AREA = (0, 0, *display.get_size())
         self.area_based = False
         self._position = (0, 0)
+        settings.game_context = self
+        self.buttons = []
+        self.previous_buttons = []
         while True:
             self()
 
+    def start_loop(self):
+        super().start_loop()
+        self.buttons, self.previous_buttons = [], self.buttons
+
     def end_loop(self):
         display.update(self.FPS)
+        self.buttons.reverse()
+        for button in self.buttons:
+            button.logic()
+            if button.hovered:
+                break
+        self.buttons.reverse()
 
     def __call__(self):
         self.events()
