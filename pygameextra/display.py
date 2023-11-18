@@ -7,6 +7,7 @@ from pygameextra.modified import Surface
 import pygameextra.settings as settings
 import pygameextra.recorder as recorder
 import pygameextra.time
+from functools import wraps
 
 # Display MODES
 DISPLAY_MODE_NORMAL = 0
@@ -139,6 +140,7 @@ def backup_details():
 
 def context_wrap(surface, catch_error: bool = False):
     def _context_wrap(func):
+        @wraps(func)
         def wrap(*args, **kwargs):
             _backup = display_reference
             context(surface)
