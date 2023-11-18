@@ -54,6 +54,7 @@ class Context(ABC):
     def start_loop(self):
         if self.area_based:
             self.update_float()
+        settings.spoof_mouse_offset = tuple(map(lambda v: -v, self.surface.pos or (0, 0)))
 
     def end_loop(self):
         display.blit(self.surface, self.surface.pos)
