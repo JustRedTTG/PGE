@@ -1,9 +1,11 @@
 """PYGAME EXTRA Sprite script
 This script manages all sprite functions"""
+from typing import Union
 
 import pygame
 from pygameextra.modified import Surface
 from pygameextra import display
+from pygameextra import settings
 from pygameextra.sheet_handlers import *
 
 
@@ -18,7 +20,7 @@ class Sheet:
 
 
 class Sprite:
-    def __init__(self, sprite_reference: [Sheet, str], scale=None, pos: tuple = (0, 0), name="Sprite", pivot='topleft',
+    def __init__(self, sprite_reference: Union[Sheet, str], scale=None, pos: tuple = (0, 0), name="Sprite", pivot='topleft',
                  layer=0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
@@ -40,7 +42,7 @@ class Sprite:
 
     def skip_frame(self, speed: int = None):
         """Skips to the next frame in the sprite animation, according to a speed variable"""
-        self.index += speed or self.speed * self.multiplier  # Add to the index, according to a speed variable
+        self.index += speed or self.speed * self.delta_time * self.multiplier  # Add to the index, according to a speed variable
         if self.multiplier > 0 and self.index >= self.reference.frames - 1:  # Check direction and index
             if self.pong:
                 self.multiplier *= -1  # Flip the pong
@@ -64,3 +66,9 @@ class Sprite:
             self.skip_frame()  # Animate!
         else:
             display.blit(self.reference, position or self.pos, area)  # Display an image
+
+    @property
+    def delta_time(self):
+        if not settings.game_context:
+            return 1
+        return settings.game_context.delta_time

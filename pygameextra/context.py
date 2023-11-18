@@ -8,6 +8,7 @@ from pygameextra import fill
 from pygameextra import display
 from pygameextra import event
 from pygameextra import settings
+from pygameextra import time
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from typing import Union, Tuple
@@ -134,9 +135,11 @@ class GameContext(Context, ABC):
         self.AREA = (0, 0, *display.get_size())
         self.area_based = False
         self._position = (0, 0)
+        self.clock = time.clock
         settings.game_context = self
         self.buttons = []
         self.previous_buttons = []
+        self.current_fps = self.FPS or 0
         while True:
             self()
 
@@ -145,6 +148,7 @@ class GameContext(Context, ABC):
         self.buttons, self.previous_buttons = [], self.buttons
 
     def end_loop(self):
+        self.current_fps = self.clock.get_fps()
         display.update(self.FPS)
         self.buttons.reverse()
         for button in self.buttons:
@@ -176,3 +180,7 @@ class GameContext(Context, ABC):
             self.MODE = display.DISPLAY_MODE_FULLSCREEN
             return (0, 0)
         return super().size
+
+    @property
+    def delta_time(self):
+        return 1 / max(1, self.current_fps)
