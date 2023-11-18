@@ -1,4 +1,6 @@
 import time
+from functools import wraps
+
 import pygame
 # noinspection PyUnresolvedReferences
 from pygame.cursors import arrow, diamond, broken_x, tri_left, tri_right
@@ -37,6 +39,26 @@ def clicked(spoof: bool = True):
 
 def place(x, y):
     return pygame.mouse.set_pos([x, y])
+
+
+def offset_wrap(offset: tuple, catch_error: bool = False):
+    def _offset_wrap(func):
+        @wraps(func)
+        def wrap(*args, **kwargs):
+            _backup = settings.spoof_mouse_offset
+            settings.spoof_mouse_offset = offset
+            if catch_error:
+                try:
+                    func(*args, **kwargs)
+                except:
+                    pass
+            else:
+                func(*args, **kwargs)
+            settings.spoof_mouse_offset = _backup
+
+        return wrap
+
+    return _offset_wrap
 
 
 class Draggable:

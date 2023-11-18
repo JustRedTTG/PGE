@@ -11,6 +11,7 @@ from pygameextra import settings
 from pygameextra import time
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
+from pygameextra.mouse import offset_wrap
 from typing import Union, Tuple
 from abc import abstractmethod, ABC
 
@@ -54,7 +55,6 @@ class Context(ABC):
     def start_loop(self):
         if self.area_based:
             self.update_float()
-        settings.spoof_mouse_offset = tuple(map(lambda v: -v, self.surface.pos or (0, 0)))
 
     def end_loop(self):
         display.blit(self.surface, self.surface.pos)
@@ -101,6 +101,7 @@ class Context(ABC):
 
     def __call__(self):
         @context_wrap(self.surface)
+        @offset_wrap(tuple(map(lambda v: -v, self.surface.pos or (0, 0))))
         def run():
             return self._loop()
 

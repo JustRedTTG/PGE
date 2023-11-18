@@ -30,12 +30,17 @@ class Button:
         self.hovered = False
         self.inactive_resource = inactive_resource
         self.active_resource = active_resource
+        self.mouse_offset = settings.spoof_mouse_offset
 
     def logic(self, area: tuple = None, hover_action: any = None, hover_data: any = None, action: any = None,
               data: any = None, disabled: Union[bool, tuple] = False):
-        self.hovered = self.static_logic(area or self.area, action or self.action, data or self.data,
+
+        @mouse.offset_wrap(self.mouse_offset)
+        def wrapped():
+            self.hovered = self.static_logic(area or self.area, action or self.action, data or self.data,
                                          hover_action or self.hover_action, hover_data or self.hover_data,
                                          disabled or self.disabled)
+        wrapped()
 
     def render(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
                disabled: Union[bool, tuple] = False):
