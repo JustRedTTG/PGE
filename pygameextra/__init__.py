@@ -13,6 +13,7 @@ from pygameextra.event import Pquit
 from pygameextra.tsx import TSX
 from pygameextra.floating_methods import *
 from pygameextra.context import Context, GameContext
+from pygameextra.button import Button, RectButton, ImageButton
 
 __version__ = get_version()
 
