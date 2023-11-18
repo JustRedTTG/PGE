@@ -69,7 +69,7 @@ class Draggable:
     pos: tuple[int, int]
     area: [tuple[int, int], None]
     rect: pygame.Rect
-    ltic: bool
+    last_left_click: bool = False
     move_multiplier: float
 
     def make_rect(self):
@@ -104,16 +104,16 @@ class Draggable:
             collide = self.rect.colliderect(mouserect) and not settings.button_lock
         else:
             collide = True
-        if (collide and clicked()[0] and not self.ltic) and not self.active:
+        if (collide and clicked()[0] and not self.last_left_click) and not self.active:
             self.active = True
             settings.button_lock = time.time()
             self.start_pos = pos()
         elif clicked()[0] and self.active:
-            self.ltic = clicked()[0]
+            self.last_left_click = clicked()[0]
             return True, self.calculate()
         elif not clicked()[0] and self.active:
             self.active = False
             self.pos = self.calculate()
 
-        self.ltic = clicked()[0]
+        self.last_left_click = clicked()[0]
         return False, self.pos
