@@ -35,6 +35,7 @@ class Sprite:
         self.index = 0
         self.speed = 0
         self.pong = False
+        self.flip = False
         self.multiplier = 1
 
     def skip_frame(self, speed: int = None):
@@ -61,18 +62,17 @@ class Sprite:
             s = Surface((self.reference.handler.width, self.reference.handler.height))
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))  # Display to area, according to the sprite sheet handler
-            s.resize(self.size)
-            display.blit(s, rect.topleft)
-            self.skip_frame()  # Animate!
         elif isinstance(self.reference, Animator):
             s = Surface((self.reference.width, self.reference.height))
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))
-            s.resize(self.size)
-            display.blit(s, rect.topleft)
-            self.skip_frame()
         else:
             display.blit(self.reference, position or self.pos, area)  # Display an image
+        if isinstance(self.reference, Union[Sheet, Animator]):
+            s.resize(self.size)
+            s.flip(flip_x=self.flip)
+            display.blit(s, rect.topleft)
+            self.skip_frame()
 
     @property
     def delta_time(self):

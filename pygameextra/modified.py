@@ -62,6 +62,9 @@ class Surface:
         self.surface = pygame.transform.scale(self.surface, size)
         self.size = self.surface.get_size()
 
+    def flip(self, flip_x: bool = False, flip_y: bool = False):
+        self.surface = pygame.transform.flip(self.surface, flip_x, flip_y)
+
     def copy(self) -> 'Surface':
         return Surface(self.size, self.layer, self.surface.copy())
 
