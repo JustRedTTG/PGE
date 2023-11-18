@@ -20,7 +20,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=long,
     packages=['pygameextra', 'pygameextra_tester'],
-    install_requires=['pygame', 'numpy'],
+    install_requires=['pygame', 'numpy', 'frozendict'],
     package_data={'pygameextra': ['font.ttf'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
         'Xbutton.png', 'Ybutton.png',

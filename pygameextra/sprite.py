@@ -3,28 +3,24 @@ This script manages all sprite functions"""
 from typing import Union
 
 import pygame
-from pygameextra.modified import Surface
+from pygameextra.rect import Rect
 from pygameextra import display
 from pygameextra import settings
+from pygameextra.sheet import Sheet
+from pygameextra.animator import Animator
 from pygameextra.sheet_handlers import *
 
 
-class Sheet:
-    def __init__(self, file, handler: SheetHandler):
-        self.surface = Surface(surface=pygame.image.load(file).convert_alpha())
-        handler.map(self.surface)
-        self.handler = handler
-        self.frames = len(self.handler.mapping)
-
-    def get(self, sprite: 'Sprite'): return self.handler.get(sprite)
-
-
 class Sprite:
-    def __init__(self, sprite_reference: Union[Sheet, str], scale=None, pos: tuple = (0, 0), name="Sprite", pivot='topleft',
+    def __init__(self, sprite_reference: Union[Sheet, str, Animator], scale=None, pos: tuple = (0, 0), name="Sprite", pivot='topleft',
                  layer=0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
             self.size = scale or (self.reference.handler.width, self.reference.handler.height)
+        elif isinstance(sprite_reference, Animator):  # Using animator
+            self.animator = sprite_reference
+            self.reference = sprite_reference
+            self.size = scale or (self.reference.width, self.reference.height)
         else:  # Using sprite image
             self.reference = Surface(surface=pygame.image.load(sprite_reference).convert_alpha(), layer=layer)
             if scale:
@@ -33,6 +29,7 @@ class Sprite:
         self.pos = pos
         self.name = name
         self.layer = layer
+        self.pivot = pivot
 
         # Animation
         self.index = 0
@@ -56,14 +53,24 @@ class Sprite:
         self.index = min(self.reference.frames - 1, max(0, self.index))
 
     def display(self, position=None, area=None):
+        rect = Rect(0, 0, *self.size)
+        rect.__setattr__(self.pivot, position or self.pos)
+
         if isinstance(self.reference, Sheet):  # Check if the reference is a sprite sheet
-            self.reference.surface.layer = self.layer  # Update the layer, just in case
+            # self.reference.surface.layer = self.layer  # Update the layer, just in case
             s = Surface((self.reference.handler.width, self.reference.handler.height))
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))  # Display to area, according to the sprite sheet handler
             s.resize(self.size)
-            display.blit(s, position or self.pos)
+            display.blit(s, rect.topleft)
             self.skip_frame()  # Animate!
+        elif isinstance(self.reference, Animator):
+            s = Surface((self.reference.width, self.reference.height))
+            s.stamp(self.reference.surface, (0, 0),
+                    self.reference.get(self))
+            s.resize(self.size)
+            display.blit(s, rect.topleft)
+            self.skip_frame()
         else:
             display.blit(self.reference, position or self.pos, area)  # Display an image
 
