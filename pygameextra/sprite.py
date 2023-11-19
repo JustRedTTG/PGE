@@ -12,7 +12,8 @@ from pygameextra.sheet_handlers import *
 
 
 class Sprite:
-    def __init__(self, sprite_reference: Union[Sheet, str, Animator], scale=None, pos: tuple = (0, 0), name="Sprite", pivot='topleft',
+    def __init__(self, sprite_reference: Union[Sheet, str, Animator], scale=None, pos: tuple = (0, 0), name="Sprite",
+                 pivot='topleft',
                  layer=0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
@@ -35,7 +36,8 @@ class Sprite:
         self.index = 0
         self.speed = 0
         self.pong = False
-        self.flip = False
+        self.flip_x = False
+        self.flip_y = False
         self.multiplier = 1
 
     def skip_frame(self, speed: int = None):
@@ -70,7 +72,7 @@ class Sprite:
             display.blit(self.reference, position or self.pos, area)  # Display an image
         if isinstance(self.reference, Union[Sheet, Animator]):
             s.resize(self.size)
-            s.flip(flip_x=self.flip)
+            s.flip(flip_x=self.flip_x, flip_y=self.flip_y)
             display.blit(s, rect.topleft)
             self.skip_frame()
 
@@ -79,3 +81,19 @@ class Sprite:
         if not settings.game_context:
             return 1
         return settings.game_context.delta_time
+
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
+
+    @property
+    def x(self):
+        return self.pos[0]
+
+    @property
+    def y(self):
+        return self.pos[1]

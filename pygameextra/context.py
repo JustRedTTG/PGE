@@ -78,6 +78,22 @@ class Context(ABC):
         else:
             raise ValueError("AREA needs to be (width, height) + FLOAT or (x, y, width, height)")
 
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
+
+    @property
+    def x(self):
+        return self.position[0]
+
+    @property
+    def y(self):
+        return self.position[1]
+
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
         if key == "FLOAT":

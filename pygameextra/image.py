@@ -17,3 +17,10 @@ class Image:
 
     def display(self, position=None, area=None):
         display.blit(self.surface, position or self.pos, area)
+
+    def resize(self, size: tuple):
+        self.surface.resize(size)
+        self.size = self.surface.size
+
+    def flip(self, flip_x: bool = False, flip_y: bool = False):
+        self.surface.flip(flip_x, flip_y)
