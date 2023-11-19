@@ -80,7 +80,10 @@ class Button:
             if (not settings.button_lock) and action and mouse.clicked()[0]:
                 button_lock()
                 if data is not None:
-                    action(data)
+                    if type(data) == tuple:
+                        action(*data)
+                    else:
+                        action(data)
                 else:
                     action()
 
