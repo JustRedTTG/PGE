@@ -24,3 +24,19 @@ class Image:
 
     def flip(self, flip_x: bool = False, flip_y: bool = False):
         self.surface.flip(flip_x, flip_y)
+
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
+
+    @property
+    def x(self):
+        return self.pos[0]
+
+    @property
+    def y(self):
+        return self.pos[1]
