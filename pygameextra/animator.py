@@ -120,4 +120,7 @@ class Animator:
 
     @property
     def speed(self):
-        return self.get_sheet().speed
+        try:
+            return self.get_sheet().speed
+        except AttributeError:
+            return None
