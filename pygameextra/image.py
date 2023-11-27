@@ -8,14 +8,15 @@ from pygameextra import display
 
 class Image:
     def __init__(self, file, size=None, position: tuple = (0, 0), layer=0):
-        if file is not None:
+        try:
             self.surface = Surface(surface=pygame.image.load(file).convert_alpha(), layer=layer)
-        elif isinstance(file, Surface):
-            self.surface = file
-        elif isinstance(file, pygame.Surface):
-            self.surface = Surface(surface=file, layer=layer)
-        else:
-            raise ValueError("Please make sure file is a path / surface / file-like object")
+        except TypeError:
+            if isinstance(file, Surface):
+                self.surface = file
+            elif isinstance(file, pygame.Surface):
+                self.surface = Surface(surface=file, layer=layer)
+            else:
+                raise ValueError("Please make sure file is a path / surface / file-like object")
         self.pos = position
 
         if size:
