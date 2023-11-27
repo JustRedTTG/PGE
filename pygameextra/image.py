@@ -8,7 +8,14 @@ from pygameextra import display
 
 class Image:
     def __init__(self, file, size=None, position: tuple = (0, 0), layer=0):
-        self.surface = Surface(surface=pygame.image.load(file).convert_alpha(), layer=layer)
+        if file is not None:
+            self.surface = Surface(surface=pygame.image.load(file).convert_alpha(), layer=layer)
+        elif isinstance(file, Surface):
+            self.surface = file
+        elif isinstance(file, pygame.Surface):
+            self.surface = Surface(surface=file, layer=layer)
+        else:
+            raise ValueError("Please make sure file is a path / surface / file-like object")
         self.pos = position
 
         if size:
@@ -40,3 +47,9 @@ class Image:
     @property
     def y(self):
         return self.pos[1]
+
+    def copy(self) -> 'Image':
+        new_surface = self.surface.copy()
+        return Image(new_surface)
+
+
