@@ -16,9 +16,9 @@ bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
 bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
 # Sprite sheet sprites
-s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16)), (250, 250), (0, 0),
+s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16), .1), (250, 250), (0, 0),
                pivot="topleft")  # Rows sprite
-s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32)), (250, 250), (250, 0),
+s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2), (250, 250), (250, 0),
                pivot="topleft")  # Columns sprite
 
 # Resized sprites
@@ -87,8 +87,6 @@ bt['debug_label'].color = pe.colors.white
 bt['debug_label'].init()
 bt['debug_close'].color = pe.colors.white
 bt['debug_close'].init()
-s1.speed = .1  # Set sprite animation
-s2.speed = .2  # Set sprite animation
 s2.pong = True  # Enable sprite pong
 sO = 50  # Set slider variable
 sT = 50  # Set slider variable

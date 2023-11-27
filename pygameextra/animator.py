@@ -1,5 +1,6 @@
 """PYGAME EXTRA Sheet script
 This script manages the animator class"""
+from typing import Union
 
 from pygameextra.sheet import Sheet
 from functools import lru_cache
@@ -85,13 +86,14 @@ class Animator:
 
         return None, None
 
+    @lru_cache()
     def _final_sheet(self, sheet_value):
         if type(sheet_value) is Sheet:
             return sheet_value
         elif type(sheet_value) is str:
             return self._final_sheet(self.one_to_one_rules[sheet_value])
 
-    def get_sheet(self):
+    def get_sheet(self) -> Union[Sheet, None]:
         sheet_dict, sheet_key = self._get_sheet(frozendict(self.key_values))
         if not sheet_dict:
             return None
@@ -115,3 +117,7 @@ class Animator:
             sprite.index = sprite.index % sheet.frames
         if sheet:
             return sheet.get(sprite)
+
+    @property
+    def speed(self):
+        return self.get_sheet().speed

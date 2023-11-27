@@ -12,16 +12,19 @@ from pygameextra.sheet_handlers import *
 
 
 class Sprite:
+    sheet_or_animator = False
+
     def __init__(self, sprite_reference: Union[Sheet, str, Animator], scale=None, pos: tuple = (0, 0), name="Sprite",
-                 pivot='topleft',
-                 layer=0):
+                 pivot='topleft', layer=0, speed: float = 0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
             self.size = scale or (self.reference.handler.width, self.reference.handler.height)
+            self.sheet_or_animator = True
         elif isinstance(sprite_reference, Animator):  # Using animator
             self.animator = sprite_reference
             self.reference = sprite_reference
             self.size = scale or (self.reference.width, self.reference.height)
+            self.sheet_or_animator = True
         else:  # Using sprite image
             self.reference = Surface(surface=pygame.image.load(sprite_reference).convert_alpha(), layer=layer)
             if scale:
@@ -34,7 +37,10 @@ class Sprite:
 
         # Animation
         self.index = 0
-        self.speed = 0
+        if self.sheet_or_animator:
+            self.speed = self.reference.speed or speed or 0
+        else:
+            self.speed = speed or 0
         self.pong = False
         self.flip_x = False
         self.flip_y = False
@@ -70,10 +76,11 @@ class Sprite:
                     self.reference.get(self))
         else:
             display.blit(self.reference, position or self.pos, area)  # Display an image
-        if isinstance(self.reference, Union[Sheet, Animator]):
+        if self.sheet_or_animator:
             s.resize(self.size)
             s.flip(flip_x=self.flip_x, flip_y=self.flip_y)
             display.blit(s, rect.topleft)
+            self.speed = self.reference.speed or self.speed or 0
             self.skip_frame()
 
     @property
