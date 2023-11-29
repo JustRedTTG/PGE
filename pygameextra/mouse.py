@@ -62,10 +62,10 @@ def offset_wrap(offset: tuple, catch_error: bool = False):
 
 
 class Draggable:
-    start_pos: tuple[int, int]
-    active: bool
-    lock: bool
-    scale_support: bool
+    start_pos: tuple[int, int] = (0, 0)
+    active: bool = False
+    lock: bool = False
+    scale_support: bool = False
     pos: tuple[int, int]
     area: [tuple[int, int], None]
     rect: pygame.Rect

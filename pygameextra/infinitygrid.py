@@ -82,7 +82,7 @@ class GridObject:
         return self.grid[self.x - 1, self.y + 1]
 
 
-class Inf_grid:
+class InfinityGrid:
     def __init__(self, default: any = None):
         self.data = {}
         self.default = default
@@ -117,9 +117,9 @@ class Inf_grid:
             x += 1
         return snip
 
-    def copy(self, destination: 'Inf_grid' = None):
+    def copy(self, destination: 'InfinityGrid' = None):
         if not destination:
-            destination = Inf_grid()
+            destination = InfinityGrid()
         destination.default = self.default
         destination.data = self.data.copy()
         return destination
