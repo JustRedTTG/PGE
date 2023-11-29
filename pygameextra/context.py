@@ -117,11 +117,11 @@ class Context(ABC):
 
     def resize(self, new_size):
         if not self.area_based:
-            self.AREA = (self.AREA[:2], *new_size)
+            self.AREA = (*self.position, *new_size)
         else:
             self.AREA = new_size
             self.update_float()
-        self.surface.resize(self.size)
+        self.surface.resize(new_size)
 
     def __call__(self):
         @context_wrap(self.surface)
