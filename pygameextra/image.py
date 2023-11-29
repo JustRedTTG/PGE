@@ -53,4 +53,7 @@ class Image:
         new_surface = self.surface.copy()
         return Image(new_surface)
 
+    def set_alpha(self, alpha: int, flags: int = 0) -> None:
+        return self.surface.set_alpha(alpha, flags)
+
 

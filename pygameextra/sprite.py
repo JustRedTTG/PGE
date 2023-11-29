@@ -34,6 +34,8 @@ class Sprite:
         self.name = name
         self.layer = layer
         self.pivot = pivot
+        self.alpha = None
+        self.flags = 0
 
         # Animation
         self.index = 0
@@ -68,10 +70,14 @@ class Sprite:
         if isinstance(self.reference, Sheet):  # Check if the reference is a sprite sheet
             # self.reference.surface.layer = self.layer  # Update the layer, just in case
             s = Surface((self.reference.handler.width, self.reference.handler.height))
+            if self.alpha:
+                s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))  # Display to area, according to the sprite sheet handler
         elif isinstance(self.reference, Animator):
             s = Surface((self.reference.width, self.reference.height))
+            if self.alpha:
+                s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))
         else:
@@ -104,3 +110,9 @@ class Sprite:
     @property
     def y(self):
         return self.pos[1]
+
+    def set_alpha(self, alpha: int, flags: int = 0) -> None:
+        if type(self.reference) is Surface:
+            return self.reference.set_alpha(alpha, flags)
+        self.alpha = alpha
+        self.flags = flags
