@@ -115,6 +115,14 @@ class Context(ABC):
         self._position = value
         self.surface.pos = self._position
 
+    def resize(self, new_size):
+        if not self.area_based:
+            self.AREA = (self.AREA[:2], *new_size)
+        else:
+            self.AREA = new_size
+            self.update_float()
+        self.surface.resize(self.size)
+
     def __call__(self):
         @context_wrap(self.surface)
         @offset_wrap(tuple(map(lambda v: -v, self.surface.pos or (0, 0))))
@@ -202,3 +210,8 @@ class GameContext(Context, ABC):
     @property
     def delta_time(self):
         return 1 / max(1, self.current_fps)
+
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+        if key == 'TITLE':
+            display.set_caption(value)
