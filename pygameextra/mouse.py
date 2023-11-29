@@ -102,7 +102,7 @@ class Draggable:
 
         self.make_rect()
         if self.rect and not self.active:
-            button.action(self.rect, hover_action=self.__setattr__, hover_data=('collide', True))
+            button.action(self.rect.copy(), hover_action=self.__setattr__, hover_data=('collide', True))
             collide = self.collide and not settings.button_lock
         elif self.area and self.active:
             button.action((*self.calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True))
