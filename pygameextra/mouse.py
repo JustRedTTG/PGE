@@ -6,6 +6,7 @@ import pygame
 from pygame.cursors import arrow, diamond, broken_x, tri_left, tri_right
 from pygameextra.rect import Rect
 from pygameextra import settings
+from pygameextra import button
 from pygameextra import fingersupport
 
 
@@ -85,6 +86,7 @@ class Draggable:
         self.rect = None
         self.active = False
         self.move_multiplier = move_multiplier
+        self.collide = False
 
     def calculate(self):
         new_pos = self.pos
@@ -99,9 +101,12 @@ class Draggable:
             return False, self.pos
 
         self.make_rect()
-        if self.rect:
-            mouserect = Rect(*pos(), 1, 1)
-            collide = self.rect.colliderect(mouserect) and not settings.button_lock
+        if self.rect and not self.active:
+            button.action(self.rect, hover_action=self.__setattr__, hover_data=('collide', True))
+            collide = self.collide and not settings.button_lock
+        elif self.area and self.active:
+            button.action((*self.calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True))
+            collide = self.collide and not settings.button_lock
         else:
             collide = True
         if (collide and clicked()[0] and not self.last_left_click) and not self.active:
@@ -116,4 +121,5 @@ class Draggable:
             self.pos = self.calculate()
 
         self.last_left_click = clicked()[0]
+        self.collide = False
         return False, self.pos

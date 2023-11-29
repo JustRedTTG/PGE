@@ -38,8 +38,9 @@ class Button:
         @mouse.offset_wrap(self.mouse_offset)
         def wrapped():
             self.hovered = self.static_logic(area or self.area, action or self.action, data or self.data,
-                                         hover_action or self.hover_action, hover_data or self.hover_data,
-                                         disabled or self.disabled)
+                                             hover_action or self.hover_action, hover_data or self.hover_data,
+                                             disabled or self.disabled)
+
         wrapped()
 
     def render(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
@@ -90,7 +91,10 @@ class Button:
             if (not settings.hover_lock) and hover_action:
                 hover_lock()
                 if hover_data is not None:
-                    hover_action(hover_data)
+                    if type(hover_data) == tuple:
+                        hover_action(*hover_data)
+                    else:
+                        hover_action(hover_data)
                 else:
                     hover_action()
         else:
