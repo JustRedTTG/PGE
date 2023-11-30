@@ -24,6 +24,10 @@ class AreaBased(Exception):
     pass
 
 
+class UnclippedContextException(Exception):
+    pass
+
+
 class Context(ABC):
     BACKGROUND: Tuple[int, int, int] = colors.black
     AREA: Union[None, Tuple[int, int], Tuple[int, int, int, int]] = None
@@ -113,7 +117,8 @@ class Context(ABC):
         if self.area_based:
             raise AreaBased("Can't change position in a AREA based context, change FLOAT instead")
         self._position = value
-        self.surface.pos = self._position
+        if self.surface:
+            self.surface.pos = self._position
 
     def resize(self, new_size):
         if not self.area_based:
@@ -121,7 +126,8 @@ class Context(ABC):
         else:
             self.AREA = new_size
             self.update_float()
-        self.surface.resize(new_size)
+        if self.surface:
+            self.surface.resize(new_size)
 
     def __call__(self):
         @context_wrap(self.surface)
@@ -148,6 +154,40 @@ class Context(ABC):
                        zip(self.size, float_position, multiplier_position)]
 
         self.surface.pos = tuple((pos - sub for pos, sub in zip(display_position, subtraction)))
+
+
+class UnclippedContext(Context, ABC):
+    FLOAT: Tuple[int, int] = floating_methods.FLOAT_TOPLEFT
+
+    def __init__(self):
+        self.surface = None
+        self.area_based = True if self.AREA is None or len(self.AREA) == 2 else False
+        if self.area_based:
+            self._position = (0, 0)
+        else:
+            raise UnclippedContextException("Unclipped context cannot have a defined position")
+        if self.FLOAT != floating_methods.FLOAT_TOPLEFT:
+            raise UnclippedContextException("Float has to be topleft in an unclipped context")
+
+    def pre_loop(self):
+        pass
+
+    def start_loop(self):
+        pass
+
+    def end_loop(self):
+        pass
+
+    def __call__(self):
+        self.start_loop()
+        self.loop()
+        self.end_loop()
+
+    @property
+    def size(self):
+        if self.AREA is None:
+            return display.get_size()
+        return super().size
 
 
 class GameContext(Context, ABC):
