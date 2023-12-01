@@ -206,8 +206,6 @@ class GameContext(Context, ABC):
         self.buttons = []
         self.previous_buttons = []
         self.current_fps = self.FPS or 0
-        while True:
-            self()
 
     def start_loop(self):
         super().start_loop()
