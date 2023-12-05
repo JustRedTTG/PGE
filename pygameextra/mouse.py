@@ -7,6 +7,7 @@ from pygame.cursors import arrow, diamond, broken_x, tri_left, tri_right
 from pygameextra.rect import Rect
 from pygameextra import settings
 from pygameextra import button
+from pygameextra import display
 from pygameextra import fingersupport
 
 
@@ -108,7 +109,8 @@ class Draggable:
             button.action((*self.calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True))
             collide = self.collide and not settings.button_lock
         else:
-            collide = True
+            button.action((0, 0, *display.get_size()), hover_action=self.__setattr__, hover_data=('collide', True))
+            collide = self.collide and not settings.button_lock
         if (collide and clicked()[0] and not self.last_left_click) and not self.active:
             self.active = True
             settings.button_lock = time.time()

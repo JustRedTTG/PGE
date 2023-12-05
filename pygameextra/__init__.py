@@ -3,6 +3,7 @@
 # noinspection PyUnresolvedReferences
 from pygameextra.pygame import pygame
 from pygame.constants import *
+from pygame.event import Event
 from pygameextra.image import *
 from pygameextra.sheet_handlers import *
 from pygameextra.sprite import *
@@ -18,6 +19,7 @@ from pygameextra.button import Button, RectButton, ImageButton
 from pygameextra.mouse import Draggable
 from pygameextra.infinitygrid import Grid, GridObject, InfinityGrid
 from pygameextra.pnzc import PanAndZoomChunks
+from pygameextra.text import Text
 
 
 __version__ = get_version()
