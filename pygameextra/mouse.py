@@ -51,12 +51,13 @@ def offset_wrap(offset: tuple, catch_error: bool = False):
             settings.spoof_mouse_offset = offset
             if catch_error:
                 try:
-                    func(*args, **kwargs)
+                    result = func(*args, **kwargs)
                 except:
-                    pass
+                    result = None
             else:
-                func(*args, **kwargs)
+                result = func(*args, **kwargs)
             settings.spoof_mouse_offset = _backup
+            return result
 
         return wrap
 

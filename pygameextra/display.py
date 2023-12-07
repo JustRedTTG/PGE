@@ -146,12 +146,13 @@ def context_wrap(surface, catch_error: bool = False):
             context(surface)
             if catch_error:
                 try:
-                    func(*args, **kwargs)
+                    result = func(*args, **kwargs)
                 except:
-                    pass
+                    result = None
             else:
-                func(*args, **kwargs)
+                result = func(*args, **kwargs)
             context(_backup)
+            return result
 
         return wrap
 
