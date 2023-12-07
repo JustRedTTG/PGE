@@ -96,15 +96,24 @@ class Draggable:
         self.move_multiplier = move_multiplier
         self.collide = False
 
-    def calculate(self):
+    def _calculate(self):
         new_pos = self.pos
         current_pos = pos()
         difference = (current_pos[0] - self.start_pos[0], current_pos[1] - self.start_pos[1])
         return new_pos[0] + difference[0] * self.move_multiplier, new_pos[1] + difference[1] * self.move_multiplier
 
+    def calculate(self):
+        """calculate(self) -> tuple
+        Gets the real time position of the draggable"""
+
+        if not self.active:
+            return self.pos
+        return self._calculate()
+
     def check(self):
         """check(self) -> bool, tuple
         This function will check if the draggable is being moved and where it is"""
+        
         if self.lock:
             return False, self.pos
 
@@ -112,8 +121,8 @@ class Draggable:
         if self.rect and not self.active:
             button.action(self.rect.copy(), hover_action=self.__setattr__, hover_data=('collide', True))
             collide = self.collide and not settings.button_lock
-        elif self.area and self.active:
-            button.action((*self.calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True))
+        elif self.area is not None and self.active:
+            button.action((*self._calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True))
             collide = self.collide and not settings.button_lock
         else:
             button.action((0, 0, *display.get_size()), hover_action=self.__setattr__, hover_data=('collide', True))
@@ -124,10 +133,10 @@ class Draggable:
             self.start_pos = pos()
         elif clicked()[0] and self.active:
             self.last_left_click = clicked()[0]
-            return True, self.calculate()
+            return True, self._calculate()
         elif not clicked()[0] and self.active:
             self.active = False
-            self.pos = self.calculate()
+            self.pos = self._calculate()
 
         self.last_left_click = clicked()[0]
         self.collide = False

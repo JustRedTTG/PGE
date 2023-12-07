@@ -9,6 +9,7 @@ from pygameextra import display
 from pygameextra import event
 from pygameextra import settings
 from pygameextra import time
+from pygameextra.button import Button
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from pygameextra.mouse import offset_wrap
@@ -203,7 +204,7 @@ class GameContext(Context, ABC):
         self._position = (0, 0)
         self.clock = time.clock
         settings.game_context = self
-        self.buttons = []
+        self.buttons: Button = []
         self.previous_buttons = []
         self.current_fps = self.FPS or 0
 

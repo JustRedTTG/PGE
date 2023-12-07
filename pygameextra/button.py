@@ -30,7 +30,7 @@ class Button:
         self.hovered = False
         self.inactive_resource = inactive_resource
         self.active_resource = active_resource
-        self.mouse_offset = settings.spoof_mouse_offset
+        self.mouse_offset = settings.spoof_mouse_offset or (0, 0)
 
     def logic(self, area: tuple = None, hover_action: any = None, hover_data: any = None, action: any = None,
               data: any = None, disabled: Union[bool, tuple] = False):
