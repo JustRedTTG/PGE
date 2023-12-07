@@ -54,7 +54,7 @@ def offset_wrap(offset: tuple, catch_error: bool = False, additive: bool = True,
             if _backup is not None and additive:
                 settings.spoof_mouse_offset = tuple(v + o for v, o in zip(offset, _backup))
             else:
-                settings.spoof_mouse_offset = offset
+                settings.spoof_mouse_offset = tuple(offset)
             if catch_error:
                 try:
                     result = func(*args, **kwargs)
