@@ -43,12 +43,18 @@ def place(x, y):
     return pygame.mouse.set_pos([x, y])
 
 
-def offset_wrap(offset: tuple, catch_error: bool = False):
+def offset_wrap(offset: tuple, catch_error: bool = False, additive: bool = True, reverse: bool = False):
+    if reverse:
+        offset = map(lambda x: -x, offset)
+
     def _offset_wrap(func):
         @wraps(func)
         def wrap(*args, **kwargs):
             _backup = settings.spoof_mouse_offset
-            settings.spoof_mouse_offset = offset
+            if _backup is not None and additive:
+                settings.spoof_mouse_offset = tuple(v + o for v, o in zip(offset, _backup))
+            else:
+                settings.spoof_mouse_offset = offset
             if catch_error:
                 try:
                     result = func(*args, **kwargs)
