@@ -50,6 +50,9 @@ class Context(ABC):
     def loop(self):
         pass
 
+    def events(self):
+        pass
+
     def pre_loop(self):
         if self.BACKGROUND:
             fill.full(self.BACKGROUND)
@@ -65,6 +68,7 @@ class Context(ABC):
         display.blit(self.surface, self.surface.pos)
 
     def _loop(self):
+        self.events()
         self.pre_loop()
         self.loop()
         self.post_loop()
@@ -169,20 +173,6 @@ class UnclippedContext(Context, ABC):
             raise UnclippedContextException("Unclipped context cannot have a defined position")
         if self.FLOAT != floating_methods.FLOAT_TOPLEFT:
             raise UnclippedContextException("Float has to be topleft in an unclipped context")
-
-    def pre_loop(self):
-        pass
-
-    def start_loop(self):
-        pass
-
-    def end_loop(self):
-        pass
-
-    def __call__(self):
-        self.start_loop()
-        self.loop()
-        self.end_loop()
 
     @property
     def size(self):
