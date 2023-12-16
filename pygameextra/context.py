@@ -180,6 +180,17 @@ class UnclippedContext(Context, ABC):
             return display.get_size()
         return super().size
 
+    def __call__(self):
+        self.start_loop()
+        self._loop()
+        self.end_loop()
+
+    def start_loop(self):
+        pass
+
+    def end_loop(self):
+        pass
+
 
 class GameContext(Context, ABC):
     TITLE: str = "Game context"
