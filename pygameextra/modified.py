@@ -81,6 +81,14 @@ class Surface:
     def rect(self) -> Rect:
         return self.surface.get_rect()
 
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
+
 
 def transparent_surface(area: tuple, alpha: int):
     new_surface = Surface(area)
