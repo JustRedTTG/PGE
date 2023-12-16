@@ -78,7 +78,7 @@ class Surface:
         return self.surface.set_alpha(alpha, flags)
 
     @property
-    def rect(self) -> Rect:
+    def rect(self) -> pygame.Rect:
         return self.surface.get_rect()
 
     @property
