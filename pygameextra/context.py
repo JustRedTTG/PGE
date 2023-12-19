@@ -13,6 +13,7 @@ from pygameextra.button import Button
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from pygameextra.mouse import offset_wrap
+from pygameextra.fpslogger import Logger as FpsLogger
 from typing import Union, Tuple
 from abc import abstractmethod, ABC
 
@@ -196,6 +197,7 @@ class GameContext(Context, ABC):
     TITLE: str = "Game context"
     MODE: int = display.DISPLAY_MODE_NORMAL
     FPS: int = None
+    FPS_LOGGER: bool = False
 
     def __init__(self):
         display.make(self.size, self.TITLE, self.MODE)
@@ -208,12 +210,17 @@ class GameContext(Context, ABC):
         self.buttons: Button = []
         self.previous_buttons = []
         self.current_fps = self.FPS or 0
+        self.fps_logger: FpsLogger = None
+        if self.FPS_LOGGER:
+            self._initialize_fps_logger()
 
     def start_loop(self):
         super().start_loop()
         self.buttons, self.previous_buttons = [], self.buttons
 
     def end_loop(self):
+        if self.FPS_LOGGER:
+            self.fps_logger.render()
         self.current_fps = self.clock.get_fps()
         display.update(self.FPS)
         self.buttons.reverse()
@@ -251,7 +258,14 @@ class GameContext(Context, ABC):
     def delta_time(self):
         return 1 / max(1, self.current_fps)
 
+    def _initialize_fps_logger(self):
+        self.fps_logger = FpsLogger()
+
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
         if key == 'TITLE':
             display.set_caption(value)
+        elif key == 'FPS_LOGGER':
+            if value:
+                if self.fps_logger is None:
+                    self._initialize_fps_logger()
