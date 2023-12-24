@@ -4,6 +4,7 @@ import pygame.event
 
 from pygameextra import colors
 from pygameextra import floating_methods
+from pygameextra import layer_methods
 from pygameextra import fill
 from pygameextra import display
 from pygameextra import event
@@ -38,6 +39,8 @@ class Context(ABC):
     surface: Surface = None
     _position: Tuple[int, int]
     area_based: bool = False
+    pre_child_contexts: list
+    post_child_contexts: list
 
     def __init__(self):
         self.surface = Surface(self.size)
@@ -46,6 +49,8 @@ class Context(ABC):
         else:
             self.position = self.AREA[:-2]
         self.surface.pos = self.position
+        self.pre_child_contexts = []
+        self.post_child_contexts = []
 
     @abstractmethod
     def loop(self):
@@ -53,6 +58,11 @@ class Context(ABC):
 
     def events(self):
         pass
+
+    @staticmethod
+    def handle_children(children):
+        for child in children:
+            child.parent_hooking()
 
     def pre_loop(self):
         if self.BACKGROUND:
@@ -71,8 +81,12 @@ class Context(ABC):
     def _loop(self):
         self.events()
         self.pre_loop()
+        self.handle_children(self.pre_child_contexts)
         self.loop()
+        self.handle_children(self.post_child_contexts)
         self.post_loop()
+        self.pre_child_contexts = []
+        self.post_child_contexts = []
 
     @property
     def size(self):
@@ -162,10 +176,38 @@ class Context(ABC):
         self.surface.pos = tuple((pos - sub for pos, sub in zip(display_position, subtraction)))
 
 
+class ChildContext(Context, ABC):
+    LAYER = layer_methods.PRE_LAYER
+    BACKGROUND = None
+
+    def __init__(self, parent: Context):
+        self.parent_context = parent
+
+    def _loop(self):
+        self.events()
+        self.pre_loop()
+        self.loop()
+        self.post_loop()
+
+    def post_loop(self):
+        pass
+
+    def parent_hooking(self):
+        self.AREA = self.parent_context.AREA
+        self._loop()
+
+    def __call__(self):
+        if self.LAYER == layer_methods.PRE_LAYER:
+            self.parent_context.pre_child_contexts.append(self)
+        elif self.LAYER == layer_methods.POST_LAYER:
+            self.parent_context.post_child_contexts.append(self)
+
+
 class UnclippedContext(Context, ABC):
     FLOAT: Tuple[int, int] = floating_methods.FLOAT_TOPLEFT
 
     def __init__(self):
+        print("UNCLIPPED CONTEXTS ARE DEPRECATED AS OF 2.0.0b41 USE THE NEW CHILD CONTEXT INSTEAD")
         self.surface = None
         self.area_based = True if self.AREA is None or len(self.AREA) == 2 else False
         if self.area_based:
@@ -213,6 +255,12 @@ class GameContext(Context, ABC):
         self.fps_logger: FpsLogger = None
         if self.FPS_LOGGER:
             self._initialize_fps_logger()
+
+    def _loop(self):
+        self.events()
+        self.pre_loop()
+        self.loop()
+        self.post_loop()
 
     def start_loop(self):
         super().start_loop()
