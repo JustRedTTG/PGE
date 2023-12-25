@@ -1,5 +1,7 @@
 """PYGAME EXTRA Contexts script
 This script provides contexts which can be used to improve complex scenes"""
+from numbers import Number
+
 import pygame.event
 
 from pygameextra import colors
@@ -32,12 +34,12 @@ class UnclippedContextException(Exception):
 
 
 class Context(ABC):
-    BACKGROUND: Tuple[int, int, int] = colors.black
-    AREA: Union[None, Tuple[int, int], Tuple[int, int, int, int]] = None
-    FLOAT: Tuple[int, int] = floating_methods.FLOAT_CENTER
+    BACKGROUND: Tuple[Number, Number, Number] = colors.black
+    AREA: Union[None, Tuple[Number, Number], Tuple[Number, Number, Number, Number]] = None
+    FLOAT: Tuple[Number, Number] = floating_methods.FLOAT_CENTER
 
     surface: Surface = None
-    _position: Tuple[int, int]
+    _position: Tuple[Number, Number]
     area_based: bool = False
     pre_child_contexts: list
     post_child_contexts: list
@@ -94,10 +96,10 @@ class Context(ABC):
             return self.surface.size
         if self.AREA is None:
             raise AreaUndefined("Contexts require an AREA to be defined")
-        elif isinstance(self.AREA, tuple) and len(self.AREA) == 2 and all(isinstance(x, int) for x in self.AREA):
+        elif isinstance(self.AREA, tuple) and len(self.AREA) == 2 and all(isinstance(x, Number) for x in self.AREA):
             self.area_based = True
             return self.AREA
-        elif isinstance(self.AREA, tuple) and len(self.AREA) == 4 and all(isinstance(x, int) for x in self.AREA):
+        elif isinstance(self.AREA, tuple) and len(self.AREA) == 4 and all(isinstance(x, Number) for x in self.AREA):
             return self.AREA[2:]
         else:
             raise ValueError("AREA needs to be (width, height) + FLOAT or (x, y, width, height)")
@@ -182,6 +184,7 @@ class ChildContext(Context, ABC):
 
     def __init__(self, parent: Context):
         self.parent_context = parent
+        self._internal_parent_hooking()
 
     def _loop(self):
         self.events()
@@ -192,8 +195,15 @@ class ChildContext(Context, ABC):
     def post_loop(self):
         pass
 
-    def parent_hooking(self):
+    def _internal_parent_hooking(self):
+        self.area_based = self.parent_context.area_based
         self.AREA = self.parent_context.AREA
+        self.FLOAT = self.parent_context.FLOAT
+        self.surface = self.parent_context.surface
+        self._position = self.parent_context._position
+
+    def parent_hooking(self):
+        self._internal_parent_hooking()
         self._loop()
 
     def __call__(self):
@@ -204,7 +214,7 @@ class ChildContext(Context, ABC):
 
 
 class UnclippedContext(Context, ABC):
-    FLOAT: Tuple[int, int] = floating_methods.FLOAT_TOPLEFT
+    FLOAT: Tuple[Number, Number] = floating_methods.FLOAT_TOPLEFT
 
     def __init__(self):
         print("UNCLIPPED CONTEXTS ARE DEPRECATED AS OF 2.0.0b41 USE THE NEW CHILD CONTEXT INSTEAD")
