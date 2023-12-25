@@ -278,11 +278,7 @@ class GameContext(Context, ABC):
 
     def start_loop(self):
         super().start_loop()
-        if len(self.buttons) < len(self.previous_buttons):
-            self.buttons, self.previous_buttons = [], self.buttons
-        else:  # can cause flickers / artifacts, buttons must be reset
-            self.buttons.clear()
-            self.previous_buttons.clear()
+        self.buttons, self.previous_buttons = [], self.buttons
 
     def end_loop(self):
         if self.FPS_LOGGER:

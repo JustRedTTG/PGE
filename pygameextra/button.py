@@ -123,13 +123,16 @@ class ImageButton(Button):
         ))
 
 
-def check_hover(button):
+def check_hover(button: Button):
     if not settings.game_context:
         return
     if len(settings.game_context.previous_buttons) >= (buttons_length := len(settings.game_context.buttons)):
         button.hovered = settings.game_context.previous_buttons[buttons_length - 1].hovered
         button.render()
         button.hovered = False
+    else:
+        button.hovered = False
+        button.render()
 
 
 def action(area: tuple, text: Text = None, hover_action: any = None,
