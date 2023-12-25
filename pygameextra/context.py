@@ -198,7 +198,10 @@ class ChildContext(Context, ABC):
     def _internal_parent_hooking(self):
         self.area_based = self.parent_context.area_based
         self.AREA = self.parent_context.AREA
-        self.FLOAT = self.parent_context.FLOAT
+        if self.area_based:
+            self._position = self.parent_context.FLOAT
+        else:
+            self.position = self.AREA[:-2]
         self.surface = self.parent_context.surface
         self._position = self.parent_context._position
 
