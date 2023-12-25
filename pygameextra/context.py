@@ -178,13 +178,14 @@ class Context(ABC):
         self.surface.pos = tuple((pos - sub for pos, sub in zip(display_position, subtraction)))
 
 
-class ChildContext(Context, ABC):
+class ChildContext(ABC):
     LAYER = layer_methods.PRE_LAYER
-    BACKGROUND = None
 
     def __init__(self, parent: Context):
         self.parent_context = parent
-        self._internal_parent_hooking()
+
+    def pre_loop(self):
+        pass
 
     def _loop(self):
         self.events()
@@ -195,18 +196,7 @@ class ChildContext(Context, ABC):
     def post_loop(self):
         pass
 
-    def _internal_parent_hooking(self):
-        self.area_based = self.parent_context.area_based
-        self.AREA = self.parent_context.AREA
-        if self.area_based:
-            self._position = self.parent_context.FLOAT
-        else:
-            self.position = self.AREA[:-2]
-        self.surface = self.parent_context.surface
-        self._position = self.parent_context._position
-
     def parent_hooking(self):
-        self._internal_parent_hooking()
         self._loop()
 
     def __call__(self):
@@ -214,6 +204,17 @@ class ChildContext(Context, ABC):
             self.parent_context.pre_child_contexts.append(self)
         elif self.LAYER == layer_methods.POST_LAYER:
             self.parent_context.post_child_contexts.append(self)
+
+    def __getattr__(self, item):
+        try:
+            return super().__getattribute__(item)
+        except AttributeError:
+            return self.parent_context.__getattribute__(item)
+    def __setattr__(self, key, value):
+        try:
+            return super().__setattr__(key, value)
+        except AttributeError:
+            return self.parent_context.__setattr__(key, value)
 
 
 class UnclippedContext(Context, ABC):
@@ -277,7 +278,11 @@ class GameContext(Context, ABC):
 
     def start_loop(self):
         super().start_loop()
-        self.buttons, self.previous_buttons = [], self.buttons
+        if len(self.buttons) < len(self.previous_buttons):
+            self.buttons, self.previous_buttons = [], self.buttons
+        else:  # can cause flickers / artifacts, buttons must be reset
+            self.buttons.clear()
+            self.previous_buttons.clear()
 
     def end_loop(self):
         if self.FPS_LOGGER:
@@ -290,6 +295,7 @@ class GameContext(Context, ABC):
             if button.hovered:
                 break
         self.buttons.reverse()
+
 
     def __call__(self):
         self.events()

@@ -1,5 +1,6 @@
 import time
 from functools import wraps
+from typing import Tuple
 
 import pygame
 # noinspection PyUnresolvedReferences
@@ -102,7 +103,7 @@ class Draggable:
         difference = (current_pos[0] - self.start_pos[0], current_pos[1] - self.start_pos[1])
         return new_pos[0] + difference[0] * self.move_multiplier, new_pos[1] + difference[1] * self.move_multiplier
 
-    def calculate(self):
+    def calculate(self) -> tuple:
         """calculate(self) -> tuple
         Gets the real time position of the draggable"""
 
@@ -110,7 +111,7 @@ class Draggable:
             return self.pos
         return self._calculate()
 
-    def check(self):
+    def check(self) -> Tuple[bool, tuple]:
         """check(self) -> bool, tuple
         This function will check if the draggable is being moved and where it is"""
         
