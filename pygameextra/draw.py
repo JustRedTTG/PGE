@@ -36,7 +36,7 @@ def rect(color: tuple, area: tuple, w: int = 0, display_work: Surface = None, ed
          edge_rounding_topright: int = -1, edge_rounding_topleft: int = -1, edge_rounding_bottomright: int = -1,
          edge_rounding_bottomleft: int = -1) -> None:
     if len(color) > 3 and color[3] != 255:
-        key = hash((color, area, w))
+        key = hash((color, tuple(area), w))
         if key in rect_cache:
             new_surface = rect_cache[key]
         else:
@@ -80,7 +80,7 @@ def circle(color: tuple, pos: tuple, radius: int, w: int = 0, display_work: Surf
 
 def ellipse(color: tuple, area: tuple, w: int = 0, display_work: Surface = None) -> None:
     if len(color) > 3 and color[3] != 255:
-        key = hash((color, area, w))
+        key = hash((color, tuple(area), w))
         if key in ellipse_cache:
             new_surface = ellipse_cache[key]
         else:
