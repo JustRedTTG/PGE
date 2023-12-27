@@ -50,6 +50,7 @@ class Animator:
         return tuple(key for key in self.key_values.keys() if key.startswith(header_key))
 
     def __setattr__(self, key, value):
+        is_header_key = False
         if key not in self.key_values.keys() and not (is_header_key := any(
                 check_key.startswith(key) for check_key in self.key_values.keys())):
             return super().__setattr__(key, value)
