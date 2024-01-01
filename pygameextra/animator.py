@@ -13,11 +13,12 @@ class Animator:
     key_values: dict = {}
     many_to_one_rules: dict = {}
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, loop_ender: list = None):
         self.key_values = {}
         self.width = 0
         self.height = 0
         self.config = config
+        self.loop_ender = loop_ender if loop_ender is not None else []
 
     @property
     def config(self):
