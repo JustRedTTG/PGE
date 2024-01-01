@@ -125,6 +125,18 @@ class Animator:
         if sheet:
             return sheet.frames
 
+    @property
+    def loop(self):
+        sheet = self.get_sheet()
+        if sheet:
+            return sheet.loop
+
+    @property
+    def reset(self):
+        sheet = self.get_sheet()
+        if sheet:
+            return sheet.reset
+
     def get(self, sprite: 'Sprite'):
         sheet: Sheet = self.get_sheet()
         if sprite.index > sheet.frames:

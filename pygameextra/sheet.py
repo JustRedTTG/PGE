@@ -7,11 +7,13 @@ from pygameextra.sheet_handlers import *
 
 
 class Sheet:
-    def __init__(self, file, handler: SheetHandler, speed: float = None):
+    def __init__(self, file, handler: SheetHandler, speed: float = None, pong: bool = False, loop: bool = False):
         self.surface = Surface(surface=pygame.image.load(file).convert_alpha())
         handler.map(self.surface)
         self.handler = handler
         self.speed = speed
+        self.pong = pong
+        self.loop = loop
         self.frames = len(self.handler.mapping)
 
     def get(self, sprite: 'Sprite'):
