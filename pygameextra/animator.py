@@ -18,6 +18,7 @@ class Animator:
         self.width = 0
         self.height = 0
         self.config = config
+        self._prev_sheet = None
         self.loop_ender = loop_ender if loop_ender is not None else []
 
     @property
@@ -133,17 +134,29 @@ class Animator:
             return sheet.loop
 
     @property
-    def reset(self):
+    def pong(self):
         sheet = self.get_sheet()
         if sheet:
-            return sheet.reset
+            return sheet.pong
+
+    def reset(self):
+        sheet_dict, sheet_key = self._get_sheet(frozendict(self.key_values))
+        if sheet_dict == 'many_to_one_rules' and not self.loop:
+            for key in sheet_key:
+                if key in self.loop_ender:
+                    self.__setattr__(key, False)
 
     def get(self, sprite: 'Sprite'):
         sheet: Sheet = self.get_sheet()
         if sprite.index > sheet.frames:
             sprite.index = sprite.index % sheet.frames
-        if sheet:
-            return sheet.get(sprite)
+        if not sheet:
+            return
+        if self._prev_sheet != sheet:
+            if not sheet.loop:
+                sprite.index = 0
+        self._prev_sheet = sheet
+        return sheet.get(sprite)
 
     @property
     def speed(self):

@@ -48,25 +48,28 @@ class Sprite:
         self.multiplier = 1
 
     def reset(self):
-        if self.multiplier > 0:
-            self.index = 0
-        elif self.multiplier < 0:
-            self.index = self.reference.frames
+        if self.reference.loop:
+            if self.multiplier > 0:
+                self.index = 0
+            elif self.multiplier < 0:
+                self.index = self.reference.frames
         if isinstance(self.reference, Animator):
             self.reference.reset()
 
     def skip_frame(self, speed: int = None):
         """Skips to the next frame in the sprite animation, according to a speed variable"""
+        if not isinstance(self.reference, Union[Animator, Sheet]):
+            return
         self.index += speed or self.speed * self.delta_time * self.multiplier  # Add to the index, according to a speed variable
         if self.multiplier > 0 and self.index >= self.reference.frames - 1:  # Check direction and index
             if self.reference.pong:
                 self.multiplier *= -1  # Flip the pong
-            elif self.index > self.reference.frames - 1 and self.reference.loop:
+            elif self.index > self.reference.frames - 1:
                 self.reset()
         elif self.multiplier < 0 and self.index <= 0:  # Check reverse direction and reverse index
             if self.reference.pong:
                 self.multiplier *= -1  # Flip the pong
-            elif self.index <= 0 and self.reference.loop:
+            elif self.index <= 0:
                 self.reset()
         self.index = min(self.reference.frames - 1, max(0, self.index))
 
