@@ -13,11 +13,13 @@ class Animator:
     key_values: dict = {}
     many_to_one_rules: dict = {}
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, loop_ender: list = None):
         self.key_values = {}
         self.width = 0
         self.height = 0
         self.config = config
+        self._prev_sheet = None
+        self.loop_ender = loop_ender if loop_ender is not None else []
 
     @property
     def config(self):
@@ -28,6 +30,8 @@ class Animator:
         self.one_to_one_rules = {}
         self.many_to_one_rules = {}
         self._get_sheet.cache_clear()
+        self._reset_keys.cache_clear()
+        self.key_values.clear()
 
         for key, value in config.items():
             if type(key) is str and (type(value) is str or isinstance(value, Sheet)):
@@ -43,10 +47,22 @@ class Animator:
 
         self._config = {**self.one_to_one_rules, **self.many_to_one_rules}
 
+    @lru_cache()
+    def _reset_keys(self, header_key):
+        return tuple(key for key in self.key_values.keys() if key.startswith(header_key))
+
     def __setattr__(self, key, value):
-        if key not in self.key_values.keys():
+        is_header_key = False
+        if key not in self.key_values.keys() and not (is_header_key := any(
+                check_key.startswith(key) for check_key in self.key_values.keys())):
             return super().__setattr__(key, value)
-        if type(value) is not bool:
+        if is_header_key:
+            for reset_key in self._reset_keys(key):
+                self.key_values[reset_key] = False
+            if value is not None:
+                self.key_values[f'{key}{value}'] = True
+            return
+        elif not isinstance(value, bool):
             raise TypeError("Values passed to the animator's switches should be of type bool")
         self.key_values[key] = value
 
@@ -111,12 +127,36 @@ class Animator:
         if sheet:
             return sheet.frames
 
+    @property
+    def loop(self):
+        sheet = self.get_sheet()
+        if sheet:
+            return sheet.loop
+
+    @property
+    def pong(self):
+        sheet = self.get_sheet()
+        if sheet:
+            return sheet.pong
+
+    def reset(self):
+        sheet_dict, sheet_key = self._get_sheet(frozendict(self.key_values))
+        if sheet_dict == 'many_to_one_rules' and not self.loop:
+            for key in sheet_key:
+                if key in self.loop_ender:
+                    self.__setattr__(key, False)
+
     def get(self, sprite: 'Sprite'):
         sheet: Sheet = self.get_sheet()
         if sprite.index > sheet.frames:
             sprite.index = sprite.index % sheet.frames
-        if sheet:
-            return sheet.get(sprite)
+        if not sheet:
+            return
+        if self._prev_sheet != sheet:
+            if not sheet.loop:
+                sprite.index = 0
+        self._prev_sheet = sheet
+        return sheet.get(sprite)
 
     @property
     def speed(self):
