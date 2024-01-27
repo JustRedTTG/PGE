@@ -18,7 +18,7 @@ class Text:
     def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = os.path.join(location, 'font.ttf'),
                  font_size: int = 3, position: tuple = (0, 0), colors: [tuple, list] = ((255, 255, 255), None),
                  antialias: bool = True):
-        if type(font) == pygame.font.Font:
+        if isinstance(font, pygame.font.Font):
             self.font = font
         else:
             self.font = get_font(font, font_size)

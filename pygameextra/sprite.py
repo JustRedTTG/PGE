@@ -4,7 +4,7 @@ from typing import Union
 
 import pygame
 from pygameextra.rect import Rect
-from pygameextra import display
+from pygameextra import display, SurfaceFileType, get_surface_file
 from pygameextra import settings
 from pygameextra.sheet import Sheet
 from pygameextra.animator import Animator
@@ -14,7 +14,7 @@ from pygameextra.sheet_handlers import *
 class Sprite:
     sheet_or_animator = False
 
-    def __init__(self, sprite_reference: Union[Sheet, str, Animator], scale=None, pos: tuple = (0, 0), name="Sprite",
+    def __init__(self, sprite_reference: Union[Sheet, SurfaceFileType, Animator], scale=None, pos: tuple = (0, 0), name="Sprite",
                  pivot='topleft', layer=0, speed: float = 0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
@@ -25,11 +25,13 @@ class Sprite:
             self.reference = sprite_reference
             self.size = scale or (self.reference.width, self.reference.height)
             self.sheet_or_animator = True
-        else:  # Using sprite image
-            self.reference = Surface(surface=pygame.image.load(sprite_reference).convert_alpha(), layer=layer)
+        elif isinstance(sprite_reference, SurfaceFileType):  # Using SurfaceFileType
+            self.reference = get_surface_file(sprite_reference, layer)
             if scale:
                 self.reference.resize(scale)
             self.size = scale or self.reference.size
+        else:
+            raise TypeError("Sprite reference should be of type Sheet | Animator or a Surface/File like object or path")
         self.pos = pos
         self.name = name
         self.layer = layer
@@ -112,7 +114,7 @@ class Sprite:
         return self.pos[1]
 
     def set_alpha(self, alpha: int, flags: int = 0) -> None:
-        if type(self.reference) is Surface:
+        if isinstance(self.reference, Surface):
             return self.reference.set_alpha(alpha, flags)
         self.alpha = alpha
         self.flags = flags

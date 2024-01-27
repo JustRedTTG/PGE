@@ -5,6 +5,7 @@ from typing import Union, List
 import pygame
 from pygameextra.rect import Rect
 from pygameextra.sorters import layer_sorter
+from typing import Union, IO
 
 
 class SurfaceException(Exception):
@@ -32,7 +33,7 @@ class Surface:
 
     def stamp(self, source: Union['Surface', pygame.Surface], position: tuple = (0, 0), area: tuple = None,
               special_flags: int = 0):
-        if type(source) == pygame.Surface:
+        if type(source) is pygame.Surface:
             self.surface.blit(source, position, area, special_flags)
         else:
             self.surface.blit(source.surface, position, area, special_flags)
@@ -90,7 +91,23 @@ class Surface:
         return self.size[1]
 
 
+SurfaceFileType = Union[str, IO, Surface, pygame.Surface]
+
+
 def transparent_surface(area: tuple, alpha: int):
     new_surface = Surface(area)
     new_surface.set_alpha(alpha)
     return new_surface
+
+
+def get_surface_file(file: SurfaceFileType, layer: int = 0) -> Surface:
+    try:
+        return Surface(surface=pygame.image.load(file).convert_alpha(), layer=layer)
+    except TypeError:
+        pass
+        if isinstance(file, Surface):
+            return file
+        elif isinstance(file, pygame.Surface):
+            return Surface(surface=file, layer=layer)
+        else:
+            raise TypeError("Please make sure file is a path / surface / file-like object")

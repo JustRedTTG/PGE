@@ -1,3 +1,5 @@
+from typing import Union
+
 from pygameextra import settings, colors, display, draw, fill
 from pygameextra.modified import Surface
 
@@ -83,25 +85,25 @@ class Portion:
 
 
 def check_boundary(item):
-    if type(item) == Blit:
+    if type(item) is Blit:
         return *item.pos, *item.obj.get_size()
-    elif type(item) == DrawLine:
+    elif type(item) is DrawLine:
         return (
             min(0, min(item.pos_a[0], item.pos_b[0])),
             min(0, min(item.pos_a[1], item.pos_b[1])),
             max(item.pos_a[0], item.pos_b[0]),
             max(item.pos_a[1], item.pos_b[1]),
         )
-    elif (type(item) == DrawRect) or (type(item) == DrawEllipse):
+    elif type(item) is Union[DrawRect, DrawEllipse]:
         return item.area
-    elif type(item) == DrawCircle:
+    elif type(item) is DrawCircle:
         return (
             item.pos[0] - item.radius * .5,
             item.pos[1] - item.radius * .5,
             item.pos[0] + item.radius * .5,
             item.pos[1] + item.radius * .5,
         )
-    elif type(item) == DrawPolygon:
+    elif type(item) is DrawPolygon:
         max_x = -100
         min_x = 100
         max_y = -100
@@ -116,7 +118,7 @@ def check_boundary(item):
 
 
 def sorter(item):
-    if type(item) == display.display_reference.size:
+    if type(item) is display.display_reference.size:
         return 0
     return 1
 
@@ -141,26 +143,26 @@ def reconstruct(data: list):
     display.context(surface)
 
     for item in data:
-        if type(item) == Blit:
+        if type(item) is Blit:
             display.blit(item.obj, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.area)
-        elif type(item) == FillFull:
+        elif type(item) is FillFull:
             draw.rect(item.color, (*offset, *size))
-        elif type(item) == FillTransparency:
+        elif type(item) is FillTransparency:
             fill.transparency(item.color)
-        elif type(item) == FillInterlace:
+        elif type(item) is FillInterlace:
             fill.interlace(item.color)
-        elif type(item) == DrawLine:
+        elif type(item) is DrawLine:
             draw.line(item.color, (item.pos_a[0] + offset[0], item.pos_a[1] + offset[1]),
                       (item.pos_b[0] + offset[0], item.pos_b[1] + offset[1]), item.w)
-        elif type(item) == DrawRect:
+        elif type(item) is DrawRect:
             draw.rect(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
                       item.w)
-        elif type(item) == DrawEllipse:
+        elif type(item) is DrawEllipse:
             draw.ellipse(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
                          item.w)
-        elif type(item) == DrawCircle:
+        elif type(item) is DrawCircle:
             draw.circle(item.color, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.radius, item.w)
-        elif type(item) == DrawPolygon:
+        elif type(item) is DrawPolygon:
             points = []
             for point in item.points:
                 points.append((point[0] + offset[0], point[1] + offset[1]))

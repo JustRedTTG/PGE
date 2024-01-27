@@ -3,7 +3,7 @@ This script manages all display functions"""
 from typing import Union, Tuple
 
 import pygame
-from pygameextra.modified import Surface
+from pygameextra.modified import Surface, SurfaceFileType, get_surface_file
 import pygameextra.settings as settings
 import pygameextra.recorder as recorder
 import pygameextra.time
@@ -30,17 +30,14 @@ max_size = (0, 0)
 def set_caption(title: str = DISPLAY_DEFAULT_TITLE): pygame.display.set_caption(title)
 
 
-def set_icon(icon: [Surface, pygame.Surface]):
+def set_icon(icon: SurfaceFileType):
     """Set icon
     context(icon: Surface or pygame.Surface) -> None
 
     Parameters:
         icon -- The new icon for the window"""
-    surface = icon.surface
-    if type(surface) == Surface:
-        surface = surface.surface  # Extract pygame extra surface type
 
-    pygame.display.set_icon(surface)
+    pygame.display.set_icon(get_surface_file(icon).surface)
 
 
 def context(display: Surface):
@@ -110,7 +107,7 @@ def blit(obj: Union['Surface', pygame.Surface], pos: tuple = (0, 0), area: tuple
     display_reference.stamp(obj, pos, area)
     if not settings.recording:
         return
-    if type(obj) == Surface:
+    if type(obj) is Surface:
         obj = obj.surface
     if display_reference.display_tag:
         recorder.record(recorder.Blit(obj, pos, area))

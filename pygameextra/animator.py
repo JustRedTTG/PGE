@@ -30,14 +30,14 @@ class Animator:
         self._get_sheet.cache_clear()
 
         for key, value in config.items():
-            if type(key) is str and (type(value) is str or type(value) is Sheet):
+            if type(key) is str and (type(value) is str or isinstance(value, Sheet)):
                 self.one_to_one_rules[key] = value
                 self.key_values[key] = self.key_values.get(key, False)
-            elif type(key) == tuple and (type(value) == str or type(value) == Sheet):
+            elif type(key) is tuple and (type(value) is str or isinstance(value, Sheet)):
                 self.many_to_one_rules[key] = value
                 for sub_key in key:
                     self.key_values[sub_key] = self.key_values.get(sub_key, False)
-            if type(value) is Sheet:
+            if isinstance(value, Sheet):
                 self.width = value.handler.width
                 self.height = value.handler.height
 
@@ -46,7 +46,7 @@ class Animator:
     def __setattr__(self, key, value):
         if key not in self.key_values.keys():
             return super().__setattr__(key, value)
-        if type(value) != bool:
+        if type(value) is not bool:
             raise TypeError("Values passed to the animator's switches should be of type bool")
         self.key_values[key] = value
 
@@ -88,7 +88,7 @@ class Animator:
 
     @lru_cache()
     def _final_sheet(self, sheet_value):
-        if type(sheet_value) is Sheet:
+        if isinstance(sheet_value, Sheet):
             return sheet_value
         elif type(sheet_value) is str:
             return self._final_sheet(self.one_to_one_rules[sheet_value])

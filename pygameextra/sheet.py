@@ -2,13 +2,13 @@
 This script manages the sheet class"""
 
 import pygame
-from pygameextra.modified import Surface
+from pygameextra.modified import Surface, get_surface_file, SurfaceFileType
 from pygameextra.sheet_handlers import *
 
 
 class Sheet:
-    def __init__(self, file, handler: SheetHandler, speed: float = None):
-        self.surface = Surface(surface=pygame.image.load(file).convert_alpha())
+    def __init__(self, file: SurfaceFileType, handler: SheetHandler, speed: float = None):
+        self.surface = get_surface_file(file)
         handler.map(self.surface)
         self.handler = handler
         self.speed = speed

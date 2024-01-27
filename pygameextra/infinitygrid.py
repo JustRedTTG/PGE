@@ -98,7 +98,7 @@ class InfinityGrid:
 
     def __setitem__(self, x_y, value):
         self.data[x_y] = value or self.default
-        if type(value) == GridObject:
+        if isinstance(value, GridObject):
             value.x, value.y = x_y
             value.grid = self
 

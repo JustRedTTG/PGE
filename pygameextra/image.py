@@ -2,21 +2,13 @@
 This script manages all image functions"""
 
 import pygame
-from pygameextra.modified import Surface
+from pygameextra.modified import Surface, get_surface_file, SurfaceFileType
 from pygameextra import display
 
 
 class Image:
-    def __init__(self, file, size=None, position: tuple = (0, 0), layer=0):
-        try:
-            self.surface = Surface(surface=pygame.image.load(file).convert_alpha(), layer=layer)
-        except TypeError:
-            if isinstance(file, Surface):
-                self.surface = file
-            elif isinstance(file, pygame.Surface):
-                self.surface = Surface(surface=file, layer=layer)
-            else:
-                raise ValueError("Please make sure file is a path / surface / file-like object")
+    def __init__(self, file: SurfaceFileType, size=None, position: tuple = (0, 0), layer=0):
+        self.surface = get_surface_file(file, layer)
         self.pos = position
 
         if size:
@@ -55,5 +47,3 @@ class Image:
 
     def set_alpha(self, alpha: int, flags: int = 0) -> None:
         return self.surface.set_alpha(alpha, flags)
-
-

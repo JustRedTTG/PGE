@@ -81,7 +81,7 @@ class Button:
             if (not settings.button_lock) and action and mouse.clicked()[0]:
                 button_lock()
                 if data is not None:
-                    if type(data) == tuple:
+                    if type(data) is tuple:
                         action(*data)
                     else:
                         action(data)
@@ -91,7 +91,7 @@ class Button:
             if (not settings.hover_lock) and hover_action:
                 hover_lock()
                 if hover_data is not None:
-                    if type(hover_data) == tuple:
+                    if type(hover_data) is tuple:
                         hover_action(*hover_data)
                     else:
                         hover_action(hover_data)
@@ -107,7 +107,7 @@ class RectButton(Button):
     def static_render(area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
                       disabled: Union[bool, tuple] = None):
         color = active_resource if (hovered and not disabled) else (
-            disabled if type(disabled) == tuple else inactive_resource)
+            disabled if type(disabled) is tuple else inactive_resource)
         draw.rect(color, area)
 
 
@@ -116,7 +116,7 @@ class ImageButton(Button):
     def static_render(area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
                       disabled: Union[bool, Image] = None):
         image = active_resource if (hovered and not disabled) else (
-            disabled if type(disabled) == Image else inactive_resource)
+            disabled if isinstance(disabled, Image) else inactive_resource)
         display.blit(image.surface, (
             area[0] + area[2] * .5 - image.size[0] * .5,
             area[1] + area[3] * .5 - image.size[1] * .5

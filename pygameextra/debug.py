@@ -107,7 +107,7 @@ class FreeInteractMode(FreeMode):
         mouse_rect = Rect(*mouse.pos(False), 1, 1)
         self.draggable.lock = False
         for item in settings.recording_data:
-            if type(item) == recorder.Portion:
+            if type(item) is recorder.Portion:
                 if self.reactivate_init:
                     old = self.offset2
                 self.offset2 = item.x, item.y
@@ -117,7 +117,7 @@ class FreeInteractMode(FreeMode):
                         self.offset = (self.offset[0] - nudge[0], self.offset[1] - nudge[1])
                         self.draggable.pos = self.offset
                     self.reactivate_init = False
-            elif type(item) == recorder.Button:
+            elif type(item) is recorder.Button:
                 area = (
                 item.area[0] + self.offset[0] + self.offset2[0], item.area[1] + self.offset[1] + self.offset2[1],
                 item.area[2], item.area[3])
