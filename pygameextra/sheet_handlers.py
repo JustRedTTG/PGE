@@ -14,7 +14,7 @@ class SheetHandler:
 
     def map(self, surface): pass
 
-    def get(self, sprite): return self.mapping[int(sprite.index)]
+    def get(self, index): return self.mapping[int(index)]
 
     def add(self, x, y): return x, y, self.width, self.height
 

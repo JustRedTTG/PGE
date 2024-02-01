@@ -18,8 +18,32 @@ bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 # Sprite sheet sprites
 s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16), .1, False, True), (250, 250), (0, 0),
                pivot="topleft")  # Rows sprite
-s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2, True), (250, 250), (250, 0),
+s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2, True, True), (250, 250), (250, 0),
                pivot="topleft")  # Columns sprite
+animation_sheets = {
+    '1_F_F': pe.Sheet(f"{sp}/animation_1.png", pe.SheetHorizontal(35, 35), .2, False, False),
+    '2_F_T': pe.Sheet(f"{sp}/animation_2.png", pe.SheetHorizontal(35, 35), .2, False, True),
+    '3_T_F': pe.Sheet(f"{sp}/animation_3.png", pe.SheetHorizontal(35, 35), .2, True, False),
+    '4_T_T': pe.Sheet(f"{sp}/animation_4.png", pe.SheetHorizontal(35, 35), .2, True, True),
+    '1_F_T': pe.Sheet(f"{sp}/animation_1.png", pe.SheetHorizontal(35, 35), .2, False, True),
+    '1_T_F': pe.Sheet(f"{sp}/animation_1.png", pe.SheetHorizontal(35, 35), .2, True, False),
+    '3_F_F': pe.Sheet(f"{sp}/animation_3.png", pe.SheetHorizontal(35, 35), .2, False, False),
+    '4_T_F': pe.Sheet(f"{sp}/animation_4.png", pe.SheetHorizontal(35, 35), .2, True, False),
+}
+
+s_f_f = pe.Sprite(animation_sheets['1_F_F'], (35, 35), (0, 250), pivot="topleft")
+s_f_t = pe.Sprite(animation_sheets['2_F_T'], (35, 35), (40, 250), pivot="topleft")
+s_t_f = pe.Sprite(animation_sheets['3_T_F'], (35, 35), (80, 250), pivot="topleft")
+s_t_t = pe.Sprite(animation_sheets['4_T_T'], (35, 35), (120, 250), pivot="topleft")
+
+s_anim = pe.Sprite(pe.Animator({
+    "trigger_F_F": animation_sheets['3_F_F'],
+    "trigger_F_T": animation_sheets['2_F_T'],
+    "trigger_T_F": animation_sheets['4_T_F'],
+    "hover": animation_sheets['1_T_F'],
+    "idle": animation_sheets['1_F_T'],
+}, ("trigger_F_F", "trigger_F_T", "trigger_T_F")), (35, 35), (0, 290), pivot="topleft")
+s_anim.animator.idle = True
 
 mouse_icon = pe.Image(f'{sp}/mouse_middle.png', (50, 50))
 debug_icon = pe.Image(f'{sp}/debug_icon.png', (50, 50))
@@ -167,12 +191,39 @@ def run():
             pe.comment('Sprites')
             s1.display()
             s2.display()
+
+            s_f_f.display()
+            s_f_f_area = (*s_f_f.pos, *s_f_f.size)
+            pe.draw.rect(pe.colors.red, s_f_f_area, 2, edge_rounding=2)
+            pe.button.action(s_f_f_area,
+                             hover_action=lambda: pe.draw.rect(pe.colors.white, s_f_f_area, 2, edge_rounding=2),
+                             action=lambda: exec("s.index = 0", {'s': s_f_f}))
+
+            s_f_t.display()
+            s_t_f.display()
+            s_t_f_area = (*s_t_f.pos, *s_t_f.size)
+            pe.draw.rect(pe.colors.red, s_t_f_area, 2, edge_rounding=2)
+            pe.button.action(s_t_f_area,
+                             hover_action=lambda: pe.draw.rect(pe.colors.white, s_t_f_area, 2, edge_rounding=2),
+                             action=lambda: exec("s.index = 0", {'s': s_t_f}))
+
+            s_t_t.display()
+
+            s_anim.display()
+            s_anim_area = (*s_anim.pos, *s_anim.size)
+            pe.draw.rect(pe.colors.gray, s_anim_area, 2, edge_rounding=2)
+            pe.button.action(s_anim_area,
+                             hover_action=lambda: pe.draw.rect(pe.colors.white, s_anim_area, 2, edge_rounding=2),
+                             action=lambda: exec("a.trigger_ = None", {'a': s_anim.animator}))
+            pe.button.rect((s_anim_area[0] + 40, *s_anim_area[1:]), pe.colors.red, pe.colors.lightred,
+                           action=lambda: exec("a.trigger_ = 'F_T'", {'a': s_anim.animator}))
+            pe.button.rect((s_anim_area[0] + 80, *s_anim_area[1:]), pe.colors.green, pe.colors.lightgreen,
+                           action=lambda: exec("a.trigger_ = 'F_F'", {'a': s_anim.animator}))
+            pe.button.rect((s_anim_area[0] + 120, *s_anim_area[1:]), pe.colors.yellow, pe.colors.lightyellow,
+                           action=lambda: exec("a.trigger_ = 'T_F'", {'a': s_anim.animator}))
+
             pe.padding_comment()
-            # s3.display()
-            # s4.display()
-            # s5.display()
-            # s6.display()
-            # s7.display()
+
         elif test == "mapping":
             pe.display.blit(s1.reference.surface, (202, 218))
             for id in list(s1.reference.handler.mapping):

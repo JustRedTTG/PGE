@@ -15,7 +15,13 @@ class Sheet:
         self.speed = speed
         self.pong = pong
         self.loop = loop
-        self.frames = len(self.handler.mapping)
+        self._frames = len(self.handler.mapping)
+
+    @property
+    def frames(self):
+        return self._frames * (1 if not self.pong else 2)
 
     def get(self, sprite: 'Sprite'):
-        return self.handler.get(sprite)
+        return self.handler.get(sprite.index if not self.pong else (
+            sprite.index if sprite.index < self._frames else self.frames - sprite.index
+        ))

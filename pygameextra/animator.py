@@ -1,6 +1,6 @@
 """PYGAME EXTRA Sheet script
 This script manages the animator class"""
-from typing import Union
+from typing import Union, Iterable
 
 from pygameextra.sheet import Sheet
 from functools import lru_cache
@@ -13,7 +13,7 @@ class Animator:
     key_values: dict = {}
     many_to_one_rules: dict = {}
 
-    def __init__(self, config: dict, loop_ender: list = None):
+    def __init__(self, config: dict, loop_ender: Iterable = None):
         self.key_values = {}
         self.width = 0
         self.height = 0
@@ -141,10 +141,19 @@ class Animator:
 
     def reset(self):
         sheet_dict, sheet_key = self._get_sheet(frozendict(self.key_values))
-        if sheet_dict == 'many_to_one_rules' and not self.loop:
-            for key in sheet_key:
-                if key in self.loop_ender:
-                    self.__setattr__(key, False)
+        if not self.loop:
+            if isinstance(sheet_key, Iterable):
+                for key in sheet_key:
+                    for loop_ender in self.loop_ender:
+                        if key in loop_ender:
+                            self.__setattr__(key, False)
+                            return True
+            else:
+                for loop_ender in self.loop_ender:
+                    if sheet_key in loop_ender:
+                        self.__setattr__(sheet_key, False)
+                        return True
+        return False
 
     def get(self, sprite: 'Sprite'):
         sheet: Sheet = self.get_sheet()
