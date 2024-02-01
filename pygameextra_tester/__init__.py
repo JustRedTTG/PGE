@@ -5,7 +5,7 @@ from pygameextra.fpslogger import Logger
 from pygameextra import settings
 
 pe.init()
-pe.display.make((500, 500), "PGE Testing Utility", 0)
+pe.display.make((500, 500), f"PGE {pe.__version__} Testing Utility", 0)
 sp = os.path.dirname(os.path.realpath(__file__))
 
 # Button images
@@ -16,26 +16,10 @@ bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
 bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
 # Sprite sheet sprites
-s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16), .1), (250, 250), (0, 0),
+s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16), .1, False, True), (250, 250), (0, 0),
                pivot="topleft")  # Rows sprite
-s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2), (250, 250), (250, 0),
+s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2, True), (250, 250), (250, 0),
                pivot="topleft")  # Columns sprite
-
-# Resized sprites
-s3 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((0, 250, 125, 125)))  # Resized sprite 1
-s3.size = 0.5
-
-s4 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((125, 250, 125, 125)))  # Resized sprite 2
-s4.size = 0.25
-
-s5 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((0, 375, 125, 125)))  # Resized sprite 3
-s5.size = 0.1
-
-s6 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((125, 375, 125, 125)))  # Resized sprite 4
-s6.size = 0.05
-
-s7 = pe.Sprite(f"{sp}/mario_01.png", (250, 250), pe.math.center((250, 250, 250, 250)), 90,
-               pivot="center")  # Rotated sprite
 
 mouse_icon = pe.Image(f'{sp}/mouse_middle.png', (50, 50))
 debug_icon = pe.Image(f'{sp}/debug_icon.png', (50, 50))
