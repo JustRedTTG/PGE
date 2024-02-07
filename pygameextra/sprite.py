@@ -75,7 +75,7 @@ class Sprite:
         self.index = min(self.reference.frames - 1, max(0, self.index))
 
     @lru_cache(100)
-    def _get_finished_surface(self, _1, _2, _3, _4, _5, _6, _7, _8):
+    def _get_finished_surface(self, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10):
         if isinstance(self.reference, Sheet):  # Check if the reference is a sprite sheet
             s = Surface((self.reference.handler.width, self.reference.handler.height))
             if self.alpha:
@@ -95,10 +95,10 @@ class Sprite:
 
     def get_finished_surface(self):
         return self._get_finished_surface(
-            self.speed, id(self.reference.surface),
+            self.speed, id(self.reference.surface), self.reference.get(self),
             (self.reference.handler.width, self.reference.handler.height) if isinstance(
                 self.reference, Sheet) else (self.reference.width, self.reference.height), self.flip_x, self.flip_y,
-            self.size, self.alpha, self.flags
+            self.size, self.alpha, self.flags, int(self.index)
         )
 
     def display(self, position=None, area=None):
@@ -107,7 +107,7 @@ class Sprite:
 
         if self.sheet_or_animator:
             s = self.get_finished_surface()
-            display.blit(s, self.reference.custom_offset(rect).topleft)
+            display.blit(s, self.reference.custom_offset(rect.copy()).topleft)
             self.speed = self.reference.speed or self.speed or 0
             self.skip_frame()
         else:

@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = "2.0.0b51"
+version = "2.0.0b52"
 short = 'Pygame. Made easier.'
 long = '''Pygame Extra is an extension for pygame, 
 you can easily make complex games and or apps with much less code then you would otherwise, 
