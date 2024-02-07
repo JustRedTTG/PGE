@@ -173,3 +173,10 @@ class Animator:
             return self.get_sheet().speed
         except AttributeError:
             return None
+
+    @property
+    def custom_offset(self):
+        try:
+            return self.get_sheet().custom_offset
+        except AttributeError:
+            return None

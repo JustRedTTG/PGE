@@ -9,12 +9,15 @@ from pygameextra import settings
 from pygameextra.sheet import Sheet
 from pygameextra.animator import Animator
 from pygameextra.sheet_handlers import *
+from functools import lru_cache
 
 
 class Sprite:
     sheet_or_animator = False
+    reference: Union[Sheet, Surface, Animator]
 
-    def __init__(self, sprite_reference: Union[Sheet, SurfaceFileType, Animator], scale=None, pos: tuple = (0, 0), name="Sprite",
+    def __init__(self, sprite_reference: Union[Sheet, SurfaceFileType, Animator], scale=None, pos: tuple = (0, 0),
+                 name="Sprite",
                  pivot='topleft', layer=0, speed: float = 0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
@@ -71,12 +74,9 @@ class Sprite:
             self.reset()
         self.index = min(self.reference.frames - 1, max(0, self.index))
 
-    def display(self, position=None, area=None):
-        rect = Rect(0, 0, *self.size)
-        rect.__setattr__(self.pivot, position or self.pos)
-
+    @lru_cache(100)
+    def _get_finished_surface(self, _1, _2, _3, _4, _5, _6, _7, _8):
         if isinstance(self.reference, Sheet):  # Check if the reference is a sprite sheet
-            # self.reference.surface.layer = self.layer  # Update the layer, just in case
             s = Surface((self.reference.handler.width, self.reference.handler.height))
             if self.alpha:
                 s.set_alpha(self.alpha, self.flags)
@@ -88,14 +88,30 @@ class Sprite:
                 s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))
-        else:
-            display.blit(self.reference, position or self.pos, area)  # Display an image
         if self.sheet_or_animator:
             s.resize(self.size)
             s.flip(flip_x=self.flip_x, flip_y=self.flip_y)
-            display.blit(s, rect.topleft)
+        return s
+
+    def get_finished_surface(self):
+        return self._get_finished_surface(
+            self.speed, id(self.reference.surface),
+            (self.reference.handler.width, self.reference.handler.height) if isinstance(
+                self.reference, Sheet) else (self.reference.width, self.reference.height), self.flip_x, self.flip_y,
+            self.size, self.alpha, self.flags
+        )
+
+    def display(self, position=None, area=None):
+        rect = Rect(0, 0, *self.size)
+        rect.__setattr__(self.pivot, position or self.pos)
+
+        if self.sheet_or_animator:
+            s = self.get_finished_surface()
+            display.blit(s, self.reference.custom_offset(rect).topleft)
             self.speed = self.reference.speed or self.speed or 0
             self.skip_frame()
+        else:
+            display.blit(self.reference, position or self.pos, area)
 
     @property
     def delta_time(self):

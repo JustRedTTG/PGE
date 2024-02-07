@@ -1,5 +1,6 @@
 """PYGAME EXTRA Sheet script
 This script manages the sheet class"""
+from abc import abstractmethod
 
 import pygame
 from pygameextra.modified import get_surface_file, SurfaceFileType
@@ -25,3 +26,7 @@ class Sheet:
         return self.handler.get(sprite.index if not self.pong else (
             sprite.index if sprite.index < self._frames else self.frames - sprite.index
         ))
+
+    @abstractmethod
+    def custom_offset(self, rect):
+        return rect
