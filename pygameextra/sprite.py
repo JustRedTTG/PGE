@@ -107,7 +107,7 @@ class Sprite:
 
         if self.sheet_or_animator:
             s = self.get_finished_surface()
-            display.blit(s, self.reference.custom_offset(rect.copy()).topleft)
+            display.blit(s, self.reference.custom_offset(rect.copy(), self).topleft)
             self.speed = self.reference.speed or self.speed or 0
             self.skip_frame()
         else:

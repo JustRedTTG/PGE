@@ -28,5 +28,5 @@ class Sheet:
         ))
 
     @abstractmethod
-    def custom_offset(self, rect):
+    def custom_offset(self, rect, sprite: 'Sprite'):
         return rect
