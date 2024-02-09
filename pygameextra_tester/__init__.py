@@ -16,9 +16,9 @@ bY = pe.Image(f"{sp}/Ybutton.png", size=(100, 100), position=(100, 0))
 bY2 = pe.Image(f"{sp}/Ybutton.png", size=(20, 20), position=(100, 0))
 
 # Sprite sheet sprites
-s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16), .1, False, True), (250, 250), (0, 0),
+s1 = pe.Sprite(pe.Sheet(f"{sp}/rows.png", pe.SheetHorizontal(16, 16), .1, False, True), (250, 250), (1, 1), (0, 0),
                pivot="topleft")  # Rows sprite
-s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2, True, True), (250, 250), (250, 0),
+s2 = pe.Sprite(pe.Sheet(f"{sp}/columns.png", pe.SheetVertical(32, 32), .2, True, True), (250, 250), (1, 1), (250, 0),
                pivot="topleft")  # Columns sprite
 animation_sheets = {
     '1_F_F': pe.Sheet(f"{sp}/animation_1.png", pe.SheetHorizontal(35, 35), .2, False, False),
@@ -31,10 +31,10 @@ animation_sheets = {
     '4_T_F': pe.Sheet(f"{sp}/animation_4.png", pe.SheetHorizontal(35, 35), .2, True, False),
 }
 
-s_f_f = pe.Sprite(animation_sheets['1_F_F'], (35, 35), (0, 250), pivot="topleft")
-s_f_t = pe.Sprite(animation_sheets['2_F_T'], (35, 35), (40, 250), pivot="topleft")
-s_t_f = pe.Sprite(animation_sheets['3_T_F'], (35, 35), (80, 250), pivot="topleft")
-s_t_t = pe.Sprite(animation_sheets['4_T_T'], (35, 35), (120, 250), pivot="topleft")
+s_f_f = pe.Sprite(animation_sheets['1_F_F'], (35, 35), (1, 1), (0, 250), pivot="topleft")
+s_f_t = pe.Sprite(animation_sheets['2_F_T'], (35, 35), (1, 1), (40, 250), pivot="topleft")
+s_t_f = pe.Sprite(animation_sheets['3_T_F'], (35, 35), (1, 1), (80, 250), pivot="topleft")
+s_t_t = pe.Sprite(animation_sheets['4_T_T'], (35, 35), (1, 1), (120, 250), pivot="topleft")
 
 s_anim = pe.Sprite(pe.Animator({
     "trigger_F_F": animation_sheets['3_F_F'],
@@ -42,7 +42,7 @@ s_anim = pe.Sprite(pe.Animator({
     "trigger_T_F": animation_sheets['4_T_F'],
     "hover": animation_sheets['1_T_F'],
     "idle": animation_sheets['1_F_T'],
-}, ("trigger_F_F", "trigger_F_T", "trigger_T_F")), (35, 35), (0, 290), pivot="topleft")
+}, ("trigger_F_F", "trigger_F_T", "trigger_T_F")), (35, 35), (1, 1), (0, 290), pivot="topleft")
 s_anim.animator.idle = True
 
 mouse_icon = pe.Image(f'{sp}/mouse_middle.png', (50, 50))

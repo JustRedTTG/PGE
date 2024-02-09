@@ -15,8 +15,6 @@ class Animator:
 
     def __init__(self, config: dict, loop_ender: Iterable = None):
         self.key_values = {}
-        self.width = 0
-        self.height = 0
         self.config = config
         self._prev_sheet = None
         self.loop_ender = loop_ender if loop_ender is not None else []
@@ -41,9 +39,6 @@ class Animator:
                 self.many_to_one_rules[key] = value
                 for sub_key in key:
                     self.key_values[sub_key] = self.key_values.get(sub_key, False)
-            if isinstance(value, Sheet):
-                self.width = value.handler.width
-                self.height = value.handler.height
 
         self._config = {**self.one_to_one_rules, **self.many_to_one_rules}
 
@@ -180,3 +175,21 @@ class Animator:
             return self.get_sheet().custom_offset
         except AttributeError:
             return None
+
+    @property
+    def width(self):
+        try:
+            return self.get_sheet().handler.width
+        except AttributeError:
+            return None
+
+    @property
+    def height(self):
+        try:
+            return self.get_sheet().handler.height
+        except AttributeError:
+            return None
+
+    @property
+    def size(self):
+        return (self.width, self.height)

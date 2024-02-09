@@ -16,25 +16,25 @@ class Sprite:
     sheet_or_animator = False
     reference: Union[Sheet, Surface, Animator]
 
-    def __init__(self, sprite_reference: Union[Sheet, SurfaceFileType, Animator], scale=None, pos: tuple = (0, 0),
+    def __init__(self, sprite_reference: Union[Sheet, SurfaceFileType, Animator], resize: tuple = None,
+                 scale: tuple = (1, 1), pos: tuple = (0, 0),
                  name="Sprite",
                  pivot='topleft', layer=0, speed: float = 0):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
-            self.size = scale or (self.reference.handler.width, self.reference.handler.height)
+            self.resize = resize or (self.reference.handler.width, self.reference.handler.height)
             self.sheet_or_animator = True
         elif isinstance(sprite_reference, Animator):  # Using animator
             self.animator = sprite_reference
             self.reference = sprite_reference
-            self.size = scale or (self.reference.width, self.reference.height)
+            self.resize = resize
             self.sheet_or_animator = True
         elif isinstance(sprite_reference, SurfaceFileType):  # Using SurfaceFileType
             self.reference = get_surface_file(sprite_reference, layer)
-            if scale:
-                self.reference.resize(scale)
-            self.size = scale or self.reference.size
+            self.resize = resize or self.reference.size
         else:
             raise TypeError("Sprite reference should be of type Sheet | Animator or a Surface/File like object or path")
+        self.scale = scale
         self.pos = pos
         self.name = name
         self.layer = layer
@@ -88,9 +88,11 @@ class Sprite:
                 s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))
-        if self.sheet_or_animator:
-            s.resize(self.size)
-            s.flip(flip_x=self.flip_x, flip_y=self.flip_y)
+        else:
+            s = Surface(self.reference.size)
+            s.stamp(self.reference, (0, 0))
+        s.resize(self.size)
+        s.flip(flip_x=self.flip_x, flip_y=self.flip_y)
         return s
 
     def get_finished_surface(self):
@@ -107,11 +109,11 @@ class Sprite:
 
         if self.sheet_or_animator:
             s = self.get_finished_surface()
-            display.blit(s, self.reference.custom_offset(rect.copy(), self).topleft)
+            display.blit(s, self.reference.custom_offset(rect.copy(), self).topleft, area)
             self.speed = self.reference.speed or self.speed or 0
             self.skip_frame()
         else:
-            display.blit(self.reference, position or self.pos, area)
+            display.blit(self.get_finished_surface(), position or self.pos, area)
 
     @property
     def delta_time(self):
@@ -140,3 +142,8 @@ class Sprite:
             return self.reference.set_alpha(alpha, flags)
         self.alpha = alpha
         self.flags = flags
+
+    @property
+    def size(self):
+        return tuple(
+            resize * scale for resize, scale in zip(self.resize if self.resize else self.reference.size, self.scale))
