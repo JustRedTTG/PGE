@@ -96,12 +96,18 @@ class Sprite:
         return s
 
     def get_finished_surface(self):
-        return self._get_finished_surface(
-            self.speed, id(self.reference.surface), self.reference.get(self),
-            (self.reference.handler.width, self.reference.handler.height) if isinstance(
-                self.reference, Sheet) else (self.reference.width, self.reference.height), self.flip_x, self.flip_y,
-            self.size, self.alpha, self.flags, int(self.index)
-        )
+        if self.sheet_or_animator:
+            return self._get_finished_surface(
+                self.speed, id(self.reference.surface), self.reference.get(self),
+                (self.reference.handler.width, self.reference.handler.height) if isinstance(
+                    self.reference, Sheet) else (self.reference.width, self.reference.height), self.flip_x, self.flip_y,
+                self.size, self.alpha, self.flags, int(self.index)
+            )
+        else:
+            return self._get_finished_surface(
+                self.speed, id(self.reference.surface), None, self.reference.size, self.flip_x, self.flip_y,
+                self.size, self.alpha, self.flags, None
+            )
 
     def display(self, position=None, area=None):
         rect = Rect(0, 0, *self.size)
