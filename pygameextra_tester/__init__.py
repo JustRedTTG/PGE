@@ -362,7 +362,7 @@ def run():
         log.render()
         pe.display.update(120)
         pe.stop_recording()
-        if pe.mouse.clicked()[2]:
+        if pe.mouse.clicked()[1]:
             pe.start_debug()
 
 
