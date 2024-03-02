@@ -13,19 +13,29 @@ class Sheet:
         self.surface = get_surface_file(file)
         handler.map(self.surface)
         self.handler = handler
-        self.speed = speed
+        self._speed = speed
         self.pong = pong
         self.loop = loop
-        self._frames = len(self.handler.mapping)
+        self.frames = len(self.handler.mapping)
 
     @property
-    def frames(self):
-        return self._frames * (1 if not self.pong else 2)
+    def speed(self):
+        return self._speed * (1 if not self.pong else .5)
+
+    @speed.setter
+    def speed(self, value):
+        self._speed = value * (1 if not self.pong else 2)
 
     def get(self, sprite: 'Sprite'):
-        return self.handler.get(sprite.index if not self.pong else (
-            sprite.index if sprite.index < self._frames else self.frames - sprite.index
-        ))
+        if not self.pong:
+            return self.handler.get(sprite.index)
+        else:
+            half = self.frames // 2
+            if sprite.index < half:
+                frame = sprite.index * 2
+            else:
+                frame = self.frames - (sprite.index - half) * 2
+            return self.handler.get(frame) if sprite.multiplier > 0 else self.handler.get(self.frames - frame-1)
 
     @abstractmethod
     def custom_offset(self, rect, sprite: 'Sprite'):

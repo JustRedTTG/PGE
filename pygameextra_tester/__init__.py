@@ -29,12 +29,20 @@ animation_sheets = {
     '1_T_F': pe.Sheet(f"{sp}/animation_1.png", pe.SheetHorizontal(35, 35), .2, True, False),
     '3_F_F': pe.Sheet(f"{sp}/animation_3.png", pe.SheetHorizontal(35, 35), .2, False, False),
     '4_T_F': pe.Sheet(f"{sp}/animation_4.png", pe.SheetHorizontal(35, 35), .2, True, False),
+    '5_T_T': pe.Sheet(f"{sp}/animation_5.png", pe.SheetHorizontal(35, 35), .2, True, True),
+    '6_F_T': pe.Sheet(f"{sp}/animation_6.png", pe.SheetHorizontal(35, 35), .2, False, True),
 }
 
 s_f_f = pe.Sprite(animation_sheets['1_F_F'], (35, 35), (1, 1), (0, 250), pivot="topleft")
 s_f_t = pe.Sprite(animation_sheets['2_F_T'], (35, 35), (1, 1), (40, 250), pivot="topleft")
 s_t_f = pe.Sprite(animation_sheets['3_T_F'], (35, 35), (1, 1), (80, 250), pivot="topleft")
 s_t_t = pe.Sprite(animation_sheets['4_T_T'], (35, 35), (1, 1), (120, 250), pivot="topleft")
+s_nr_t = pe.Sprite(animation_sheets['5_T_T'], (35, 35), (1, 1), (160, 250), pivot="topleft")
+s_r_t = pe.Sprite(animation_sheets['5_T_T'], (35, 35), (1, 1), (195, 250), pivot="topleft")
+s_nr_f = pe.Sprite(animation_sheets['6_F_T'], (35, 35), (1, 1), (235, 250), pivot="topleft")
+s_r_f = pe.Sprite(animation_sheets['6_F_T'], (35, 35), (1, 1), (270, 250), pivot="topleft")
+s_r_f.multiplier = -1
+s_r_t.multiplier = -1
 
 s_anim = pe.Sprite(pe.Animator({
     "trigger_F_F": animation_sheets['3_F_F'],
@@ -208,6 +216,13 @@ def run():
                              action=lambda: exec("s.index = 0", {'s': s_t_f}))
 
             s_t_t.display()
+
+            s_nr_t.display()
+            s_r_t.display()
+
+            s_nr_f.display()
+            s_r_f.display()
+
 
             s_anim.display()
             s_anim_area = (*s_anim.pos, *s_anim.size)

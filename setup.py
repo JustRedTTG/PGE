@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = "2.0.0b55"
+version = "2.0.0b56"
 short = 'Pygame. Made easier.'
 long = '''Pygame Extra is an extension for pygame, 
 you can easily make complex games and or apps with much less code then you would otherwise, 
@@ -25,6 +25,7 @@ setup(
         'columns.png', 'rows.png',
         'Xbutton.png', 'Ybutton.png',
         'animation_1.png', 'animation_2.png', 'animation_3.png', 'animation_4.png',
+        'animation_5.png', 'animation_6.png',
         'debug_icon.png', 'mouse_middle.png'
     ]},
     keywords=['python'],
