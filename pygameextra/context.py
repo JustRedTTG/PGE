@@ -41,8 +41,10 @@ class Context(ABC):
     surface: Surface = None
     _position: Tuple[Number, Number]
     area_based: bool = False
+    before_pre_child_contexts: list
     pre_child_contexts: list
     post_child_contexts: list
+    after_post_child_contexts: list
 
     def __init__(self):
         self.surface = Surface(self.size)
@@ -51,8 +53,10 @@ class Context(ABC):
         else:
             self.position = self.AREA[:-2]
         self.surface.pos = self.position
+        self.before_pre_child_contexts = []
         self.pre_child_contexts = []
         self.post_child_contexts = []
+        self.after_post_child_contexts = []
 
     @abstractmethod
     def loop(self):
@@ -82,13 +86,17 @@ class Context(ABC):
 
     def _loop(self):
         self.events()
+        self.handle_children(self.before_pre_child_contexts)
         self.pre_loop()
         self.handle_children(self.pre_child_contexts)
         self.loop()
         self.handle_children(self.post_child_contexts)
         self.post_loop()
-        self.pre_child_contexts = []
-        self.post_child_contexts = []
+        self.handle_children(self.after_post_child_contexts)
+        self.before_pre_child_contexts.clear()
+        self.pre_child_contexts.clear()
+        self.post_child_contexts.clear()
+        self.after_post_child_contexts.clear()
 
     @property
     def size(self):
@@ -200,10 +208,14 @@ class ChildContext(ABC):
         self._loop()
 
     def __call__(self):
-        if self.LAYER == layer_methods.PRE_LAYER:
+        if self.LAYER == layer_methods.BEFORE_PRE_LAYER:
+            self.parent_context.before_pre_child_contexts.append(self)
+        elif self.LAYER == layer_methods.PRE_LAYER:
             self.parent_context.pre_child_contexts.append(self)
         elif self.LAYER == layer_methods.POST_LAYER:
             self.parent_context.post_child_contexts.append(self)
+        elif self.LAYER == layer_methods.AFTER_POST_LAYER:
+            self.parent_context.after_post_child_contexts.append(self)
 
     def __getattr__(self, item):
         try:
