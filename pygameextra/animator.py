@@ -17,6 +17,7 @@ class Animator:
         self.key_values = {}
         self.config = config
         self._prev_sheet = None
+        self._prev_sheet_key = None
         self.loop_ender = loop_ender if loop_ender is not None else []
 
     @property
@@ -106,6 +107,7 @@ class Animator:
 
     def get_sheet(self) -> Union[Sheet, None]:
         sheet_dict, sheet_key = self._get_sheet(frozendict(self.key_values))
+        self._prev_sheet_key = sheet_key
         if not sheet_dict:
             return None
         return self._final_sheet(super().__getattribute__(sheet_dict)[sheet_key])
