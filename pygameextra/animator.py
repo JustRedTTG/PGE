@@ -139,17 +139,17 @@ class Animator:
     def reset(self):
         sheet_dict, sheet_key = self._get_sheet(frozendict(self.key_values))
         if not self.loop:
-            if isinstance(sheet_key, Iterable):
+            if isinstance(sheet_key, str):
+                for loop_ender in self.loop_ender:
+                    if sheet_key in loop_ender:
+                        self.__setattr__(sheet_key, False)
+                        return True
+            else:
                 for key in sheet_key:
                     for loop_ender in self.loop_ender:
                         if key in loop_ender:
                             self.__setattr__(key, False)
                             return True
-            else:
-                for loop_ender in self.loop_ender:
-                    if sheet_key in loop_ender:
-                        self.__setattr__(sheet_key, False)
-                        return True
         return False
 
     def get(self, sprite: 'Sprite'):

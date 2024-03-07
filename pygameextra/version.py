@@ -1,5 +1,5 @@
 VERSION = '2.0.0'
-revision = 58
+revision = 60
 alpha = False
 beta = True
 release_candidate = False
