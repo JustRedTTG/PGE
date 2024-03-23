@@ -2,8 +2,10 @@
 <!DOCTYPE instance-profile
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
-<instance-profile id="docs" name="PGE docs"
-                  start-page="Getting-Started.md" is-library="true" status="eap">
+<instance-profile id="guide" name="PGE guide"
+                  start-page="Introduction.md" is-library="true" status="eap">
 
+    <toc-element topic="Introduction.md"/>
     <toc-element topic="Getting-Started.md"/>
+    <toc-element topic="Contexts.md"/>
 </instance-profile>

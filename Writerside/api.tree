@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="api"
+                 name="PGE API docs"
+                 start-page="pge-api-docs.md">
+
+    <toc-element topic="pge-api-docs.md"/>
+</instance-profile>
