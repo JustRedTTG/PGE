@@ -80,6 +80,23 @@ pe.draw.rect((*pe.colors.red, 150), (0, 0, 100, 100), w=5)
 ```python
 pe.draw.rect((*pe.colors.red, 150), (0, 0, 100, 100))
 ```
+
+You can also make any of the 4 edges round
+
+> Using the edge_rounding parameter will make all edges the same rounding value
+> You can also change the roundness of each edge individually
+> ```python
+> edge_rounding: int = -1
+> edge_rounding_topright: int = -1
+> edge_rounding_topleft: int = -1
+> edge_rounding_bottomright: int = -1
+> edge_rounding_bottomleft: int = -1
+> ```
+> Leaving the value to -1 which is the default will make the edge not rounded
+> Notice that if you pass edge_rounding it will override the individual edge roundings
+> if they have -1 set as their value, this can be avoided by setting it to 0
+
+
 <img src="pe.draw.rect(3).png" width="50" height="50" style="inline"/>
 
 ```python
