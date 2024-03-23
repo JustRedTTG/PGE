@@ -2,7 +2,9 @@
 <buildprofiles xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/build-profiles.xsd"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <variables></variables>
+    <variables>
+        <header-logo>mini-logo.png</header-logo>
+    </variables>
     <build-profile instance="docs">
         <variables>
             <noindex-content>true</noindex-content>
