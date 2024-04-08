@@ -78,18 +78,20 @@ class Sprite:
     def _get_finished_surface(self, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10):
         if isinstance(self.reference, Sheet):  # Check if the reference is a sprite sheet
             s = Surface((self.reference.handler.width, self.reference.handler.height))
-            if self.alpha:
+            if self.alpha is not None:
                 s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))  # Display to area, according to the sprite sheet handler
         elif isinstance(self.reference, Animator):
             s = Surface((self.reference.width, self.reference.height))
-            if self.alpha:
+            if self.alpha is not None:
                 s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference.surface, (0, 0),
                     self.reference.get(self))
         else:
             s = Surface(self.reference.size)
+            if self.alpha is not None:
+                s.set_alpha(self.alpha, self.flags)
             s.stamp(self.reference, (0, 0))
         s.resize(self.size)
         s.flip(flip_x=self.flip_x, flip_y=self.flip_y)
@@ -144,8 +146,6 @@ class Sprite:
         return self.pos[1]
 
     def set_alpha(self, alpha: int, flags: int = 0) -> None:
-        if isinstance(self.reference, Surface):
-            return self.reference.set_alpha(alpha, flags)
         self.alpha = alpha
         self.flags = flags
 
