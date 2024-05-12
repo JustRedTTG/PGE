@@ -18,7 +18,9 @@ class TestSurface(unittest.TestCase):
 
     def test_compressing_surface(self):
         surface = pe.get_surface_file(pe.Surface((10, 10)))
-        surface.compress()
+        compressed = surface.compress()
+        as_dict = compressed.to_dict()
+        pe.CompressedSurface.from_dict(as_dict)
 
     def test_load_compressed_surface(self):
         surface = pe.get_surface_file(pe.Surface((10, 10)))
