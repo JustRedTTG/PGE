@@ -1,11 +1,11 @@
 from typing import Union
 
-from pygameextra import settings, colors, display, draw, fill
-from pygameextra.modified import Surface
+import pygameextra as pe
+import pygameextra.modified as modified
 
 
 def record(item):
-    settings.recording_data.append(item)
+    pe.settings.recording_data.append(item)
 
 
 class Blit:
@@ -118,7 +118,7 @@ def check_boundary(item):
 
 
 def sorter(item):
-    if type(item) is display.display_reference.size:
+    if type(item) is pe.display.display_reference.size:
         return 0
     return 1
 
@@ -138,49 +138,49 @@ def reconstruct(data: list):
         )
     final_size = (rect[2] - rect[0], rect[3] - rect[1])
     offset = (-rect[0], -rect[1])
-    surface = Surface(final_size)
-    old_context = display.display_reference
-    display.context(surface)
+    modified.Surface = modified.Surface(final_size)
+    old_context = pe.display.display_reference
+    pe.display.context(modified.Surface)
 
     for item in data:
         if type(item) is Blit:
-            display.blit(item.obj, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.area)
+            pe.display.blit(item.obj, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.area)
         elif type(item) is FillFull:
-            draw.rect(item.color, (*offset, *size))
+            pe.draw.rect(item.color, (*offset, *size))
         elif type(item) is FillTransparency:
-            fill.transparency(item.color)
+            pe.fill.transparency(item.color)
         elif type(item) is FillInterlace:
-            fill.interlace(item.color)
+            pe.fill.interlace(item.color)
         elif type(item) is DrawLine:
-            draw.line(item.color, (item.pos_a[0] + offset[0], item.pos_a[1] + offset[1]),
+            pe.draw.line(item.color, (item.pos_a[0] + offset[0], item.pos_a[1] + offset[1]),
                       (item.pos_b[0] + offset[0], item.pos_b[1] + offset[1]), item.w)
         elif type(item) is DrawRect:
-            draw.rect(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
+            pe.draw.rect(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
                       item.w)
         elif type(item) is DrawEllipse:
-            draw.ellipse(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
+            pe.draw.ellipse(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
                          item.w)
         elif type(item) is DrawCircle:
-            draw.circle(item.color, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.radius, item.w)
+            pe.draw.circle(item.color, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.radius, item.w)
         elif type(item) is DrawPolygon:
             points = []
             for point in item.points:
                 points.append((point[0] + offset[0], point[1] + offset[1]))
-            draw.polygon(item.color, points, item.w)
+            pe.draw.polygon(item.color, points, item.w)
 
-    draw.rect(colors.pge_dark, (*offset, *size), 2)
-    draw.rect(colors.pge_light, (*offset, *size), 1)
-    settings.recording_data.append(Portion(*offset, *size))
+    pe.draw.rect(pe.colors.pge_dark, (*offset, *size), 2)
+    pe.draw.rect(pe.colors.pge_light, (*offset, *size), 1)
+    pe.settings.recording_data.append(Portion(*offset, *size))
 
     # noinspection PyTypeChecker
-    display.context(old_context)
+    pe.display.context(old_context)
 
-    return surface
+    return modified.Surface
 
 
 def comment(string: str = "Blank comment."):
-    if settings.recording:
-        settings.recording_data.append(string)
+    if pe.settings.recording:
+        pe.settings.recording_data.append(string)
 
 
 def padding_comment():

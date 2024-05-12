@@ -2,6 +2,8 @@
 This script manages all pygame modifications"""
 import zlib
 import pygame
+
+from pygameextra import display
 from pygameextra.rect import Rect
 from pygameextra.sorters import layer_sorter
 from typing import Union, IO, List, Literal
@@ -61,6 +63,7 @@ class Surface:
         self.area = None  # Used by stamps function
         self.pos = None  # Used by stamps function
         self.frames = 1  # Used by sprite animation function, if used improperly
+        self._display_backup = None
 
     def stamp(self, source: Union['Surface', pygame.Surface], position: tuple = (0, 0), area: tuple = None,
               special_flags: int = 0):
@@ -126,6 +129,13 @@ class Surface:
 
     def save_to_file(self, file: str):
         pygame.image.save(self.surface, file)
+
+    def __enter__(self):
+        self._display_backup = display.display_reference
+        display.context(self)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        display.context(self._display_backup)
 
 
 SurfaceFileType = Union[str, IO, Surface, pygame.Surface, CompressedSurface]
