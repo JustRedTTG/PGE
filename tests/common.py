@@ -22,14 +22,18 @@ class PygameExtraTest(unittest.TestCase):
             color_a = sheet.surface.get_at(rect[:2])[0]
             color_b = sheet.surface.get_at(tuple(pos + size - 1 for pos, size in zip(rect[:2], rect[2:])))[0]
 
+            on_color = 'A'
             try:
                 self.assertEqual(color_a, i, "The sheet color A should match the gradient index")
+                on_color = 'B'
+                self.assertEqual(color_b, i, "The sheet color B should match the gradient index")
             except AssertionError as e:
                 surface = pe.Surface(size=rect[2:])
                 surface.stamp(sheet.surface, area=rect)
-                surface.save_to_file(f"tests/_test_errors/test_sheet_COLOR_A_{i}_cut.png")
+                surface.save_to_file(f"tests/_test_errors/test_sheet_COLOR_{on_color}_{i}_cut.png")
                 with sheet.surface:
                     pe.draw.rect(pe.colors.red, rect, 1)
-                sheet.surface.save_to_file(f"tests/_test_errors/test_sheet_COLOR_A_{i}_outlined.png")
+                sheet.surface.save_to_file(f"tests/_test_errors/test_sheet_COLOR_{on_color}_{i}_outlined.png")
                 raise e
-            self.assertEqual(color_b, i, "The sheet color B should match the gradient index")
+
+
