@@ -124,6 +124,9 @@ class Surface:
     def compress(self) -> CompressedSurface:
         return CompressedSurface(self.surface)
 
+    def save_to_file(self, file: str):
+        pygame.image.save(self.surface, file)
+
 
 SurfaceFileType = Union[str, IO, Surface, pygame.Surface, CompressedSurface]
 
