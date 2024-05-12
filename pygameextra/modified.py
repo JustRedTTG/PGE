@@ -1,15 +1,46 @@
 """PYGAME EXTRA Modifications script
 This script manages all pygame modifications"""
-from typing import Union, List
-
+import zlib
 import pygame
 from pygameextra.rect import Rect
 from pygameextra.sorters import layer_sorter
-from typing import Union, IO
+from typing import Union, IO, List, Literal
+
+_string_format = Literal["P", "RGB", "RGBX", "RGBA", "ARGB", "BGRA"]
 
 
 class SurfaceException(Exception):
     pass
+
+
+class CompressedSurface:
+    def __init__(
+            self,
+            file: 'SurfaceFileType',
+            level: int = zlib.Z_BEST_COMPRESSION,
+            image_format: _string_format = 'RGBA'):
+        surface = get_surface_file(file)
+        self.format: _string_format = image_format
+        self.compressed = zlib.compress(pygame.image.tobytes(surface.surface, self.format), level=level)
+        self.size = surface.size
+
+    def decompress(self) -> 'Surface':
+        return Surface(surface=pygame.image.frombuffer(zlib.decompress(self.compressed), self.size, self.format))
+
+    def to_dict(self) -> dict:
+        return {
+            'compressed': self.compressed,
+            'format': self.format,
+            'size': self.size
+        }
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> 'CompressedSurface':
+        instance = cls.__new__(cls)
+        instance.compressed = raw['compressed']
+        instance.format = raw['format']
+        instance.size = raw['size']
+        return instance
 
 
 class Surface:
@@ -90,8 +121,11 @@ class Surface:
     def height(self):
         return self.size[1]
 
+    def compress(self) -> CompressedSurface:
+        return CompressedSurface(self.surface)
 
-SurfaceFileType = Union[str, IO, Surface, pygame.Surface]
+
+SurfaceFileType = Union[str, IO, Surface, pygame.Surface, CompressedSurface]
 
 
 def transparent_surface(area: tuple, alpha: int):
@@ -109,5 +143,7 @@ def get_surface_file(file: SurfaceFileType, layer: int = 0) -> Surface:
             return file
         elif isinstance(file, pygame.Surface):
             return Surface(surface=file, layer=layer)
+        elif isinstance(file, CompressedSurface):
+            return file.decompress()
         else:
             raise TypeError("Please make sure file is a path / surface / file-like object")
