@@ -19,7 +19,7 @@ class Sprite:
     def __init__(self, sprite_reference: Union[Sheet, SurfaceFileType, Animator], resize: tuple = None,
                  scale: tuple = (1, 1), pos: tuple = (0, 0),
                  name="Sprite",
-                 pivot='topleft', layer=0, speed: float = 0):
+                 pivot='topleft', layer=0, speed: float = None):
         if isinstance(sprite_reference, Sheet):  # Using sprite sheet
             self.reference = sprite_reference
             self.resize = resize or (self.reference.handler.width, self.reference.handler.height)
