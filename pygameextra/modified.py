@@ -27,7 +27,7 @@ class CompressedSurface:
         self.size = surface.size
 
     def decompress(self) -> 'Surface':
-        return Surface(surface=pygame.image.frombuffer(zlib.decompress(self.compressed), self.size, self.format))
+        return Surface(surface=pygame.image.frombytes(zlib.decompress(self.compressed), self.size, self.format))
 
     def to_dict(self) -> dict:
         return {
