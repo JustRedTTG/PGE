@@ -157,3 +157,4 @@ icon.png
 upload.bat
 install and upload.bat
 upload.sh
+/tests.py
