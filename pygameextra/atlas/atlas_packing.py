@@ -14,7 +14,7 @@ def try_pack(rects: List[Rect], size: Tuple[int, int]):
         rect = queue.pop(0)
         if not packer.pack(Box(rect.width, rect.height)):
             return False, rect
-        
+
     for packed_rect, rect in zip(packer.packed, rects):
         rect.x = packed_rect.x
         rect.y = packed_rect.y
@@ -25,7 +25,7 @@ def try_pack(rects: List[Rect], size: Tuple[int, int]):
 def pack(rects: List[Rect], size: Tuple[int, int]):
     while not (result := try_pack(rects, size))[0]:
         size = (size[0] + result[1].width // 2, size[1] + result[1].height // 2)
-    return result[1]
+    return result[1], size
 
 
 def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: dict = None):
@@ -50,7 +50,7 @@ def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: d
     }
 
     # Pack the rects
-    packing_map = pack(rects, begin_size)
+    packing_map, size = pack(rects, begin_size)
 
     # Create temporary mappings to clean up the packing map
     temporary_mappings = {key: [] for key in keys}
@@ -69,4 +69,4 @@ def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: d
             ]
         ]
 
-    return mappings
+    return mappings, size

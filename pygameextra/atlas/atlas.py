@@ -74,5 +74,14 @@ class Atlas:
                 with surfaces[-1][1]:
                     display.blit(sheet.surface, area=mapping)
 
-        print(pack_surfaces(surfaces))
+        mappings, size = pack_surfaces(surfaces)
 
+        surface = Surface(size)
+
+        with surface:
+            for key, sheet in sheets.items():
+                for index in range(sheet.frames):
+                    mapping = sheet.handler.get(index)
+                    display.blit(sheet.surface, mappings[key][index][:2], mapping)
+
+        return cls(surface, mappings)

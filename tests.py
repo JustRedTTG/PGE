@@ -23,7 +23,6 @@ class Tests(pe.GameContext):
         ]
 
         self.atlas = pe.Atlas.from_sheets({i: sheet for i, sheet in enumerate(self.sheets)})
-        exit()
 
     @lru_cache
     def sprite(self, index, use_atlas):
@@ -32,15 +31,17 @@ class Tests(pe.GameContext):
         return pe.Sprite(self.sheets[index], (self.SPRITE_RESIZE, self.SPRITE_RESIZE))
 
     def loop(self):
-        x, y = 0, 0
-        for i in range(len(self.sheets)):
-            for use_atlas in (False, True):
-                sprite = self.sprite(i, use_atlas)
-                sprite.display((x, y))
-                x += self.SPRITE_RESIZE
-                if x > self.width:
-                    x = 0
-                    y += self.SPRITE_RESIZE
+        # x, y = 0, 0
+        # for i in range(len(self.sheets)):
+        #     for use_atlas in (False, True):
+        #         sprite = self.sprite(i, use_atlas)
+        #         sprite.display((x, y))
+        #         x += self.SPRITE_RESIZE
+        #         if x > self.width:
+        #             x = 0
+        #             y += self.SPRITE_RESIZE
+
+        pe.display.blit(self.atlas.surface)
 
 
 tests = Tests()
