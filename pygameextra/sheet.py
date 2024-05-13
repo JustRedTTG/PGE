@@ -8,7 +8,7 @@ from pygameextra.sheet_handlers import *
 
 
 class Sheet:
-    def __init__(self, file: SurfaceFileType, handler: SheetHandler, speed: float = None, pong: bool = False,
+    def __init__(self, file: SurfaceFileType, handler: SheetHandler, speed: float = 0, pong: bool = False,
                  loop: bool = False):
         self.surface = get_surface_file(file)
         handler.map(self.surface)
@@ -16,7 +16,10 @@ class Sheet:
         self._speed = speed
         self.pong = pong
         self.loop = loop
-        self.frames = len(self.handler.mapping)
+
+    @property
+    def frames(self):
+        return len(self.handler.mapping)
 
     @property
     def speed(self):

@@ -1,17 +1,28 @@
 import pickle
-from typing import Union, List, Tuple
+from functools import lru_cache
+from types import FunctionType
+from typing import Union, List, Tuple, TypedDict, Dict
 
 from pygameextra import display, Rect
 from pygameextra.atlas.atlas_packing import pack_surfaces
 from pygameextra.modified import SurfaceFileType, get_surface_file, CompressedSurface, Surface
 from pygameextra.sheet import Sheet
-from pygameextra.sheet_handlers import SheetHandler
+from pygameextra.sheet_handlers import PropertySheetHandler, SheetMappingType
+
+
+class AtlasSheetConfiguration(TypedDict):
+    speed: float
+    loop: bool
+    pong: bool
+    custom_offset_function: FunctionType
 
 
 class AtlasFile:
-    def __init__(self, file: SurfaceFileType, mappings: dict):
+    def __init__(self, file: SurfaceFileType, mappings: Dict[str, SheetMappingType],
+                 sheet_configurations: Dict[str, AtlasSheetConfiguration] = None):
         self.surface = get_surface_file(file)
         self.mappings = mappings
+        self.sheet_configurations = sheet_configurations or {}
 
     @classmethod
     def load(cls, file: str):
@@ -19,33 +30,89 @@ class AtlasFile:
             raw = pickle.load(file)
         return cls(CompressedSurface.from_dict(raw['file']).decompress(), raw['mapping'])
 
-    @classmethod
-    def save(cls, file: SurfaceFileType, mapping: dict, save_location: str):
-        if isinstance(file, CompressedSurface):
-            compressed = file
-        else:
-            compressed = get_surface_file(file).compress()
+    def save(self, save_location: str):
+        compressed = self.surface.compress()
 
         with open(save_location, 'wb') as file:
-            pickle.dump({'file': compressed.to_dict(), 'mapping': mapping}, file)
+            pickle.dump({'file': compressed.to_dict(), 'mapping': self.mappings,
+                         'sheet_configurations': self.sheet_configurations or {}
+                         }, file)
 
 
 AtlasFileType = Union[SurfaceFileType, AtlasFile]
 
 
-class AtlasSheet:
-    pass
+class AtlasSheet(Sheet):
+    def __init__(self, atlas: 'Atlas', key: str):
+        self.atlas = atlas
+        self.key = key
+
+        self.__speed = self.atlas.sheet_configurations.get(key, {}).get('speed', 0)
+        self._pong = self.atlas.sheet_configurations.get(key, {}).get('pong', False)
+        self._loop = self.atlas.sheet_configurations.get(key, {}).get('loop', False)
+
+        self.handler = PropertySheetHandler(lambda: self.atlas.mappings[self.key])
+
+    @property
+    def surface(self):
+        return self.atlas.surface
+
+    @property
+    def _speed(self):
+        return self.__speed
+
+    @_speed.setter
+    def _speed(self, value):
+        self.__speed = value
+        self.atlas.sheet_configurations[self.key]['speed'] = value
+
+    @property
+    def pong(self):
+        return self._pong
+
+    @pong.setter
+    def pong(self, value):
+        self._pong = value
+        self.atlas.sheet_configurations[self.key]['pong'] = value
+
+    @property
+    def loop(self):
+        return self._loop
+
+    @loop.setter
+    def loop(self, value):
+        self._loop = value
+        self.atlas.sheet_configurations[self.key]['loop'] = value
+
+    def configure(self, speed: float = None, loop: bool = None, pong: bool = None):
+        self.speed = speed or self.speed
+        self.loop = loop or self.loop
+        self.pong = pong or self.pong
+
+        return self
+
+    def configure_from_dict(self, config: AtlasSheetConfiguration):
+        self.configure(config['speed'], config['loop'], config['pong'])
+
+        return self
+
+    def custom_offset(self, rect, sprite: 'Sprite'):
+        return rect
 
 
 class Atlas:
     """The atlas is a all-in-one sheet manager, it combines a single texture file into multiple sheets
     """
 
-    def __init__(self, file: AtlasFileType, mappings: dict = None):
+    def __init__(self, file: AtlasFileType, mappings: dict = None,
+                 sheet_configurations: Dict[str, AtlasSheetConfiguration] = None):
         if isinstance(file, AtlasFile):
             self._atlas_file = file
+        elif not mappings:
+            raise ValueError(
+                "Mappings must be provided if file is not an AtlasFile. Use load for loading from a PGE atlas file.")
         else:
-            self._atlas_file = AtlasFile(file, mappings)
+            self._atlas_file = AtlasFile(file, mappings, sheet_configurations)
 
     @property
     def surface(self):
@@ -54,6 +121,10 @@ class Atlas:
     @property
     def mappings(self):
         return self._atlas_file.mappings
+
+    @property
+    def sheet_configurations(self):
+        return self._atlas_file.sheet_configurations
 
     @classmethod
     def from_sheets(cls, sheets: dict):
@@ -75,7 +146,11 @@ class Atlas:
                     mapping = sheet.handler.get(index)
                     display.blit(sheet.surface, mappings[key][index][:2], mapping)
 
-        return cls(surface, mappings)
+        # noinspection PyTypeChecker
+        return cls(surface, mappings, {
+            key: {'speed': sheet.speed, 'loop': sheet.loop, 'pong': sheet.pong}
+            for key, sheet in sheets.items()
+        })
 
     def save(self, atlas_file: str):
         AtlasFile.save(self.surface, self.mappings, atlas_file)
@@ -86,3 +161,12 @@ class Atlas:
     @classmethod
     def load(cls, file: str):
         return cls(AtlasFile.load(file))
+
+    @lru_cache
+    def _access_atlas_sheet(self, key):
+        return AtlasSheet(self, key)
+
+    def __getitem__(self, key):
+        if key in self.mappings:
+            return self._access_atlas_sheet(key)
+        super().__getitem__(key)

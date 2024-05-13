@@ -23,8 +23,8 @@ class Tests(pe.GameContext):
         super().__init__()
 
         self.sheets = [
-            pe.Sheet("tests/files/test_atlas_1.png", pe.SheetHorizontal(10, 30), 255, True, True),
-            pe.Sheet("tests/files/test_atlas_2.png", pe.SheetVertical(30, 10), 255, True, True),
+            pe.Sheet("tests/files/test_atlas_1.png", pe.SheetHorizontal(10, 30), 20, 0, True),
+            pe.Sheet("tests/files/test_atlas_2.png", pe.SheetVertical(30, 10), 20, 0, True),
         ]
 
         begin = time.time()
@@ -34,21 +34,25 @@ class Tests(pe.GameContext):
     @lru_cache
     def sprite(self, index, use_atlas):
         if use_atlas:
-            return self.atlas[index]
-        return pe.Sprite(self.sheets[index], (self.SPRITE_RESIZE, self.SPRITE_RESIZE))
+            sheet = self.atlas[index].configure(pong=True)
+        else:
+            sheet = self.sheets[index]
+        return pe.Sprite(sheet, (self.SPRITE_RESIZE, self.SPRITE_RESIZE))
 
     def loop(self):
-        # x, y = 0, 0
-        # for i in range(len(self.sheets)):
-        #     for use_atlas in (False, True):
-        #         sprite = self.sprite(i, use_atlas)
-        #         sprite.display((x, y))
-        #         x += self.SPRITE_RESIZE
-        #         if x > self.width:
-        #             x = 0
-        #             y += self.SPRITE_RESIZE
+        # pe.display.blit(self.atlas.surface)
 
-        pe.display.blit(self.atlas.surface)
+        x, y = 0, 0
+        for i in range(len(self.sheets)):
+            for use_atlas in (False, True):
+                sprite = self.sprite(i, use_atlas)
+                sprite.display((x, y))
+                x += self.SPRITE_RESIZE
+                if x > self.width:
+                    x = 0
+                    y += self.SPRITE_RESIZE
+
+
 
 
 tests = Tests()
