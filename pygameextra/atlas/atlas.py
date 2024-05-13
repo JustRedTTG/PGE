@@ -164,7 +164,7 @@ class Atlas:
         AtlasFile.save(self.surface, self.mappings, atlas_file)
 
     def export(self, image_file: str, mapping_file: str):
-        pass
+        raise NotImplementedError("Exporting to separate image and mapping files is not yet defined.")
 
     @classmethod
     def load(cls, file: str):
@@ -173,6 +173,9 @@ class Atlas:
     @classmethod
     def from_dict(cls, data: dict):
         return cls(AtlasFile.from_dict(data))
+
+    def to_dict(self):
+        return self._atlas_file.to_dict()
 
     @lru_cache
     def _access_atlas_sheet(self, key):
