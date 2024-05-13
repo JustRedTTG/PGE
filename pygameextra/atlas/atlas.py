@@ -105,7 +105,8 @@ class AtlasSheet(Sheet):
         return self
 
     def custom_offset(self, rect, sprite: 'Sprite'):
-        return rect
+        custom_offset_function = self.atlas.sheet_configurations[self.key]['custom_offset_function']
+        return custom_offset_function(rect, sprite) if custom_offset_function is None else rect
 
 
 class Atlas:
@@ -156,7 +157,8 @@ class Atlas:
 
         # noinspection PyTypeChecker
         return cls(surface, mappings, {
-            key: {'speed': sheet.speed * (2 if sheet.pong else 1), 'loop': sheet.loop, 'pong': sheet.pong}
+            key: {'speed': sheet.speed * (2 if sheet.pong else 1), 'loop': sheet.loop, 'pong': sheet.pong,
+                  'custom_offset_function': sheet.custom_offset}
             for key, sheet in sheets.items()
         })
 
