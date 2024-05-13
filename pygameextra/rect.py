@@ -2,8 +2,9 @@
 import pygame
 
 
-def Rect(rect1, rect2, rect3, rect4):
+class Rect:
     """rect(a, b, c, d) -> Rect Object
     A simple rect function :P
     """
-    return pygame.Rect(rect1, rect2, rect3, rect4)
+    def __new__(cls, rect1, rect2, rect3, rect4):
+        return pygame.Rect(rect1, rect2, rect3, rect4)
