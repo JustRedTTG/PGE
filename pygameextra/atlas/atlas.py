@@ -33,13 +33,8 @@ class AtlasFile:
 AtlasFileType = Union[SurfaceFileType, AtlasFile]
 
 
-class AtlasSheetHandler(SheetHandler):
-    def __init__(self, atlas: 'Atlas', sheet_key: int):
-        self.atlas = atlas
-        self.sheet_key = sheet_key
-
-    def map(self, surface):
-        pass
+class AtlasSheet:
+    pass
 
 
 class Atlas:
@@ -48,21 +43,17 @@ class Atlas:
 
     def __init__(self, file: AtlasFileType, mappings: dict = None):
         if isinstance(file, AtlasFile):
-            self.atlas_file = file
+            self._atlas_file = file
         else:
-            self.atlas_file = AtlasFile(file, mappings)
+            self._atlas_file = AtlasFile(file, mappings)
 
     @property
     def surface(self):
-        return self.atlas_file.surface
+        return self._atlas_file.surface
 
     @property
     def mappings(self):
-        return self.atlas_file.mappings
-
-    @classmethod
-    def from_atlas_file(cls, file: str):
-        pass
+        return self._atlas_file.mappings
 
     @classmethod
     def from_sheets(cls, sheets: dict):
@@ -85,3 +76,13 @@ class Atlas:
                     display.blit(sheet.surface, mappings[key][index][:2], mapping)
 
         return cls(surface, mappings)
+
+    def save(self, atlas_file: str):
+        AtlasFile.save(self.surface, self.mappings, atlas_file)
+
+    def export(self, image_file: str, mapping_file: str):
+        pass
+
+    @classmethod
+    def load(cls, file: str):
+        return cls(AtlasFile.load(file))

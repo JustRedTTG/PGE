@@ -1,3 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pygameextra import context
+
 rundown_enabled = True
 auto_fps = True
 debugger = None
@@ -18,4 +24,6 @@ hover_lock_timeout_time = .1  # The hover locking timeout
 hover_lock = None  # The hover locking variable
 hover_lock_enabled = False  # Enable hover locking
 
-game_context = None
+atlas_attempt_keep_past_attempt = True  # When trying to fit the atlas, keep the past attempt on the new size, may speed up the process
+
+game_context: context.Context = None

@@ -1,8 +1,12 @@
+import os
+import time
 from functools import lru_cache
 
 import pygameextra as pe
 
 pe.init()
+
+os.makedirs("tests/_test_temp", exist_ok=True)
 
 
 class Tests(pe.GameContext):
@@ -11,18 +15,21 @@ class Tests(pe.GameContext):
     BACKGROUND = pe.colors.verydarkgray
     FPS = 60
     FPS_LOGGER = True
+    MODE = pe.display.DISPLAY_MODE_RESIZABLE
 
-    SPRITE_RESIZE = 100
+    SPRITE_RESIZE = 50
 
     def __init__(self):
         super().__init__()
 
         self.sheets = [
-            pe.Sheet("tests/files/test_sheet_horizontal.png", pe.SheetHorizontal(30, 30), 255, True, True),
-            pe.Sheet("tests/files/test_sheet_vertical.png", pe.SheetVertical(30, 30), 255, True, True),
+            pe.Sheet("tests/files/test_atlas_1.png", pe.SheetHorizontal(10, 30), 255, True, True),
+            pe.Sheet("tests/files/test_atlas_2.png", pe.SheetVertical(30, 10), 255, True, True),
         ]
 
+        begin = time.time()
         self.atlas = pe.Atlas.from_sheets({i: sheet for i, sheet in enumerate(self.sheets)})
+        print("Atlas creation time:", time.time() - begin)
 
     @lru_cache
     def sprite(self, index, use_atlas):
