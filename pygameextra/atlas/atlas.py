@@ -148,7 +148,7 @@ class Atlas:
 
         # noinspection PyTypeChecker
         return cls(surface, mappings, {
-            key: {'speed': sheet.speed, 'loop': sheet.loop, 'pong': sheet.pong}
+            key: {'speed': sheet.speed * (2 if sheet.pong else 1), 'loop': sheet.loop, 'pong': sheet.pong}
             for key, sheet in sheets.items()
         })
 

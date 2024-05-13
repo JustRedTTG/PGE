@@ -23,8 +23,8 @@ class Tests(pe.GameContext):
         super().__init__()
 
         self.sheets = [
-            pe.Sheet("tests/files/test_atlas_1.png", pe.SheetHorizontal(10, 30), 20, 0, True),
-            pe.Sheet("tests/files/test_atlas_2.png", pe.SheetVertical(30, 10), 20, 0, True),
+            pe.Sheet("tests/files/test_atlas_1.png", pe.SheetHorizontal(10, 30), 20, True, True),
+            pe.Sheet("tests/files/test_atlas_2.png", pe.SheetVertical(30, 10), 20, False, True),
         ]
 
         begin = time.time()
