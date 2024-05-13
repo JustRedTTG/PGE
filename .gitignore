@@ -157,5 +157,5 @@ icon.png
 upload.bat
 install and upload.bat
 upload.sh
-/tests.py
+#/tests.py
 tests/_test_errors
