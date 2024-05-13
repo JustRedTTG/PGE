@@ -170,6 +170,10 @@ class Atlas:
     def load(cls, file: str):
         return cls(AtlasFile.load(file))
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(AtlasFile.from_dict(data))
+
     @lru_cache
     def _access_atlas_sheet(self, key):
         return AtlasSheet(self, key)

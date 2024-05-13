@@ -1,1 +1,1 @@
-from pygameextra.atlas.atlas import Atlas, AtlasFileType, AtlasSheet
+from pygameextra.atlas.atlas import Atlas, AtlasFileType, AtlasFile
