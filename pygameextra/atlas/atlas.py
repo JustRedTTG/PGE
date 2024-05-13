@@ -32,7 +32,8 @@ class AtlasFile:
 
     @classmethod
     def from_dict(cls, data: dict):
-        return cls(CompressedSurface.from_dict(data['file']).decompress(), data['mapping'], data['sheet_configurations'])
+        return cls(CompressedSurface.from_dict(data['file']).decompress(), data['mapping'],
+                   data['sheet_configurations'])
 
     def save(self, save_location: str):
         with open(save_location, 'wb') as file:
@@ -42,8 +43,8 @@ class AtlasFile:
         compressed = self.surface.compress()
 
         return {'file': compressed.to_dict(), 'mapping': self.mappings,
-                         'sheet_configurations': self.sheet_configurations or {}
-                         }
+                'sheet_configurations': self.sheet_configurations or {}
+                }
 
 
 AtlasFileType = Union[SurfaceFileType, AtlasFile]

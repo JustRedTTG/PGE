@@ -38,7 +38,7 @@ class Sheet:
                 frame = sprite.index * 2
             else:
                 frame = self.frames - (sprite.index - half) * 2
-            return self.handler.get(frame) if sprite.multiplier > 0 else self.handler.get(self.frames - frame-1)
+            return self.handler.get(frame) if sprite.multiplier > 0 else self.handler.get(self.frames - frame - 1)
 
     @abstractmethod
     def custom_offset(self, rect, sprite: 'Sprite'):

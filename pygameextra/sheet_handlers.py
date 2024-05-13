@@ -75,5 +75,3 @@ class PropertySheetHandler(SheetHandler):
     @property
     def mapping(self):
         return self.mapping_getter()
-
-

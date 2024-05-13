@@ -1,8 +1,8 @@
 import os
 import time
-from functools import lru_cache
-
 import pygameextra as pe
+
+from functools import lru_cache
 
 pe.init()
 
@@ -51,8 +51,6 @@ class Tests(pe.GameContext):
                 if x > self.width:
                     x = 0
                     y += self.SPRITE_RESIZE
-
-
 
 
 tests = Tests()

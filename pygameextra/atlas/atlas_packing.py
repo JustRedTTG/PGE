@@ -15,7 +15,8 @@ def try_pack(rects: List[Rect], size: Tuple[int, int], previous_result: List[Rec
         packer.packed, packer.free_rects = previous_result[0], [*previous_result[1], *[
             Rect(previous_result[2][0], 0, size[0] - previous_result[2][0], size[1]),
             Rect(0, previous_result[2][1], size[0], size[1] - previous_result[2][1]),
-            Rect(previous_result[2][0], previous_result[2][1], size[0] - previous_result[2][0], size[1] - previous_result[2][1])
+            Rect(previous_result[2][0], previous_result[2][1], size[0] - previous_result[2][0],
+                 size[1] - previous_result[2][1])
         ]]
         queue = queue[len(packer.packed):]
 
@@ -42,8 +43,9 @@ def pack(rects: List[Rect], size: Tuple[int, int]):
             add_width = result[2].width < result[2].height
         add_height = not add_width
         extending_side = not extending_side
-        
-        size = (size[0] + result[2].width * (1 if add_width else 0), size[1] + result[2].height * (1 if add_height else 0))
+
+        size = (
+        size[0] + result[2].width * (1 if add_width else 0), size[1] + result[2].height * (1 if add_height else 0))
         if settings.atlas_attempt_keep_past_attempt:
             previous_result = result[1]
     return result[1], size
