@@ -6,22 +6,25 @@ from pygameextra.touchingperimeter import Packer, Box
 
 
 def try_pack(rects: List[Rect], size: Tuple[int, int]):
-    box = Rect(0, 0, *size)
-    packer = Packer(box)
+    bin = Rect(0, 0, *size)
+    packer = Packer(bin)
     queue = rects.copy()
-
-    mapping = []
 
     while queue:
         rect = queue.pop(0)
         if not packer.pack(Box(rect.width, rect.height)):
-            return False, rect.size
-    return True, packer.packed
+            return False, rect
+        
+    for packed_rect, rect in zip(packer.packed, rects):
+        rect.x = packed_rect.x
+        rect.y = packed_rect.y
+
+    return True, rects
 
 
 def pack(rects: List[Rect], size: Tuple[int, int]):
     while not (result := try_pack(rects, size))[0]:
-        size = (size[0] + result[1][0] // 2, size[1] + result[1][1] // 2)
+        size = (size[0] + result[1].width // 2, size[1] + result[1].height // 2)
     return result[1]
 
 
@@ -36,7 +39,7 @@ def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: d
     # Set a random starting size for the atlas
     begin_size = surfaces[0][1].size
 
-    # Create a rect object for each surface
+    # Create a box object for each surface
     rects = [
         Rect(0, 0, *surface[1].size) for surface in surfaces
     ]

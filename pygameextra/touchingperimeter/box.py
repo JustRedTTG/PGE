@@ -11,3 +11,6 @@ class Box:
 
     def __str__(self):
         return '{} x {}'.format(self.w, self.h)
+
+    def __repr__(self):
+        return str(self)
