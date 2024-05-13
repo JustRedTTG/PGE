@@ -65,7 +65,7 @@ def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: d
         mappings[key] = [
             *mappings.get(key, []),
             *[
-                rect for rect in sorted(temporary_mappings[key], key=lambda x: x[1])
+                tuple(rect[0]) for rect in sorted(temporary_mappings[key], key=lambda x: x[1])
             ]
         ]
 
