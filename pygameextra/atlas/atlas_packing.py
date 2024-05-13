@@ -6,7 +6,7 @@ from pygameextra.touchingperimeter import Packer, Box
 
 
 def try_pack(rects: List[Rect], size: Tuple[int, int]):
-    box = Box(*size)
+    box = Rect(0, 0, *size)
     packer = Packer(box)
     queue = rects.copy()
 
@@ -15,13 +15,14 @@ def try_pack(rects: List[Rect], size: Tuple[int, int]):
     while queue:
         rect = queue.pop(0)
         if not packer.pack(Box(rect.width, rect.height)):
-            return False
-    return packer.packed
-
+            return False, rect.size
+    return True, packer.packed
 
 
 def pack(rects: List[Rect], size: Tuple[int, int]):
-    try_pack(rects, size)
+    while not (result := try_pack(rects, size))[0]:
+        size = (size[0] + result[1][0] // 2, size[1] + result[1][1] // 2)
+    return result[1]
 
 
 def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: dict = None):
