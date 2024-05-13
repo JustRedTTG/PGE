@@ -1,6 +1,7 @@
 from .func import *
-from .rect import Rect
 from .box import Box
+from pygameextra.rect import Rect
+
 
 class Packer:
     def __init__(self, bin, rotating=False):
@@ -13,12 +14,13 @@ class Packer:
         def get_free(b):
             def r_test(fr):
                 return Rect(fr.x, fr.y, b.w, b.h)
+
             try:
                 return max((touching_perimeter(self.packed + [self.bin], r_test(fr)), fr)
-                    for fr in self.free_rects
-                    if b.would_fit_in(fr) and \
-                        touching_perimeter_left(self.packed + [self.bin], r_test(fr)) > 0 and \
-                        touching_perimeter_bottom(self.packed + [self.bin], r_test(fr)) > 0)
+                           for fr in self.free_rects
+                           if b.would_fit_in(fr) and \
+                           touching_perimeter_left(self.packed + [self.bin], r_test(fr)) > 0 and \
+                           touching_perimeter_bottom(self.packed + [self.bin], r_test(fr)) > 0)
             except ValueError:
                 return None
 
@@ -41,10 +43,10 @@ class Packer:
         self.packed.append(r)
 
         self.free_rects = [fr for f in self.free_rects
-            for fr in f.substracted(r)
-            if fr.area() > 0
-            if touching_perimeter_left(self.packed + [self.bin], fr) > 0
-            if touching_perimeter_right(self.packed + [self.bin], fr) > 0
-            if touching_perimeter_top(self.packed + [self.bin], fr) > 0
-            if touching_perimeter_bottom(self.packed + [self.bin], fr) > 0]
+                           for fr in f.substracted(r)
+                           if fr.area() > 0
+                           if touching_perimeter_left(self.packed + [self.bin], fr) > 0
+                           if touching_perimeter_right(self.packed + [self.bin], fr) > 0
+                           if touching_perimeter_top(self.packed + [self.bin], fr) > 0
+                           if touching_perimeter_bottom(self.packed + [self.bin], fr) > 0]
         return True
