@@ -27,16 +27,23 @@ class AtlasFile:
     @classmethod
     def load(cls, file: str):
         with open(file, 'rb') as file:
-            raw = pickle.load(file)
-        return cls(CompressedSurface.from_dict(raw['file']).decompress(), raw['mapping'])
+            data = pickle.load(file)
+        return cls.from_dict(data)
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(CompressedSurface.from_dict(data['file']).decompress(), data['mapping'], data['sheet_configurations'])
 
     def save(self, save_location: str):
+        with open(save_location, 'wb') as file:
+            pickle.dump(self.to_dict(), file)
+
+    def to_dict(self):
         compressed = self.surface.compress()
 
-        with open(save_location, 'wb') as file:
-            pickle.dump({'file': compressed.to_dict(), 'mapping': self.mappings,
+        return {'file': compressed.to_dict(), 'mapping': self.mappings,
                          'sheet_configurations': self.sheet_configurations or {}
-                         }, file)
+                         }
 
 
 AtlasFileType = Union[SurfaceFileType, AtlasFile]
