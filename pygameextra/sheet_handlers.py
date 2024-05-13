@@ -1,13 +1,15 @@
 """PYGAME EXTRA Sprite sheet handlers script
 This script manages all sprite sheet functions"""
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 from pygameextra.modified import Surface
 
 
-class SheetHandler:
+class SheetHandler(ABC):
     mapping = {}
 
+
+    @abstractmethod
     def map(self, surface): pass
 
     def get(self, index): return self.mapping[int(index)]

@@ -12,7 +12,7 @@ class Sheet:
                  loop: bool = False):
         self.surface = get_surface_file(file)
         handler.map(self.surface)
-        self.handler = handler
+        self.handler: SheetHandler = handler
         self._speed = speed
         self.pong = pong
         self.loop = loop
