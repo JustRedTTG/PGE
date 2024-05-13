@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = "2.0.0b65"
+version = "2.0.0b66"
 short = 'Pygame. Made easier.'
 long = '''Pygame Extra is an extension for pygame, 
 you can easily make complex games and or apps with much less code then you would otherwise, 
@@ -19,9 +19,9 @@ setup(
     description=short,
     long_description_content_type="text/markdown",
     long_description=long,
-    packages=['pygameextra', 'pygameextra_tester'],
+    packages=['pygameextra', 'pygameextra.atlas', 'pygameextra.touchingperimeter', 'pygameextra_tester'],
     install_requires=['pygame-ce', 'numpy', 'frozendict', 'requests'],
-    package_data={'pygameextra': ['font.ttf'], 'pygameextra_tester': [
+    package_data={'pygameextra': ['font.ttf'], 'pygameextra.touchingperimeter': ['LICENSE'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
         'Xbutton.png', 'Ybutton.png',
         'animation_1.png', 'animation_2.png', 'animation_3.png', 'animation_4.png',
