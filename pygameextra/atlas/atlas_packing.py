@@ -6,18 +6,47 @@ from pygameextra.touchingperimeter import Packer, Box
 from pygameextra import settings
 
 
+def expand_free_rects(previous_rects: List[Rect], previous_size: Tuple[int, int], new_size: Tuple[int, int]):
+    new_rects = []
+    difference_in_size = tuple(new - previous for new, previous in zip(new_size, previous_size))
+
+    for previous_rect in previous_rects:
+        new_rect: Rect = previous_rect.copy()
+        if previous_rect.right == previous_size[0]:
+            new_rect.w += difference_in_size[0]
+        if previous_rect.bottom == previous_size[1]:
+            new_rect.h += difference_in_size[1]
+        new_rects.append(new_rect)
+
+    right_column_available = False
+    bottom_row_available = False
+    edge_available = False
+
+    for rect in new_rects:
+        if rect.left == previous_size[0] and rect.top == 0 and rect.right == new_size[0] and rect.height == new_size[1]:
+            right_column_available = True
+        elif rect.left == 0 and rect.top == previous_size[1] and rect.width == new_size[0] and rect.bottom == new_size[1]:
+            bottom_row_available = True
+        elif rect.left == previous_size[0] and rect.top == previous_size[1] and rect.right == new_size[0] and rect.bottom == new_size[1]:
+            edge_available = True
+
+    if not right_column_available:
+        new_rects.append(Rect(previous_size[0], 0, new_size[0] - previous_size[0], new_size[1]))
+    if not bottom_row_available:
+        new_rects.append(Rect(0, previous_size[1], new_size[0], new_size[1] - previous_size[1]))
+    if not edge_available:
+        new_rects.append(Rect(previous_size[0], previous_size[1], new_size[0] - previous_size[0],
+        new_size[1] - previous_size[1]))
+
+    return new_rects
+
 def try_pack(rects: List[Rect], size: Tuple[int, int], previous_result: List[Rect] = None):
     bin = Rect(0, 0, *size)
     packer = Packer(bin)
     queue = rects.copy()
 
     if previous_result is not None:
-        packer.packed, packer.free_rects = previous_result[0], [*previous_result[1], *[
-            Rect(previous_result[2][0], 0, size[0] - previous_result[2][0], size[1]),
-            Rect(0, previous_result[2][1], size[0], size[1] - previous_result[2][1]),
-            Rect(previous_result[2][0], previous_result[2][1], size[0] - previous_result[2][0],
-                 size[1] - previous_result[2][1])
-        ]]
+        packer.packed, packer.free_rects = previous_result[0], expand_free_rects(*previous_result[1:], size)
         queue = queue[len(packer.packed):]
 
     while queue:
@@ -30,7 +59,6 @@ def try_pack(rects: List[Rect], size: Tuple[int, int], previous_result: List[Rec
         rect.y = packed_rect.y
 
     return True, rects
-
 
 def pack(rects: List[Rect], size: Tuple[int, int]):
     previous_result = None
@@ -45,11 +73,11 @@ def pack(rects: List[Rect], size: Tuple[int, int]):
         extending_side = not extending_side
 
         size = (
-        size[0] + result[2].width * (1 if add_width else 0), size[1] + result[2].height * (1 if add_height else 0))
+            size[0] + result[2].width * (1 if add_width else 0),
+            size[1] + result[2].height * (1 if add_height else 0))
         if settings.atlas_attempt_keep_past_attempt:
             previous_result = result[1]
     return result[1], size
-
 
 def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: dict = None):
     # Sort the surfaces by the largest dimension, to pack the largest surfaces first

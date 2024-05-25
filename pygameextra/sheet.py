@@ -9,13 +9,14 @@ from pygameextra.sheet_handlers import *
 
 class Sheet:
     def __init__(self, file: SurfaceFileType, handler: SheetHandler, speed: float = 0, pong: bool = False,
-                 loop: bool = False):
+                 loop: bool = False, data: dict = None):
         self.surface = get_surface_file(file)
         handler.map(self.surface)
         self.handler: SheetHandler = handler
         self._speed = speed
         self.pong = pong
         self.loop = loop
+        self.data = data if data is not None else {}
 
     @property
     def frames(self):
@@ -40,6 +41,11 @@ class Sheet:
                 frame = self.frames - (sprite.index - half) * 2
             return self.handler.get(frame) if sprite.multiplier > 0 else self.handler.get(self.frames - frame - 1)
 
+
+    @staticmethod
     @abstractmethod
-    def custom_offset(self, rect, sprite: 'Sprite'):
+    def custom_offset(rect, sprite: 'Sprite', data: dict):
         return rect
+
+    def handle_custom_offset(self, rect, sprite: 'Sprite'):
+        return self.custom_offset(rect, sprite, self.data)

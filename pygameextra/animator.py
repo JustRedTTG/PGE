@@ -172,9 +172,9 @@ class Animator:
             return None
 
     @property
-    def custom_offset(self):
+    def handle_custom_offset(self):
         try:
-            return self.get_sheet().custom_offset
+            return self.get_sheet().handle_custom_offset
         except AttributeError:
             return None
 

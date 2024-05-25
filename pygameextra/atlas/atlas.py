@@ -15,6 +15,7 @@ class AtlasSheetConfiguration(TypedDict):
     loop: bool
     pong: bool
     custom_offset_function: FunctionType
+    custom_offset_function_data: dict
 
 
 class AtlasFile:
@@ -104,9 +105,10 @@ class AtlasSheet(Sheet):
 
         return self
 
-    def custom_offset(self, rect, sprite: 'Sprite'):
+    def handle_custom_offset(self, rect, sprite: 'Sprite'):
         custom_offset_function = self.atlas.sheet_configurations[self.key]['custom_offset_function']
-        return custom_offset_function(rect, sprite) if custom_offset_function is None else rect
+        custom_offset_function_data = self.atlas.sheet_configurations[self.key]['custom_offset_function_data'] or {}
+        return custom_offset_function(rect, sprite, custom_offset_function_data) if custom_offset_function is not None else rect
 
 
 class Atlas:
@@ -158,7 +160,9 @@ class Atlas:
         # noinspection PyTypeChecker
         return cls(surface, mappings, {
             key: {'speed': sheet.speed * (2 if sheet.pong else 1), 'loop': sheet.loop, 'pong': sheet.pong,
-                  'custom_offset_function': sheet.custom_offset}
+                  'custom_offset_function': sheet.custom_offset if issubclass(type(sheet), Sheet) else None,
+                  'custom_offset_function_data': sheet.data if issubclass(type(sheet), Sheet) else None
+                  }
             for key, sheet in sheets.items()
         })
 
