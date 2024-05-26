@@ -1,6 +1,6 @@
 import os
 import pygameextra as pe
-from pygameextra.debug import FreeInteractMode
+from pygameextra.debug import Debugger
 from pygameextra.fpslogger import Logger
 from pygameextra import settings
 
@@ -152,7 +152,7 @@ def set_tsx_offset(data):
 # Test functions
 testscore = 0
 
-pe.settings.debugger = FreeInteractMode()
+pe.settings.debugger = Debugger()
 
 
 # Main GAME LOOP
@@ -162,7 +162,6 @@ def run():
     while True:
         for pe.event.c in pe.event.get():
             pe.event.quitCheckAuto()
-        pe.start_recording()
         pe.fill.full(pe.colors.verydarkgray)
 
         debug_icon.display((350, 440))
@@ -196,7 +195,6 @@ def run():
                     x = 0
                     y += 20
         elif test == "sprite":
-            pe.comment('Sprites')
             s1.display()
             s2.display()
 
@@ -223,7 +221,6 @@ def run():
             s_nr_f.display()
             s_r_f.display()
 
-
             s_anim.display()
             s_anim_area = (*s_anim.pos, *s_anim.size)
             pe.draw.rect(pe.colors.gray, s_anim_area, 2, edge_rounding=2)
@@ -237,16 +234,14 @@ def run():
             pe.button.rect((s_anim_area[0] + 120, *s_anim_area[1:]), pe.colors.yellow, pe.colors.lightyellow,
                            action=lambda: exec("a.trigger_ = 'T_F'", {'a': s_anim.animator}))
 
-            pe.padding_comment()
-
         elif test == "mapping":
             pe.display.blit(s1.reference.surface, (202, 218))
-            for id in list(s1.reference.handler.mapping):
-                rect = s1.reference.handler.mapping[id]
+            for i, mapping in enumerate(s1.reference.handler.mapping):
+                rect = s1.reference.handler.mapping[i]
                 pe.draw.rect(pe.colors.red, (rect[0] + 202, rect[1] + 218, rect[2], rect[3]), 1)
             pe.display.blit(s2.reference.surface, (122, 250))
-            for id in list(s2.reference.handler.mapping):
-                rect = s2.reference.handler.mapping[id]
+            for i, mapping in enumerate(s2.reference.handler.mapping):
+                rect = s2.reference.handler.mapping[i]
                 pe.draw.rect(pe.colors.green, (rect[0] + 122, rect[1] + 250, rect[2], rect[3]), 1)
         elif test == "shapes":
             pe.draw.circle(pe.colors.red, (125, 125), 50, 5)

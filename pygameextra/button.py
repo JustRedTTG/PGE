@@ -1,7 +1,7 @@
 import time
 from typing import Union
 
-from pygameextra import draw, mouse, math, display, settings, recorder
+from pygameextra import draw, mouse, math, display, settings
 from pygameextra.image import Image
 from pygameextra.rect import Rect
 from pygameextra.text import Text
@@ -70,8 +70,6 @@ class Button:
 
     @staticmethod
     def static_logic(area, action, data, hover_action, hover_data, disabled: Union[bool, tuple] = None):
-        if settings.recording:
-            recorder.record(recorder.Button(area, action, data))
         if disabled:
             return
         mouse_rect = Rect(*mouse.pos(), 1, 1)

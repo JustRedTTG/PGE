@@ -7,8 +7,6 @@ if TYPE_CHECKING:
 rundown_enabled = True
 auto_fps = True
 debugger = None
-recording = False
-recording_data = []
 
 spoof_mouse_offset = None
 spoof_mouse_position = None

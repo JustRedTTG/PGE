@@ -1,14 +1,8 @@
-import pygameextra.display as display
-import pygameextra.settings as settings
-import pygameextra.recorder as recorder
 from pygameextra.modified import *
 
 
 def full(color: tuple, display_work: Surface = None):
     display_work.surface.fill(color) if display_work else display.display_reference.surface.fill(color)
-    if not settings.recording and not display_work:
-        return
-    recorder.record(recorder.FillFull(color))
 
 
 def transparency(color: tuple, alpha=255, display_work: Surface = None):
@@ -17,9 +11,6 @@ def transparency(color: tuple, alpha=255, display_work: Surface = None):
     new.set_alpha(alpha)
     # noinspection PyArgumentList
     display_work.stamp(new) if display_work else display.display_reference.stamp(new)
-    if not settings.recording and not display_work:
-        return
-    recorder.record(recorder.FillTransparency(color, alpha))
 
 
 def interlace(color: tuple, skips=2, display_work: Surface = None):
@@ -34,6 +25,3 @@ def interlace(color: tuple, skips=2, display_work: Surface = None):
         x += skips
     # noinspection PyArgumentList
     display_work.stamp(new) if display_work else display.display_reference.stamp(new)
-    if not settings.recording and not display_work:
-        return
-    recorder.record(recorder.FillInterlace(color, skips))

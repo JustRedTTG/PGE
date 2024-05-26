@@ -1,5 +1,7 @@
 """PYGAME EXTRA __INIT__"""
+from deprecation import deprecated
 
+from pygameextra._deprecations import RECORDING_DEPRECATION_WRAPPER
 # noinspection PyUnresolvedReferences
 from pygameextra.pygame import pygame
 from pygame.constants import *
@@ -10,7 +12,6 @@ from pygameextra.sprite import *
 from pygameextra.modified import *
 from pygameextra.version import get as get_version
 from pygameextra import event, time, fill, mouse, settings, colors, draw, math, text, button, rect
-from pygameextra.recorder import comment, padding_comment
 from pygameextra.event import Pquit
 from pygameextra.tsx import TSX
 from pygameextra.floating_methods import *
@@ -61,15 +62,22 @@ def start_debug(delete_after: bool = False, reactivate: bool = False):
         settings.debugger.reset()
 
 
+@RECORDING_DEPRECATION_WRAPPER
 def start_recording():
-    del settings.recording_data
-    settings.recording_data = [display.display_reference.size]
-    settings.recording = True
+    pass
+
+
+@RECORDING_DEPRECATION_WRAPPER
+def comment(_):
+    pass
+
+
+@RECORDING_DEPRECATION_WRAPPER
+def padding_comment():
+    pass
 
 
 def stop_recording():
-    settings.recording = False
-    settings.recording_data[0] = display.display_reference.size
     if settings.debugger:
         if settings.debugger.reactivate:
             settings.debugger.reactivate = False

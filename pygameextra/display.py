@@ -6,7 +6,6 @@ from typing import Union, Tuple
 import pygame
 import pygameextra.modified as modified
 import pygameextra.settings as settings
-import pygameextra.recorder as recorder
 import pygameextra.time
 from functools import wraps
 
@@ -106,12 +105,8 @@ def update(framerate: int = None, area: tuple = None):
 
 def blit(obj: Union['Surface', pygame.Surface], pos: tuple = (0, 0), area: tuple = None):
     display_reference.stamp(obj, pos, area)
-    if not settings.recording:
-        return
     if type(obj) is modified.Surface:
         obj = obj.surface
-    if display_reference.display_tag:
-        recorder.record(recorder.Blit(obj, pos, area))
 
 
 def get_width() -> int:

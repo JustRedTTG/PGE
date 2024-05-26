@@ -1,6 +1,5 @@
-from pygameextra import display, fill, draw, settings, colors, event, mouse, recorder, button
+from pygameextra import display, fill, draw, colors, event, mouse
 from pygameextra.fpslogger import Logger
-from pygameextra.rect import Rect
 
 
 class Debugger:
@@ -83,56 +82,3 @@ class Debugger:
         self.log.render()
         self.after_update()
         display.update(60)
-
-
-class FreeMode(Debugger):
-    def before_run(self):
-        self.target = recorder.reconstruct(settings.recording_data)
-        self.display_backup = display.backup_details()
-        self.setup_display()
-        if not self.reactivate_init:
-            self.offset = (
-                display.get_width() * .5 - self.target.size[0] * .5,
-                display.get_height() * .5 - self.target.size[1] * .5
-            )
-        if not self.reactivate_init:
-            self.draggable = mouse.Draggable(self.offset)
-            settings.button_lock = False
-        else:
-            button.button_lock()
-
-
-class FreeInteractMode(FreeMode):
-    def after_update(self):
-        mouse_rect = Rect(*mouse.pos(False), 1, 1)
-        self.draggable.lock = False
-        for item in settings.recording_data:
-            if type(item) is recorder.Portion:
-                if self.reactivate_init:
-                    old = self.offset2
-                self.offset2 = item.x, item.y
-                if self.reactivate_init:
-                    if old != self.offset2:
-                        nudge = (self.offset2[0] - old[0], self.offset2[1] - old[1])
-                        self.offset = (self.offset[0] - nudge[0], self.offset[1] - nudge[1])
-                        self.draggable.pos = self.offset
-                    self.reactivate_init = False
-            elif type(item) is recorder.Button:
-                area = (
-                    item.area[0] + self.offset[0] + self.offset2[0], item.area[1] + self.offset[1] + self.offset2[1],
-                    item.area[2], item.area[3])
-                button_rect = Rect(*area)
-                if button_rect.colliderect(mouse_rect):
-                    draw.rect(colors.green, area, 2)
-                    self.draggable.lock = True
-                    if (not settings.button_lock) and item.action and mouse.clicked(False)[0]:
-                        button.button_lock()
-                        if item.data is None:
-                            item.action()
-                        else:
-                            item.action(item.data)
-                        self.active = False
-                        self.reactivate = True
-                elif not settings.button_lock:
-                    draw.rect(colors.black, area, 3)
-                    draw.rect(colors.red, area, 1)
