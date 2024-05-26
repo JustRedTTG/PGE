@@ -167,7 +167,7 @@ class Atlas:
         })
 
     def save(self, atlas_file: str):
-        AtlasFile.save(self.surface, self.mappings, atlas_file)
+        self._atlas_file.save(atlas_file)
 
     def export(self, image_file: str, mapping_file: str):
         raise NotImplementedError("Exporting to separate image and mapping files is not yet defined.")

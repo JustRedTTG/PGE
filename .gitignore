@@ -159,3 +159,4 @@ install and upload.bat
 upload.sh
 #/tests.py
 tests/_test_errors
+assets_raw/atlas surfaces/
