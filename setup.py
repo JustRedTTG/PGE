@@ -21,7 +21,7 @@ setup(
     long_description=long,
     packages=['pygameextra', 'pygameextra.atlas', 'pygameextra.touchingperimeter', 'pygameextra_tester'],
     install_requires=['pygame-ce', 'numpy', 'frozendict', 'requests', 'deprecation'],
-    package_data={'pygameextra': ['font.ttf'], 'pygameextra.touchingperimeter': ['LICENSE'], 'pygameextra_tester': [
+    package_data={'pygameextra': ['assets/*'], 'pygameextra.touchingperimeter': ['LICENSE'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
         'Xbutton.png', 'Ybutton.png',
         'animation_1.png', 'animation_2.png', 'animation_3.png', 'animation_4.png',

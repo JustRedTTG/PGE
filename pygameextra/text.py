@@ -3,7 +3,7 @@ import os
 from pygameextra import display
 from functools import lru_cache
 
-location = os.path.dirname(os.path.realpath(__file__))
+from pygameextra.assets import ASSET_FONT
 
 
 @lru_cache()
@@ -15,7 +15,7 @@ class Text:
     obj = None
     rect = None
 
-    def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = os.path.join(location, 'font.ttf'),
+    def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = ASSET_FONT,
                  font_size: int = 3, position: tuple = (0, 0), colors: [tuple, list] = ((255, 255, 255), None),
                  antialias: bool = True):
         if isinstance(font, pygame.font.Font):

@@ -4,6 +4,7 @@ import pygame
 import pygameextra.time
 import pygameextra.display
 import pygameextra.colors as colors
+from pygameextra.assets import ASSET_FONT
 from pygameextra.modified import Surface
 from pygameextra.fill import transparency as fill_trans
 
@@ -17,7 +18,7 @@ class Logger:
     total = 0
     count = 0
 
-    def __init__(self, font: str = os.path.join(location, 'font.ttf'), size: int = 15, position: tuple = None):
+    def __init__(self, font: str = ASSET_FONT, size: int = 15, position: tuple = None):
         self.font = pygame.font.Font(font, size)
         self.good = 50
         self.okay = 30
