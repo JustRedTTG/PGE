@@ -119,8 +119,8 @@ class FreeInteractMode(FreeMode):
                     self.reactivate_init = False
             elif type(item) is recorder.Button:
                 area = (
-                item.area[0] + self.offset[0] + self.offset2[0], item.area[1] + self.offset[1] + self.offset2[1],
-                item.area[2], item.area[3])
+                    item.area[0] + self.offset[0] + self.offset2[0], item.area[1] + self.offset[1] + self.offset2[1],
+                    item.area[2], item.area[3])
                 button_rect = Rect(*area)
                 if button_rect.colliderect(mouse_rect):
                     draw.rect(colors.green, area, 2)

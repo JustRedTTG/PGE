@@ -222,6 +222,7 @@ class ChildContext(ABC):
             return super().__getattribute__(item)
         except AttributeError:
             return self.parent_context.__getattribute__(item)
+
     def __setattr__(self, key, value):
         try:
             return super().__setattr__(key, value)
@@ -303,7 +304,6 @@ class GameContext(Context, ABC):
             if button.hovered:
                 break
         self.buttons.reverse()
-
 
     def __call__(self):
         self.events()

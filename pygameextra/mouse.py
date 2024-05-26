@@ -114,7 +114,7 @@ class Draggable:
     def check(self) -> Tuple[bool, tuple]:
         """check(self) -> bool, tuple
         This function will check if the draggable is being moved and where it is"""
-        
+
         if self.lock:
             return False, self.pos
 

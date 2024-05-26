@@ -153,13 +153,14 @@ def reconstruct(data: list):
             pe.fill.interlace(item.color)
         elif type(item) is DrawLine:
             pe.draw.line(item.color, (item.pos_a[0] + offset[0], item.pos_a[1] + offset[1]),
-                      (item.pos_b[0] + offset[0], item.pos_b[1] + offset[1]), item.w)
+                         (item.pos_b[0] + offset[0], item.pos_b[1] + offset[1]), item.w)
         elif type(item) is DrawRect:
             pe.draw.rect(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
-                      item.w)
-        elif type(item) is DrawEllipse:
-            pe.draw.ellipse(item.color, (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
                          item.w)
+        elif type(item) is DrawEllipse:
+            pe.draw.ellipse(item.color,
+                            (item.area[0] + offset[0], item.area[1] + offset[1], item.area[2], item.area[3]),
+                            item.w)
         elif type(item) is DrawCircle:
             pe.draw.circle(item.color, (item.pos[0] + offset[0], item.pos[1] + offset[1]), item.radius, item.w)
         elif type(item) is DrawPolygon:

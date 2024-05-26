@@ -39,7 +39,7 @@ class Logger:
                     self.total = fps
                     self.count = 1
             self.surface = self.font.render(text, True, (20, 200, 20) if fps >= self.good else (
-            200, 200, 20) if fps >= self.okay else (200, 20, 20) if fps != 0 else colors.pge_light,
+                200, 200, 20) if fps >= self.okay else (200, 20, 20) if fps != 0 else colors.pge_light,
                                             None if fps != 0 else colors.pge_dark)
             back_surface = Surface(self.surface.get_size())
             fill_trans(colors.black, 150, back_surface)
