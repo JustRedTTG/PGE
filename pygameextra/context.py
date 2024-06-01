@@ -12,6 +12,7 @@ from pygameextra import display
 from pygameextra import event
 from pygameextra import settings
 from pygameextra import time
+from pygameextra._deprecations import UNCLIPPED_CONTEXT_DEPRECATION_WRAPPER
 from pygameextra.button import Button
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
@@ -196,6 +197,7 @@ class ChildContext(ABC):
         pass
 
     def _loop(self):
+
         self.events()
         self.pre_loop()
         self.loop()
@@ -234,7 +236,6 @@ class UnclippedContext(Context, ABC):
     FLOAT: Tuple[Number, Number] = floating_methods.FLOAT_TOPLEFT
 
     def __init__(self):
-        print("UNCLIPPED CONTEXTS ARE DEPRECATED AS OF 2.0.0b41 USE THE NEW CHILD CONTEXT INSTEAD")
         self.surface = None
         self.area_based = True if self.AREA is None or len(self.AREA) == 2 else False
         if self.area_based:
@@ -244,11 +245,24 @@ class UnclippedContext(Context, ABC):
         if self.FLOAT != floating_methods.FLOAT_TOPLEFT:
             raise UnclippedContextException("Float has to be topleft in an unclipped context")
 
+        self.before_pre_child_contexts = []
+        self.pre_child_contexts = []
+        self.post_child_contexts = []
+        self.after_post_child_contexts = []
+
+    @UNCLIPPED_CONTEXT_DEPRECATION_WRAPPER
+    def __new__(cls, *args, **kwargs):
+        super().__new__(cls, *args, **kwargs)
+
     @property
     def size(self):
         if self.AREA is None:
             return display.get_size()
         return super().size
+
+    @property
+    def position(self):
+        return self._position
 
     def __call__(self):
         self.start_loop()
@@ -283,11 +297,16 @@ class GameContext(Context, ABC):
         if self.FPS_LOGGER:
             self._initialize_fps_logger()
 
-    def _loop(self):
-        self.events()
-        self.pre_loop()
-        self.loop()
-        self.post_loop()
+        self.before_pre_child_contexts = []
+        self.pre_child_contexts = []
+        self.post_child_contexts = []
+        self.after_post_child_contexts = []
+
+    # def _loop(self):
+    #     self.events()
+    #     self.pre_loop()
+    #     self.loop()
+    #     self.post_loop()
 
     def start_loop(self):
         super().start_loop()

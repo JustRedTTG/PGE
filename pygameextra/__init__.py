@@ -24,6 +24,7 @@ from pygameextra.infinitygrid import Grid, GridObject, InfinityGrid
 from pygameextra.pnzc import PanAndZoomChunks
 from pygameextra.text import Text
 import pygameextra.assets as assets
+import pygameextra.animations as animations
 
 __version__ = get_version()
 

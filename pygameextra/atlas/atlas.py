@@ -176,6 +176,12 @@ class Atlas:
     def load(cls, file: str):
         return cls(AtlasFile.load(file))
 
+
+    @classmethod
+    @lru_cache
+    def load_store(cls, file: str):
+        return cls(AtlasFile.load(file))
+
     @classmethod
     def from_dict(cls, data: dict):
         return cls(AtlasFile.from_dict(data))

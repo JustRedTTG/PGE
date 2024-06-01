@@ -7,3 +7,8 @@ RECORDING_DEPRECATION_WRAPPER = deprecated(
     "2.0.0b71", "2.0.0b71", __version__,
     "Recording has been scrapped from PGE"
 )
+
+UNCLIPPED_CONTEXT_DEPRECATION_WRAPPER = deprecated(
+    "2.0.0b41", "2.0.0b41", __version__,
+    "Use new child context instead"
+)

@@ -19,7 +19,7 @@ atlases = {
     "loading_icon": Atlas.from_sheets({
         "loading_icon": Sheet(os.path.join(SCRIPT_PATH, "loading_icon.png"), SheetHorizontal(64, 64), 20, loop=True),
         "loading_icon_progress": Sheet(os.path.join(SCRIPT_PATH, "loading_icon_progress.png"), SheetHorizontal(64, 64), 0),
-        "pge_icon": Sheet(os.path.join(SCRIPT_PATH, "pge_icon.png"), SheetHorizontal(96, 48), 20),
+        "pge_icon": Sheet(os.path.join(SCRIPT_PATH, "pge_icon.png"), SheetHorizontal(96, 48), 44),
     })
 }
 
