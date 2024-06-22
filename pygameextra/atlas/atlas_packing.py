@@ -25,9 +25,11 @@ def expand_free_rects(previous_rects: List[Rect], previous_size: Tuple[int, int]
     for rect in new_rects:
         if rect.left == previous_size[0] and rect.top == 0 and rect.right == new_size[0] and rect.height == new_size[1]:
             right_column_available = True
-        elif rect.left == 0 and rect.top == previous_size[1] and rect.width == new_size[0] and rect.bottom == new_size[1]:
+        elif rect.left == 0 and rect.top == previous_size[1] and rect.width == new_size[0] and rect.bottom == new_size[
+            1]:
             bottom_row_available = True
-        elif rect.left == previous_size[0] and rect.top == previous_size[1] and rect.right == new_size[0] and rect.bottom == new_size[1]:
+        elif rect.left == previous_size[0] and rect.top == previous_size[1] and rect.right == new_size[
+            0] and rect.bottom == new_size[1]:
             edge_available = True
 
     if not right_column_available:
@@ -36,9 +38,10 @@ def expand_free_rects(previous_rects: List[Rect], previous_size: Tuple[int, int]
         new_rects.append(Rect(0, previous_size[1], new_size[0], new_size[1] - previous_size[1]))
     if not edge_available:
         new_rects.append(Rect(previous_size[0], previous_size[1], new_size[0] - previous_size[0],
-        new_size[1] - previous_size[1]))
+                              new_size[1] - previous_size[1]))
 
     return new_rects
+
 
 def try_pack(rects: List[Rect], size: Tuple[int, int], previous_result: List[Rect] = None):
     bin = Rect(0, 0, *size)
@@ -60,15 +63,17 @@ def try_pack(rects: List[Rect], size: Tuple[int, int], previous_result: List[Rec
 
     return True, rects
 
+
 def pack(rects: List[Rect], size: Tuple[int, int]):
     previous_result = None
     extending_side = True
     while not (result := try_pack(rects, size, previous_result))[0]:
         if result[2].width == result[2].height:
             add_width = extending_side
-
         else:
             add_width = result[2].width < result[2].height
+        if add_width and size[0] > size[1]:
+            add_width = not add_width
         add_height = not add_width
         extending_side = not extending_side
 
@@ -79,9 +84,10 @@ def pack(rects: List[Rect], size: Tuple[int, int]):
             previous_result = result[1]
     return result[1], size
 
+
 def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: dict = None):
     # Sort the surfaces by the largest dimension, to pack the largest surfaces first
-    surfaces.sort(key=lambda surface: surface[1].width*surface[1].height, reverse=True)
+    surfaces.sort(key=lambda surface: surface[1].width * surface[1].height, reverse=True)
 
     # Initialize some basic information
     keys = set(surface[0] for surface in surfaces)
