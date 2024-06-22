@@ -81,7 +81,7 @@ def pack(rects: List[Rect], size: Tuple[int, int]):
 
 def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: dict = None):
     # Sort the surfaces by the largest dimension, to pack the largest surfaces first
-    surfaces.sort(key=lambda surface: max(surface[1].width, surface[1].height), reverse=True)
+    surfaces.sort(key=lambda surface: surface[1].width*surface[1].height, reverse=True)
 
     # Initialize some basic information
     keys = set(surface[0] for surface in surfaces)
