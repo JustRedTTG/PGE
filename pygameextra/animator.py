@@ -9,6 +9,7 @@ from frozendict import frozendict
 
 class Animator:
     _config: dict
+    original_config: dict
     one_to_one_rules: dict = {}
     key_values: dict = {}
     many_to_one_rules: dict = {}
@@ -26,6 +27,7 @@ class Animator:
 
     @config.setter
     def config(self, config):
+        self.original_config = config
         self.one_to_one_rules = {}
         self.many_to_one_rules = {}
         self._get_sheet.cache_clear()
@@ -195,3 +197,7 @@ class Animator:
     @property
     def size(self):
         return (self.width, self.height)
+
+    def extend(self, other: 'Animator'):
+        self.loop_ender = list(set((*self.loop_ender, *other.loop_ender)))
+        self.config = {**self.original_config, **other.original_config}
