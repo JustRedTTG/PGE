@@ -84,18 +84,26 @@ class Button:
                 else:
                     action()
 
-            if (not settings.hover_lock) and hover_action:
-                hover_lock()
-                if hover_data is not None:
-                    if type(hover_data) is tuple:
-                        hover_action(*hover_data)
-                    else:
-                        hover_action(hover_data)
-                else:
-                    hover_action()
+            Button.static_do_hover_action(hover_action, hover_data)
         else:
             hovered = False
         return hovered
+
+    def do_hover_action(self):
+        self.static_do_hover_action(self.hover_action, self.hover_data)
+
+
+    @staticmethod
+    def static_do_hover_action(hover_action, hover_data):
+        if (not settings.hover_lock) and hover_action:
+            hover_lock()
+            if hover_data is not None:
+                if type(hover_data) is tuple:
+                    hover_action(*hover_data)
+                else:
+                    hover_action(hover_data)
+            else:
+                hover_action()
 
 
 class RectButton(Button):
@@ -124,11 +132,14 @@ def check_hover(button: Button):
         return
     if len(settings.game_context.previous_buttons) >= (buttons_length := len(settings.game_context.buttons)):
         button.hovered = settings.game_context.previous_buttons[buttons_length - 1].hovered
+        if button.hovered:
+            button.do_hover_action()
         button.render()
         button.hovered = False
     else:
         button.hovered = False
         button.render()
+
 
 
 def action(area: tuple, text: Text = None, hover_action: any = None,
