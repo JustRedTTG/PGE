@@ -12,7 +12,7 @@ from pygameextra.sprite import *
 from pygameextra.modified import *
 from pygameextra.version import get as get_version
 from pygameextra import event, time, fill, mouse, settings, colors, draw, math, text, button, rect
-from pygameextra.event import Pquit
+from pygameextra.event import pge_quit
 from pygameextra.tsx import TSX
 from pygameextra.floating_methods import *
 from pygameextra.layer_methods import *

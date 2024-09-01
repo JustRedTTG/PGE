@@ -18,7 +18,7 @@ from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from pygameextra.mouse import offset_wrap
 from pygameextra.fpslogger import Logger as FpsLogger
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 from abc import abstractmethod, ABC
 
 
@@ -171,6 +171,8 @@ class Context(ABC):
             run()
             self.end_loop()
 
+        settings.game_context.sub_contexts.append(self)
+
         return actual()
 
     def update_float(self):
@@ -290,8 +292,8 @@ class GameContext(Context, ABC):
         self._position = (0, 0)
         self.clock = time.clock
         settings.game_context = self
-        self.buttons: Button = []
-        self.previous_buttons = []
+        self.buttons: List[Button] = []
+        self.previous_buttons: List[Button] = []
         self.current_fps = self.FPS or 0
         self.fps_logger: FpsLogger = None
         if self.FPS_LOGGER:
@@ -301,6 +303,7 @@ class GameContext(Context, ABC):
         self.pre_child_contexts = []
         self.post_child_contexts = []
         self.after_post_child_contexts = []
+        self.sub_contexts = []
 
     # def _loop(self):
     #     self.events()
@@ -330,16 +333,19 @@ class GameContext(Context, ABC):
         self._loop()
         self.end_loop()
 
-    def handle_event(self, e: pygame.event.Event):
-        if event.quitCheck():
+    def handle_event(self, e: event.Event):
+        for context in self.sub_contexts:
+            context.handle_event(e)
+        if event.quit_check():
             self.quit_check()
 
     def events(self):
         for event.c in event.get():
             self.handle_event(event.c)
+        self.sub_contexts.clear()
 
     def quit_check(self):
-        event.Pquit()
+        event.pge_quit()
 
     @property
     def size(self):

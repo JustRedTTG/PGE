@@ -4,6 +4,8 @@ import pygameextra as pe
 
 from functools import lru_cache
 
+from pygameextra import event
+
 pe.init()
 
 os.makedirs("tests/_test_temp", exist_ok=True)

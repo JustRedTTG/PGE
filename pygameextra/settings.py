@@ -24,4 +24,4 @@ hover_lock_enabled = False  # Enable hover locking
 
 atlas_attempt_keep_past_attempt = True  # When trying to fit the atlas, keep the past attempt on the new size, may speed up the process
 
-game_context: context.Context = None
+game_context: context.GameContext = None

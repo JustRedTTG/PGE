@@ -161,7 +161,7 @@ def run():
     global sO, sT
     while True:
         for pe.event.c in pe.event.get():
-            pe.event.quitCheckAuto()
+            pe.event.quit_check_auto()
         pe.fill.full(pe.colors.verydarkgray)
 
         debug_icon.display((350, 440))
