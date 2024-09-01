@@ -1,6 +1,7 @@
 import math
 from typing import Callable
-from pygameextra.mouse import Draggable, fingersupport
+from pygameextra.draggable import Draggable
+from pygameextra import fingersupport
 from pygameextra.math import lerp, dist
 
 

@@ -106,7 +106,7 @@ def update(framerate: int = None, area: tuple = None):
 def blit(obj: Union['Surface', pygame.Surface], pos: tuple = (0, 0), area: tuple = None):
     display_reference.stamp(obj, pos, area)
     if type(obj) is modified.Surface:
-        obj = obj.surface
+        obj.last_blit_pos = pos
 
 
 def get_width() -> int:

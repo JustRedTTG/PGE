@@ -3,7 +3,7 @@ This script manages all pygame modifications"""
 import zlib
 import pygame
 
-from pygameextra import display
+from pygameextra import display, mouse
 from pygameextra.rect import Rect
 from pygameextra.sorters import layer_sorter
 from typing import Union, IO, List, Literal
@@ -63,7 +63,10 @@ class Surface:
         self.area = None  # Used by stamps function
         self.pos = None  # Used by stamps function
         self.frames = 1  # Used by sprite animation function, if used improperly
+        self._offset = None
         self._display_backup = None
+        self.last_blit_pos = (0, 0)
+
 
     def stamp(self, source: Union['Surface', pygame.Surface], position: tuple = (0, 0), area: tuple = None,
               special_flags: int = 0):
@@ -131,11 +134,17 @@ class Surface:
         pygame.image.save(self.surface, file)
 
     def __enter__(self):
+        if self._display_backup is not None:
+            raise SurfaceException("Surface already in context")
         self._display_backup = display.display_reference
+        self._offset = mouse.Offset(self.last_blit_pos, additive=True, reverse=True)
         display.context(self)
+        self._offset.__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         display.context(self._display_backup)
+        self._display_backup = None
+        self._offset.__exit__(exc_type, exc_val, exc_tb)
 
 
 SurfaceFileType = Union[str, IO, Surface, pygame.Surface, CompressedSurface]

@@ -1,7 +1,7 @@
 import time
 from typing import Union
 
-from pygameextra import draw, mouse, math, display, settings
+from pygameextra import draw, mouse, math, display, settings, colors
 from pygameextra.image import Image
 from pygameextra.rect import Rect
 from pygameextra.text import Text
@@ -35,11 +35,14 @@ class Button:
 
     def logic(self, area: tuple = None, hover_action: any = None, hover_data: any = None, action: any = None,
               data: any = None, disabled: Union[bool, tuple] = False):
-        with mouse.Offset(self.mouse_offset):
-            with self.display_reference:
-                self.hovered = self.static_logic(area or self.area, action or self.action, data or self.data,
-                                                 hover_action or self.hover_action, hover_data or self.hover_data,
-                                                 disabled or self.disabled)
+        @display.context_wrap(self.display_reference)
+        @mouse.offset_wrap(self.mouse_offset)
+        def offset_logic():
+            self.hovered = self.static_logic(area or self.area, action or self.action, data or self.data,
+                                             hover_action or self.hover_action, hover_data or self.hover_data,
+                                             disabled or self.disabled)
+
+        offset_logic()
 
     def render(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
                disabled: Union[bool, tuple] = False):
@@ -92,7 +95,6 @@ class Button:
     def do_hover_action(self):
         self.static_do_hover_action(self.hover_action, self.hover_data)
 
-
     @staticmethod
     def static_do_hover_action(hover_action, hover_data):
         if (not settings.hover_lock) and hover_action:
@@ -139,7 +141,6 @@ def check_hover(button: Button):
     else:
         button.hovered = False
         button.render()
-
 
 
 def action(area: tuple, text: Text = None, hover_action: any = None,
