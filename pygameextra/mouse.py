@@ -51,24 +51,40 @@ def offset_wrap(offset: tuple, catch_error: bool = False, additive: bool = True,
     def _offset_wrap(func):
         @wraps(func)
         def wrap(*args, **kwargs):
-            _backup = settings.spoof_mouse_offset
-            if _backup is not None and additive:
-                settings.spoof_mouse_offset = tuple(v + o for v, o in zip(offset, _backup))
-            else:
-                settings.spoof_mouse_offset = tuple(offset)
-            if catch_error:
-                try:
+            with Offset(offset, additive, reverse):
+                if catch_error:
+                    try:
+                        result = func(*args, **kwargs)
+                    except:
+                        result = None
+                else:
                     result = func(*args, **kwargs)
-                except:
-                    result = None
-            else:
-                result = func(*args, **kwargs)
-            settings.spoof_mouse_offset = _backup
             return result
 
         return wrap
 
     return _offset_wrap
+
+
+class Offset:
+    def __init__(self, offset: tuple, additive: bool = True, reverse: bool = False):
+        self.offset = offset
+        self.additive = additive
+        self.reverse = reverse
+
+    def __enter__(self):
+        self._backup = settings.spoof_mouse_offset
+        if self._backup is not None and self.additive:
+            settings.spoof_mouse_offset = tuple(v + o for v, o in zip(self.offset, self._backup))
+        else:
+            settings.spoof_mouse_offset = tuple(self.offset)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        settings.spoof_mouse_offset = self._backup
+
+    @classmethod
+    def wrap(cls, offset: tuple, catch_error: bool = False, additive: bool = True, reverse: bool = False):
+        return offset_wrap(offset, catch_error, additive, reverse)
 
 
 class Draggable:
