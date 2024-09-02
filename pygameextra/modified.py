@@ -65,6 +65,7 @@ class Surface:
         self.frames = 1  # Used by sprite animation function, if used improperly
         self._offset: mouse.Offset = None
         self._display_backup: Surface = None
+        self._with_depth = 0
         self.last_blit_pos = (0, 0)
 
 
@@ -135,13 +136,18 @@ class Surface:
 
     def __enter__(self):
         if self._display_backup is not None:
-            raise SurfaceException("Surface already in context")
+            self._with_depth += 1
+            return
         self._display_backup = display.display_reference
         self._offset = mouse.Offset(self.last_blit_pos, additive=True, reverse=True)
         display.context(self)
         self._offset.__enter__()
+        self._with_depth = 0
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._with_depth > 0:
+            self._with_depth -= 1
+            return
         display.context(self._display_backup)
         self._display_backup = None
         self._offset.__exit__(exc_type, exc_val, exc_tb)

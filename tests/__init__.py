@@ -9,7 +9,7 @@ script_folder = os.path.dirname(__file__)
 temp_directory = os.path.join(script_folder, "_test_temp")
 errors_directory = os.path.join(script_folder, "_test_errors")
 
-pe.init()
+pe.init((600, 600))
 if os.path.exists(errors_directory):
     shutil.rmtree(errors_directory)
 os.makedirs(temp_directory, exist_ok=True)

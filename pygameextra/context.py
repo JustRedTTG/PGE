@@ -18,7 +18,7 @@ from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from pygameextra.mouse import offset_wrap, Offset
 from pygameextra.fpslogger import Logger as FpsLogger
-from typing import Union, Tuple, List
+from typing import Union, Tuple, List, Dict, Hashable
 from abc import abstractmethod, ABC
 
 
@@ -177,6 +177,9 @@ class Context(ABC):
         self._exit()
         self.end_loop()
 
+    def handle_event(self, e: event.Event):
+        pass
+
 
     def _enter(self):
         self.events()
@@ -192,7 +195,8 @@ class Context(ABC):
         self.pre_child_contexts.clear()
         self.post_child_contexts.clear()
         self.after_post_child_contexts.clear()
-        settings.game_context.sub_contexts.append(self)
+        if not isinstance(self, GameContext):
+            settings.game_context.sub_contexts.append(self)
 
     def update_float(self):
         if not self.area_based:
@@ -312,7 +316,9 @@ class GameContext(Context, ABC):
         self.clock = time.clock
         settings.game_context = self
         self.buttons: List[Button] = []
+        self.buttons_with_names: Dict[Hashable, Button] = {}
         self.previous_buttons: List[Button] = []
+        self.previous_buttons_with_names: Dict[Hashable, Button] = {}
         self.current_fps = self.FPS or 0
         self.fps_logger: FpsLogger = None
         if self.FPS_LOGGER:
@@ -333,18 +339,17 @@ class GameContext(Context, ABC):
     def start_loop(self):
         super().start_loop()
         self.buttons, self.previous_buttons = [], self.buttons
+        self.buttons_with_names, self.previous_buttons_with_names = {}, self.buttons_with_names
 
     def end_loop(self):
         if self.FPS_LOGGER:
             self.fps_logger.render()
         self.current_fps = self.clock.get_fps()
         display.update(self.FPS)
-        self.buttons.reverse()
-        for button in self.buttons:
+        for button in reversed(self.buttons):
             button.logic()
             if button.hovered:
                 break
-        self.buttons.reverse()
 
     def __call__(self):
         self.events()

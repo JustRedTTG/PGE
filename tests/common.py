@@ -4,14 +4,45 @@ from types import GeneratorType
 
 import pygameextra as pe
 
-SCREEN_FLASH_TIME = 0.05
-SCREEN_FLASH_MAIN = pe.colors.darkred
-SCREEN_FLASH_PARENT = pe.colors.darkpink
+SCREEN_FLASH_TIME = 0.01
+BETWEEN_FRAME_TIME = 0.001  # Prevents errors, please use, can slow down tests that do multiple frames
+SCREEN_FLASH_MAIN = (*pe.colors.verydarkpink, 10)
+SCREEN_FLASH_PARENT = (*pe.colors.verydarkblue, 10)
+SCREEN_MODE = pe.display.DISPLAY_MODE_NORMAL
+TEST_FPS = 0  # 600 -> .1 second when tests are tailored for 60 fps
+# USE 0 FOR INFINITE FPS
+
+def between_frame_sleep():
+    if BETWEEN_FRAME_TIME:
+        time.sleep(BETWEEN_FRAME_TIME)
+
+def screen_flash_sleep():
+    if SCREEN_FLASH_TIME:
+        time.sleep(SCREEN_FLASH_TIME)
 
 
 class PygameExtraTest(unittest.TestCase):
+    class ContextingLogic:
+        def __enter__(self):
+            pe.fill.full(pe.colors.black)
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
+            pe.display.update(TEST_FPS)
+            between_frame_sleep()
+
+        @property
+        def display_reference(self):
+            return pe.display.display_reference
+
     def setUp(self):
-        pe.display.make((500, 500), "tests", pe.display.DISPLAY_MODE_HIDDEN)
+        pe.display.make((500, 500), "tests", SCREEN_MODE)
+        self.context = self.ContextingLogic()
+
+    def tearDown(self):
+        pe.fill.full(SCREEN_FLASH_MAIN)
+        pe.display.update()
+        screen_flash_sleep()
 
     def assert_surfaces_are_same(self, surface1: pe.Surface, surface2: pe.Surface):
         self.assertEqual(surface1.size, surface2.size, "Sizes should be the same")
@@ -42,7 +73,8 @@ class PygameExtraTest(unittest.TestCase):
                 raise e
 
     def spoof_mouse(self, position: tuple = None):
-        pe.settings.spoof_mouse_position = tuple(v - o for v, o in zip(position, pe.settings.spoof_mouse_offset))
+        pe.settings.spoof_mouse_position = tuple(
+            v - o for v, o in zip(position, pe.settings.spoof_mouse_offset or (0, 0)))
 
     def spoof_click(self, button: int = None):
         if button is None:
@@ -53,6 +85,43 @@ class PygameExtraTest(unittest.TestCase):
         pe.settings.spoof_mouse_clicked = buttons
 
 
+class PygameExtraSubSurfaceTest(PygameExtraTest):
+    class ContextingLogic:
+        def __init__(self, context: pe.Surface):
+            self._context = context
+
+        def __enter__(self):
+            pe.fill.full(pe.colors.verydarkgray)
+            self._context.last_blit_pos = (100, 100)
+            self._context.__enter__()
+            pe.fill.full(pe.colors.black)
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
+            self._context.__exit__(exc_type, exc_val, exc_tb)
+            pe.display.blit(self._context, (100, 100))
+            pe.display.update(TEST_FPS)
+            between_frame_sleep()
+
+        @property
+        def display_reference(self):
+
+            return self._context
+
+
+    def setUp(self):
+        pe.display.make((600, 600), "tests", SCREEN_MODE)
+        self._context = pe.Surface((500, 500))
+        self.context = self.ContextingLogic(self._context)
+
+    def tearDown(self):
+        pe.fill.full(SCREEN_FLASH_PARENT)
+        with self._context:
+            pe.fill.full(SCREEN_FLASH_MAIN)
+        pe.display.blit(self._context, (100, 100))
+        pe.display.update()
+        screen_flash_sleep()
+
 class PygameExtraDebugGameContext(pe.GameContext):
     def post_loop(self):
         for button in self.buttons:
@@ -61,6 +130,7 @@ class PygameExtraDebugGameContext(pe.GameContext):
                 *button.area[2:]
             ), 1)
         pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
+        super().post_loop()
 
 
 class PygameExtraContextTest(PygameExtraTest):
@@ -68,8 +138,8 @@ class PygameExtraContextTest(PygameExtraTest):
 
     class TestContext(PygameExtraDebugGameContext):
         BACKGROUND = pe.colors.black
-        FPS = 60
-        MODE = pe.display.DISPLAY_MODE_NORMAL
+        FPS = TEST_FPS
+        MODE = SCREEN_MODE
 
         def __init__(self, area):
             self.AREA = area
@@ -84,7 +154,7 @@ class PygameExtraContextTest(PygameExtraTest):
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             pe.settings.game_context.__exit__(exc_type, exc_val, exc_tb)
-            time.sleep(SCREEN_FLASH_TIME)
+            between_frame_sleep()
 
         @property
         def display_reference(self):
@@ -97,8 +167,9 @@ class PygameExtraContextTest(PygameExtraTest):
     def tearDown(self):
         with self._context:
             pe.fill.full(SCREEN_FLASH_MAIN)
-        time.sleep(SCREEN_FLASH_TIME / 2)
+        screen_flash_sleep()
         super().tearDown()
+        pe.settings.game_context = None
 
 
 class PygameExtraSubContextTest(PygameExtraTest):
@@ -106,8 +177,8 @@ class PygameExtraSubContextTest(PygameExtraTest):
 
     class TestContext(PygameExtraDebugGameContext):
         BACKGROUND = pe.colors.verydarkgray
-        FPS = 60
-        MODE = pe.display.DISPLAY_MODE_NORMAL
+        FPS = TEST_FPS
+        MODE = SCREEN_MODE
 
         class TestSubContext(pe.Context):
             BACKGROUND = pe.colors.black
@@ -138,7 +209,7 @@ class PygameExtraSubContextTest(PygameExtraTest):
         def __exit__(self, exc_type, exc_val, exc_tb):
             pe.settings.game_context.sub_context.__exit__(exc_type, exc_val, exc_tb)
             pe.settings.game_context.__exit__(exc_type, exc_val, exc_tb)
-            time.sleep(SCREEN_FLASH_TIME)
+            between_frame_sleep()
 
         @property
         def display_reference(self):
@@ -153,5 +224,6 @@ class PygameExtraSubContextTest(PygameExtraTest):
             pe.fill.full(SCREEN_FLASH_PARENT)
             with self._context.sub_context:
                 pe.fill.full(SCREEN_FLASH_MAIN)
-        time.sleep(SCREEN_FLASH_TIME / 2)
+        screen_flash_sleep()
         super().tearDown()
+        pe.settings.game_context = None
