@@ -16,7 +16,7 @@ from pygameextra._deprecations import UNCLIPPED_CONTEXT_DEPRECATION_WRAPPER
 from pygameextra.button import Button
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
-from pygameextra.mouse import offset_wrap
+from pygameextra.mouse import offset_wrap, Offset
 from pygameextra.fpslogger import Logger as FpsLogger
 from typing import Union, Tuple, List
 from abc import abstractmethod, ABC
@@ -86,18 +86,9 @@ class Context(ABC):
         display.blit(self.surface, self.surface.pos)
 
     def _loop(self):
-        self.events()
-        self.handle_children(self.before_pre_child_contexts)
-        self.pre_loop()
-        self.handle_children(self.pre_child_contexts)
+        self._enter()
         self.loop()
-        self.handle_children(self.post_child_contexts)
-        self.post_loop()
-        self.handle_children(self.after_post_child_contexts)
-        self.before_pre_child_contexts.clear()
-        self.pre_child_contexts.clear()
-        self.post_child_contexts.clear()
-        self.after_post_child_contexts.clear()
+        self._exit()
 
     @property
     def size(self):
@@ -162,7 +153,7 @@ class Context(ABC):
 
     def __call__(self):
         @context_wrap(self.surface)
-        @offset_wrap(tuple(map(lambda v: -v, self.surface.pos or (0, 0))))
+        @offset_wrap(self.surface.pos or (0, 0), reverse=True)
         def run():
             return self._loop()
 
@@ -171,9 +162,37 @@ class Context(ABC):
             run()
             self.end_loop()
 
-        settings.game_context.sub_contexts.append(self)
-
         return actual()
+
+    def __enter__(self):
+        self.start_loop()
+        self.surface.__enter__()
+        self.surface._offset.__exit__(None, None, None)
+        self.surface._offset = Offset(self.surface.pos or (0, 0), reverse=True)
+        self.surface._offset.__enter__()
+        self._enter()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.surface.__exit__(exc_type, exc_val, exc_tb)
+        self._exit()
+        self.end_loop()
+
+
+    def _enter(self):
+        self.events()
+        self.handle_children(self.before_pre_child_contexts)
+        self.pre_loop()
+        self.handle_children(self.pre_child_contexts)
+
+    def _exit(self):
+        self.handle_children(self.post_child_contexts)
+        self.post_loop()
+        self.handle_children(self.after_post_child_contexts)
+        self.before_pre_child_contexts.clear()
+        self.pre_child_contexts.clear()
+        self.post_child_contexts.clear()
+        self.after_post_child_contexts.clear()
+        settings.game_context.sub_contexts.append(self)
 
     def update_float(self):
         if not self.area_based:

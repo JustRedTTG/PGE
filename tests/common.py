@@ -1,7 +1,12 @@
+import time
 import unittest
 from types import GeneratorType
 
 import pygameextra as pe
+
+SCREEN_FLASH_TIME = 0.05
+SCREEN_FLASH_MAIN = pe.colors.darkred
+SCREEN_FLASH_PARENT = pe.colors.darkpink
 
 
 class PygameExtraTest(unittest.TestCase):
@@ -36,4 +41,117 @@ class PygameExtraTest(unittest.TestCase):
                 sheet.surface.save_to_file(f"tests/_test_errors/test_sheet_COLOR_{on_color}_{i}_outlined.png")
                 raise e
 
+    def spoof_mouse(self, position: tuple = None):
+        pe.settings.spoof_mouse_position = tuple(v - o for v, o in zip(position, pe.settings.spoof_mouse_offset))
 
+    def spoof_click(self, button: int = None):
+        if button is None:
+            pe.settings.spoof_mouse_clicked = None
+            return
+        buttons = [False, False, False]
+        buttons[button] = True
+        pe.settings.spoof_mouse_clicked = buttons
+
+
+class PygameExtraDebugGameContext(pe.GameContext):
+    def post_loop(self):
+        for button in self.buttons:
+            pe.draw.rect(pe.colors.yellow, (
+                *tuple(v + o for v, o in zip(button.area[:2], button.display_reference.last_blit_pos)),
+                *button.area[2:]
+            ), 1)
+        pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
+
+
+class PygameExtraContextTest(PygameExtraTest):
+    AREA = (500, 500)
+
+    class TestContext(PygameExtraDebugGameContext):
+        BACKGROUND = pe.colors.black
+        FPS = 60
+        MODE = pe.display.DISPLAY_MODE_NORMAL
+
+        def __init__(self, area):
+            self.AREA = area
+            super().__init__()
+
+        def loop(self):
+            pass
+
+    class ContextingLogic:
+        def __enter__(self):
+            pe.settings.game_context.__enter__()
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pe.settings.game_context.__exit__(exc_type, exc_val, exc_tb)
+            time.sleep(SCREEN_FLASH_TIME)
+
+        @property
+        def display_reference(self):
+            return pe.display.display_reference
+
+    def setUp(self):
+        self._context = self.TestContext(self.AREA)
+        self.context = self.ContextingLogic()
+
+    def tearDown(self):
+        with self._context:
+            pe.fill.full(SCREEN_FLASH_MAIN)
+        time.sleep(SCREEN_FLASH_TIME / 2)
+        super().tearDown()
+
+
+class PygameExtraSubContextTest(PygameExtraTest):
+    AREA = (500, 500)
+
+    class TestContext(PygameExtraDebugGameContext):
+        BACKGROUND = pe.colors.verydarkgray
+        FPS = 60
+        MODE = pe.display.DISPLAY_MODE_NORMAL
+
+        class TestSubContext(pe.Context):
+            BACKGROUND = pe.colors.black
+
+            def __init__(self, area):
+                self.AREA = area
+                super().__init__()
+
+            def loop(self):
+                pass
+
+            def post_loop(self):
+                pe.draw.circle(pe.colors.aqua, pe.mouse.pos(), 7, 3)
+
+        def __init__(self, area):
+            self.AREA = tuple(s * 2 for s in area)
+            self.sub_context = self.TestSubContext(area)
+            super().__init__()
+
+        def loop(self):
+            pass
+
+    class ContextingLogic:
+        def __enter__(self):
+            pe.settings.game_context.__enter__()
+            pe.settings.game_context.sub_context.__enter__()
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pe.settings.game_context.sub_context.__exit__(exc_type, exc_val, exc_tb)
+            pe.settings.game_context.__exit__(exc_type, exc_val, exc_tb)
+            time.sleep(SCREEN_FLASH_TIME)
+
+        @property
+        def display_reference(self):
+            return pe.settings.game_context.sub_context.surface
+
+    def setUp(self):
+        self._context = self.TestContext(self.AREA)
+        self.context = self.ContextingLogic()
+
+    def tearDown(self):
+        with self._context:
+            pe.fill.full(SCREEN_FLASH_PARENT)
+            with self._context.sub_context:
+                pe.fill.full(SCREEN_FLASH_MAIN)
+        time.sleep(SCREEN_FLASH_TIME / 2)
+        super().tearDown()

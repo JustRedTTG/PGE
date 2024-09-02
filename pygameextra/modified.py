@@ -63,8 +63,8 @@ class Surface:
         self.area = None  # Used by stamps function
         self.pos = None  # Used by stamps function
         self.frames = 1  # Used by sprite animation function, if used improperly
-        self._offset = None
-        self._display_backup = None
+        self._offset: mouse.Offset = None
+        self._display_backup: Surface = None
         self.last_blit_pos = (0, 0)
 
 
