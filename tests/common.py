@@ -6,10 +6,10 @@ import pygameextra as pe
 
 SCREEN_SHOW_TIME = 0
 SCREEN_FLASH_TIME = 0
-BETWEEN_FRAME_TIME = 0.001  # Prevents errors, please use, can slow down tests that do multiple frames
+BETWEEN_FRAME_TIME = 0
 SCREEN_FLASH_MAIN = (*pe.colors.verydarkpink, 10)
 SCREEN_FLASH_PARENT = (*pe.colors.verydarkblue, 10)
-SCREEN_MODE = pe.display.DISPLAY_MODE_NORMAL
+SCREEN_MODE = pe.display.DISPLAY_MODE_HIDDEN
 TEST_FPS = 0  # 600 -> .1 second when tests are tailored for 60 fps
 
 
@@ -150,6 +150,7 @@ class PygameExtraWithButtonManagerTest(PygameExtraTest):
         @property
         def display_reference(self):
             return pe.display.display_reference
+
     def tearDown(self):
         super().tearDown()
         pe.settings.game_context = None

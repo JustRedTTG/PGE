@@ -32,7 +32,8 @@ class AbstractButtonTest(PygameExtraTest):
         start = rect.right
         for i in range(10):
             for j in range(randint(1, 20), randint(1, 50)):
-                pe.button.rect((start+j, i*5, 1, 5), pe.colors.verydarkred, pe.colors.verydarkred, name=f"jumble_{i}_{j}")
+                pe.button.rect((start + j, i * 5, 1, 5), pe.colors.verydarkred, pe.colors.verydarkred,
+                               name=f"jumble_{i}_{j}")
 
     def center_mouse_on_button(self):
         self.spoof_mouse(self.button_center)
@@ -161,6 +162,8 @@ class TestButtonsWithSubSurface(AbstractButtonTest, PygameExtraSubSurfaceTest):
     EXPECT_OVERLAYING = False
     FRAMES_TO_SIMULATE = 1
     pass
+
+
 class TestButtonsWithButtonManager(AbstractButtonTest, PygameExtraWithButtonManagerTest):
     pass
 
