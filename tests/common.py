@@ -132,6 +132,70 @@ class PygameExtraSubSurfaceTest(PygameExtraTest):
         screen_flash_sleep()
 
 
+class PygameExtraWithButtonManagerTest(PygameExtraTest):
+    class ContextingLogic:
+        def __init__(self):
+            self.button_manager = pe.ButtonManager()
+
+        def __enter__(self):
+            pe.fill.full(pe.colors.black)
+            self.button_manager.push_buttons()
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
+            pe.display.update(TEST_FPS)
+            self.button_manager.handle_buttons()
+            between_frame_sleep()
+
+        @property
+        def display_reference(self):
+            return pe.display.display_reference
+    def tearDown(self):
+        super().tearDown()
+        pe.settings.game_context = None
+
+
+class PygameExtraSubSurfaceWithButtonManagerTest(PygameExtraTest):
+    class ContextingLogic:
+        def __init__(self, context: pe.Surface):
+            self._context = context
+            self.button_manager = pe.ButtonManager()
+
+        def __enter__(self):
+            pe.fill.full(pe.colors.verydarkgray)
+            self._context.last_blit_pos = (100, 100)
+            self._context.__enter__()
+            self.button_manager.push_buttons()
+            pe.fill.full(pe.colors.black)
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
+            self._context.__exit__(exc_type, exc_val, exc_tb)
+            pe.display.blit(self._context, (100, 100))
+            pe.display.update(TEST_FPS)
+            self.button_manager.handle_buttons()
+            between_frame_sleep()
+
+        @property
+        def display_reference(self):
+            return self._context
+
+    def setUp(self):
+        pe.display.make((600, 600), "tests", SCREEN_MODE)
+        self._context = pe.Surface((500, 500))
+        self.context = self.ContextingLogic(self._context)
+
+    def tearDown(self):
+        screen_show_sleep()
+        pe.fill.full(SCREEN_FLASH_PARENT)
+        with self._context:
+            pe.fill.full(SCREEN_FLASH_MAIN)
+        pe.display.blit(self._context, (100, 100))
+        pe.display.update()
+        screen_flash_sleep()
+        pe.settings.game_context = None
+
+
 class PygameExtraDebugGameContext(pe.GameContext):
     def post_loop(self):
         for button in self.buttons:

@@ -13,7 +13,7 @@ from pygameextra import event
 from pygameextra import settings
 from pygameextra import time
 from pygameextra._deprecations import UNCLIPPED_CONTEXT_DEPRECATION_WRAPPER
-from pygameextra.button import Button
+from pygameextra.button import Button, ButtonManager
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from pygameextra.mouse import offset_wrap, Offset
@@ -180,7 +180,6 @@ class Context(ABC):
     def handle_event(self, e: event.Event):
         pass
 
-
     def _enter(self):
         self.events()
         self.handle_children(self.before_pre_child_contexts)
@@ -315,10 +314,7 @@ class GameContext(Context, ABC):
         self._position = (0, 0)
         self.clock = time.clock
         settings.game_context = self
-        self.buttons: List[Button] = []
-        self.buttons_with_names: Dict[Hashable, Button] = {}
-        self.previous_buttons: List[Button] = []
-        self.previous_buttons_with_names: Dict[Hashable, Button] = {}
+        self.button_manager = ButtonManager(False)
         self.current_fps = self.FPS or 0
         self.fps_logger: FpsLogger = None
         if self.FPS_LOGGER:
@@ -338,18 +334,14 @@ class GameContext(Context, ABC):
 
     def start_loop(self):
         super().start_loop()
-        self.buttons, self.previous_buttons = [], self.buttons
-        self.buttons_with_names, self.previous_buttons_with_names = {}, self.buttons_with_names
+        self.button_manager.push_buttons()
 
     def end_loop(self):
         if self.FPS_LOGGER:
             self.fps_logger.render()
         self.current_fps = self.clock.get_fps()
         display.update(self.FPS)
-        for button in reversed(self.buttons):
-            button.logic()
-            if button.hovered:
-                break
+        self.button_manager.handle_buttons()
 
     def __call__(self):
         self.events()
@@ -393,3 +385,19 @@ class GameContext(Context, ABC):
             if value:
                 if self.fps_logger is None:
                     self._initialize_fps_logger()
+
+    @property
+    def buttons(self):
+        return self.button_manager.buttons
+
+    @property
+    def buttons_with_names(self):
+        return self.button_manager.buttons_with_names
+
+    @property
+    def previous_buttons(self):
+        return self.button_manager.previous_buttons
+
+    @property
+    def previous_buttons_with_names(self):
+        return self.button_manager.previous_buttons_with_names

@@ -1,5 +1,5 @@
 import time
-from typing import Union, Hashable
+from typing import Union, Hashable, List, Dict
 
 from pygameextra import draw, mouse, math, display, settings, colors
 from pygameextra.image import Image
@@ -225,7 +225,8 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
         return
     hovered = Button.static_logic(area, action, data, hover_action, hover_data, hover_draw_action, hover_draw_data,
                                   disabled)
-    RectButton.full_static_render(area, inactive_color, active_color, hovered, hover_draw_action, hover_draw_data, disabled)
+    RectButton.full_static_render(area, inactive_color, active_color, hovered, hover_draw_action, hover_draw_data,
+                                  disabled)
     RectButton.static_render_text(area, text)
 
 
@@ -242,3 +243,23 @@ def image(area: tuple, inactive_image: tuple, active_image: tuple, text: Text = 
                                   disabled)
     ImageButton.static_render(area, inactive_image, active_image, hovered, disabled)
     ImageButton.static_render_text(area, text)
+
+
+class ButtonManager:
+    def __init__(self, set_as_context: bool = True):
+        self.buttons: List[Button] = []
+        self.buttons_with_names: Dict[Hashable, Button] = {}
+        self.previous_buttons: List[Button] = []
+        self.previous_buttons_with_names: Dict[Hashable, Button] = {}
+        if set_as_context:
+            settings.game_context = self
+
+    def handle_buttons(self):
+        for button in reversed(self.buttons):
+            button.logic()
+            if button.hovered:
+                break
+
+    def push_buttons(self):
+        self.buttons, self.previous_buttons = [], self.buttons
+        self.buttons_with_names, self.previous_buttons_with_names = {}, self.buttons_with_names

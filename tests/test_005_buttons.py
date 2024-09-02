@@ -2,7 +2,8 @@ from random import randint
 
 import pygameextra as pe
 
-from tests.common import PygameExtraTest, PygameExtraContextTest, PygameExtraSubContextTest, PygameExtraSubSurfaceTest
+from tests.common import PygameExtraTest, PygameExtraContextTest, PygameExtraSubContextTest, PygameExtraSubSurfaceTest, \
+    PygameExtraWithButtonManagerTest, PygameExtraSubSurfaceWithButtonManagerTest
 
 
 class AbstractButtonTest(PygameExtraTest):
@@ -159,6 +160,12 @@ class TestButtonsWithoutContext(AbstractButtonTest, PygameExtraTest):
 class TestButtonsWithSubSurface(AbstractButtonTest, PygameExtraSubSurfaceTest):
     EXPECT_OVERLAYING = False
     FRAMES_TO_SIMULATE = 1
+    pass
+class TestButtonsWithButtonManager(AbstractButtonTest, PygameExtraWithButtonManagerTest):
+    pass
+
+
+class TestButtonsWithSubSurfaceAndButtonManager(AbstractButtonTest, PygameExtraSubSurfaceWithButtonManagerTest):
     pass
 
 
