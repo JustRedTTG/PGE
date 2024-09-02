@@ -4,17 +4,26 @@ from types import GeneratorType
 
 import pygameextra as pe
 
-SCREEN_FLASH_TIME = 0.01
+SCREEN_SHOW_TIME = 0
+SCREEN_FLASH_TIME = 0
 BETWEEN_FRAME_TIME = 0.001  # Prevents errors, please use, can slow down tests that do multiple frames
 SCREEN_FLASH_MAIN = (*pe.colors.verydarkpink, 10)
 SCREEN_FLASH_PARENT = (*pe.colors.verydarkblue, 10)
 SCREEN_MODE = pe.display.DISPLAY_MODE_NORMAL
 TEST_FPS = 0  # 600 -> .1 second when tests are tailored for 60 fps
+
+
 # USE 0 FOR INFINITE FPS
 
 def between_frame_sleep():
     if BETWEEN_FRAME_TIME:
         time.sleep(BETWEEN_FRAME_TIME)
+
+
+def screen_show_sleep():
+    if SCREEN_SHOW_TIME:
+        time.sleep(SCREEN_SHOW_TIME)
+
 
 def screen_flash_sleep():
     if SCREEN_FLASH_TIME:
@@ -40,6 +49,7 @@ class PygameExtraTest(unittest.TestCase):
         self.context = self.ContextingLogic()
 
     def tearDown(self):
+        screen_show_sleep()
         pe.fill.full(SCREEN_FLASH_MAIN)
         pe.display.update()
         screen_flash_sleep()
@@ -105,9 +115,7 @@ class PygameExtraSubSurfaceTest(PygameExtraTest):
 
         @property
         def display_reference(self):
-
             return self._context
-
 
     def setUp(self):
         pe.display.make((600, 600), "tests", SCREEN_MODE)
@@ -115,12 +123,14 @@ class PygameExtraSubSurfaceTest(PygameExtraTest):
         self.context = self.ContextingLogic(self._context)
 
     def tearDown(self):
+        screen_show_sleep()
         pe.fill.full(SCREEN_FLASH_PARENT)
         with self._context:
             pe.fill.full(SCREEN_FLASH_MAIN)
         pe.display.blit(self._context, (100, 100))
         pe.display.update()
         screen_flash_sleep()
+
 
 class PygameExtraDebugGameContext(pe.GameContext):
     def post_loop(self):
@@ -165,10 +175,10 @@ class PygameExtraContextTest(PygameExtraTest):
         self.context = self.ContextingLogic()
 
     def tearDown(self):
+        screen_show_sleep()
         with self._context:
             pe.fill.full(SCREEN_FLASH_MAIN)
         screen_flash_sleep()
-        super().tearDown()
         pe.settings.game_context = None
 
 
@@ -220,10 +230,10 @@ class PygameExtraSubContextTest(PygameExtraTest):
         self.context = self.ContextingLogic()
 
     def tearDown(self):
+        screen_show_sleep()
         with self._context:
             pe.fill.full(SCREEN_FLASH_PARENT)
             with self._context.sub_context:
                 pe.fill.full(SCREEN_FLASH_MAIN)
         screen_flash_sleep()
-        super().tearDown()
         pe.settings.game_context = None

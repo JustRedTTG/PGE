@@ -62,18 +62,29 @@ class Button:
         offset_logic()
 
     def render(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
+               hover_draw_action: any = None, hover_draw_data: any = None,
                disabled: Union[bool, tuple] = False):
-        if self.hover_draw_action and settings.do_not_render_if_hover_draw:
-            return
-        self.static_render(area or self.area, inactive_resource or self.inactive_resource,
-                           active_resource or self.active_resource, self.hovered, disabled or self.disabled)
+        self.full_static_render(area or self.area, inactive_resource or self.inactive_resource,
+                                active_resource or self.active_resource, self.hovered,
+                                hover_draw_action or self.hover_draw_action,
+                                hover_draw_data or self.hover_draw_data, disabled or self.disabled)
         self.static_render_text(area or self.area, text or self.text)
 
     def __call__(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
                  hover_action: any = None, hover_data: any = None, action: any = None, data: any = None,
+                 hover_draw_action: any = None, hover_draw_data: any = None,
                  disabled: Union[bool, tuple] = False):
-        self.logic(area, hover_action, hover_data, action, data, disabled)
-        self.render(area, inactive_resource, active_resource, text, disabled)
+        self.logic(area, hover_action, hover_data, action, data, hover_draw_action, hover_draw_data, disabled)
+        self.render(area, inactive_resource, active_resource, text, hover_draw_action, hover_draw_data, disabled)
+
+    @classmethod
+    def full_static_render(cls, area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
+                           hover_draw_action: any = None, hover_draw_data: any = None,
+                           disabled: Union[bool, tuple] = None):
+        if not (settings.do_not_render_if_hover_draw and hover_draw_action and hovered):
+            cls.static_render(area, inactive_resource, active_resource, hovered, disabled)
+        if hover_draw_action and hovered:
+            cls.static_do_hover_action(hover_draw_action, hover_draw_data)
 
     @staticmethod
     def static_render(area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
@@ -163,17 +174,18 @@ class ImageButton(Button):
 def check_hover(button: Button):
     if not settings.game_context:
         return
-    if button.hover_draw_action:
-        button.hovered = Button.static_hover_logic(button.area, button.disabled)
-        button.render()
-        if button.hovered:
-            Button.static_do_hover_action(button.hover_draw_action, button.hover_draw_data)
-    elif button.name is not None and \
+    if button.name is not None and \
             (previous_button := settings.game_context.previous_buttons_with_names.get(button.name, None)) is not None:
         button.hovered = previous_button.hovered
         button.render()
         button.hovered = False
-    elif settings.use_button_context_indexing and len(settings.game_context.previous_buttons) >= (buttons_length := len(settings.game_context.buttons)):
+    elif settings.raise_error_for_button_without_name and button.name is None:
+        raise ValueError(
+            "The pygameextra settings demand that all buttons have a name, "
+            "trace the button and give it a name to avoid this error."
+        )
+    elif settings.use_button_context_indexing and len(settings.game_context.previous_buttons) >= (
+            buttons_length := len(settings.game_context.buttons)):
         button.hovered = settings.game_context.previous_buttons[buttons_length - 1].hovered
         button.render()
         button.hovered = False
@@ -213,7 +225,7 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
         return
     hovered = Button.static_logic(area, action, data, hover_action, hover_data, hover_draw_action, hover_draw_data,
                                   disabled)
-    RectButton.static_render(area, inactive_color, active_color, hovered, disabled)
+    RectButton.full_static_render(area, inactive_color, active_color, hovered, hover_draw_action, hover_draw_data, disabled)
     RectButton.static_render_text(area, text)
 
 

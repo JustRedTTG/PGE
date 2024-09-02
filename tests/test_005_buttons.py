@@ -21,6 +21,8 @@ class AbstractButtonTest(PygameExtraTest):
         self.color_active = pe.colors.green
         pe.settings.spoof_mouse_position = None
         pe.settings.spoof_mouse_offset = None
+        pe.settings.button_lock = None
+        pe.settings.raise_error_for_button_without_name = True
 
     def jumble(self):
         if not self.do_jumble:
@@ -111,7 +113,7 @@ class AbstractButtonTest(PygameExtraTest):
             with self.context:
                 self.spoof_mouse(tuple(v + 10 for v in self.area[2:]))
                 self.jumble()
-                pe.button.rect(self.area, self.color_inactive, (0, 0, 0, 0), hover_draw_action=pe.draw.rect,
+                pe.button.rect(self.area, self.color_inactive, pe.colors.black, hover_draw_action=pe.draw.rect,
                                hover_draw_data=(self.color_active, self.area), name="button")
             self.check_color(self.button_center, self.color_inactive, "Button draw action shouldn't be visible", _)
 
@@ -120,7 +122,7 @@ class AbstractButtonTest(PygameExtraTest):
             with self.context:
                 self.center_mouse_on_button()
                 self.jumble()
-                pe.button.rect(self.area, self.color_inactive, (0, 0, 0, 0), hover_draw_action=pe.draw.rect,
+                pe.button.rect(self.area, self.color_inactive, pe.colors.black, hover_draw_action=pe.draw.rect,
                                hover_draw_data=(self.color_active, self.area), name="button")
             self.check_color(self.button_center, self.color_active, "Button draw action should be visible", _)
 

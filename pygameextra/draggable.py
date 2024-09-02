@@ -47,6 +47,10 @@ class Draggable:
             return self.pos
         return self._calculate()
 
+    @property
+    def button_name(self):
+        return f"pygameextra.Draggable<{id(self)}>"
+
     def check(self) -> Tuple[bool, tuple]:
         """check(self) -> bool, tuple
         This function will check if the draggable is being moved and where it is"""
@@ -56,13 +60,16 @@ class Draggable:
 
         self.make_rect()
         if self.rect and not self.active:
-            button.action(self.rect.copy(), hover_action=self.__setattr__, hover_data=('collide', True))
+            button.action(self.rect.copy(), hover_action=self.__setattr__, hover_data=('collide', True),
+                          name=self.button_name)
             collide = self.collide and not settings.button_lock
         elif self.area is not None and self.active:
-            button.action((*self._calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True))
+            button.action((*self._calculate(), *self.area), hover_action=self.__setattr__, hover_data=('collide', True),
+                          name=self.button_name)
             collide = self.collide and not settings.button_lock
         else:
-            button.action((0, 0, *display.get_size()), hover_action=self.__setattr__, hover_data=('collide', True))
+            button.action((0, 0, *display.get_size()), hover_action=self.__setattr__, hover_data=('collide', True),
+                          name=self.button_name)
             collide = self.collide and not settings.button_lock
         if (collide and clicked()[0] and not self.last_left_click) and not self.active:
             self.active = True

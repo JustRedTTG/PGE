@@ -26,4 +26,5 @@ atlas_attempt_keep_past_attempt = True  # When trying to fit the atlas, keep the
 
 game_context: context.GameContext = None
 use_button_context_indexing = True
+raise_error_for_button_without_name = False
 do_not_render_if_hover_draw = False
