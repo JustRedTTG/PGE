@@ -1,6 +1,9 @@
 import pygame
 import os
-from pygameextra import display
+
+from pygame import Surface
+
+from pygameextra import display, Rect
 from functools import lru_cache
 
 from pygameextra.assets import ASSET_FONT
@@ -12,8 +15,8 @@ def get_font(font, font_size):
 
 
 class Text:
-    obj = None
-    rect = None
+    obj: Surface = None
+    rect: Rect = None
 
     def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = ASSET_FONT,
                  font_size: int = 3, position: tuple = (0, 0), colors: [tuple, list] = ((255, 255, 255), None),

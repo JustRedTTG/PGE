@@ -4,6 +4,8 @@ from __future__ import annotations
 from typing import Union, Tuple
 
 import pygame
+from pygame.rect import RectType
+
 import pygameextra.modified as modified
 import pygameextra.settings as settings
 import pygameextra.time
@@ -103,7 +105,7 @@ def update(framerate: int = None, area: tuple = None):
         pygameextra.time.tickBlock = True
 
 
-def blit(obj: Union['Surface', pygame.Surface], pos: tuple = (0, 0), area: tuple = None):
+def blit(obj: Union['Surface', pygame.Surface], pos: tuple = (0, 0), area: RectType = None):
     display_reference.stamp(obj, pos, area)
     if type(obj) is modified.Surface:
         obj.last_blit_pos = pos
@@ -117,6 +119,7 @@ def get_height() -> int:
     return display_reference.size[1]
 
 
+# noinspection PyTypeChecker
 def get_size() -> Tuple[int, int]:
     return display_reference.size
 

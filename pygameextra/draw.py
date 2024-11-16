@@ -1,4 +1,6 @@
 import pygame
+from pygame.rect import RectType
+
 from pygameextra.modified import *
 
 line_cache = {}
@@ -28,7 +30,7 @@ def line(color: tuple, pos_a: tuple, pos_b: tuple, w: int = 0, display_work: Sur
                      w)
 
 
-def rect(color: tuple, area: tuple, w: int = 0, display_work: Surface = None, edge_rounding: int = -1,
+def rect(color: tuple, area: RectType, w: int = 0, display_work: Surface = None, edge_rounding: int = -1,
          edge_rounding_topright: int = -1, edge_rounding_topleft: int = -1, edge_rounding_bottomright: int = -1,
          edge_rounding_bottomleft: int = -1) -> None:
     if len(color) > 3 and color[3] != 255:
@@ -68,7 +70,7 @@ def circle(color: tuple, pos: tuple, radius: int, w: int = 0, display_work: Surf
                        w, )
 
 
-def ellipse(color: tuple, area: tuple, w: int = 0, display_work: Surface = None) -> None:
+def ellipse(color: tuple, area: RectType, w: int = 0, display_work: Surface = None) -> None:
     if len(color) > 3 and color[3] != 255:
         key = hash((color, tuple(area), w))
         if key in ellipse_cache:

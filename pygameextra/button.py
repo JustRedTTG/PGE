@@ -1,6 +1,8 @@
 import time
 from typing import Union, Hashable, List, Dict
 
+from pygame.rect import RectType
+
 from pygameextra import draw, mouse, math, display, settings, colors
 from pygameextra.image import Image
 from pygameextra.rect import Rect
@@ -18,7 +20,7 @@ def hover_lock():
 
 
 class Button:
-    def __init__(self, area: tuple, inactive_resource, active_resource, text: Text = None, hover_action: any = None,
+    def __init__(self, area: RectType, inactive_resource, active_resource, text: Text = None, hover_action: any = None,
                  hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
                  hover_draw_data: any = None, disabled: Union[bool, tuple] = False, name: Hashable = None):
         self.area = area
@@ -39,7 +41,7 @@ class Button:
         if name is not None and settings.game_context:
             settings.game_context.buttons_with_names[name] = self
 
-    def logic(self, area: tuple = None, hover_action: any = None, hover_data: any = None, action: any = None,
+    def logic(self, area: RectType = None, hover_action: any = None, hover_data: any = None, action: any = None,
               data: any = None, hover_draw_action: any = None,
               hover_draw_data: any = None, disabled: Union[bool, tuple] = False):
         @display.context_wrap(self.display_reference)
@@ -53,7 +55,7 @@ class Button:
 
         offset_logic()
 
-    def check_hover(self, area: tuple = None, disabled: Union[bool, tuple] = False):
+    def check_hover(self, area: RectType = None, disabled: Union[bool, tuple] = False):
         @display.context_wrap(self.display_reference)
         @mouse.offset_wrap(self.mouse_offset)
         def offset_logic():
@@ -61,7 +63,7 @@ class Button:
 
         offset_logic()
 
-    def render(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
+    def render(self, area: RectType = None, inactive_resource=None, active_resource=None, text: Text = None,
                hover_draw_action: any = None, hover_draw_data: any = None,
                disabled: Union[bool, tuple] = False):
         self.full_static_render(area or self.area, inactive_resource or self.inactive_resource,
@@ -70,7 +72,7 @@ class Button:
                                 hover_draw_data or self.hover_draw_data, disabled or self.disabled)
         self.static_render_text(area or self.area, text or self.text)
 
-    def __call__(self, area: tuple = None, inactive_resource=None, active_resource=None, text: Text = None,
+    def __call__(self, area: RectType = None, inactive_resource=None, active_resource=None, text: Text = None,
                  hover_action: any = None, hover_data: any = None, action: any = None, data: any = None,
                  hover_draw_action: any = None, hover_draw_data: any = None,
                  disabled: Union[bool, tuple] = False):
@@ -78,7 +80,7 @@ class Button:
         self.render(area, inactive_resource, active_resource, text, hover_draw_action, hover_draw_data, disabled)
 
     @classmethod
-    def full_static_render(cls, area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
+    def full_static_render(cls, area: RectType, inactive_resource=None, active_resource=None, hovered: bool = False,
                            hover_draw_action: any = None, hover_draw_data: any = None,
                            disabled: Union[bool, tuple] = None):
         if not (settings.do_not_render_if_hover_draw and hover_draw_action and hovered):
@@ -87,12 +89,12 @@ class Button:
             cls.static_do_hover_action(hover_draw_action, hover_draw_data)
 
     @staticmethod
-    def static_render(area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
+    def static_render(area: RectType, inactive_resource=None, active_resource=None, hovered: bool = False,
                       disabled: Union[bool, tuple] = None):
         pass
 
     @staticmethod
-    def static_render_text(area: tuple, text: Text):
+    def static_render_text(area: RectType, text: Text):
         if not text:
             return
         text.rect.center = math.center(area)
@@ -152,7 +154,7 @@ class Button:
 
 class RectButton(Button):
     @staticmethod
-    def static_render(area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
+    def static_render(area: RectType, inactive_resource=None, active_resource=None, hovered: bool = False,
                       disabled: Union[bool, tuple] = None):
         color = active_resource if (hovered and not disabled) else (
             disabled if type(disabled) is tuple else inactive_resource)
@@ -161,7 +163,7 @@ class RectButton(Button):
 
 class ImageButton(Button):
     @staticmethod
-    def static_render(area: tuple, inactive_resource=None, active_resource=None, hovered: bool = False,
+    def static_render(area: RectType, inactive_resource=None, active_resource=None, hovered: bool = False,
                       disabled: Union[bool, Image] = None):
         image = active_resource if (hovered and not disabled) else (
             disabled if isinstance(disabled, Image) else inactive_resource)
@@ -199,7 +201,7 @@ def check_hover(button: Button):
         button.render()
 
 
-def action(area: tuple, text: Text = None, hover_action: any = None,
+def action(area: RectType, text: Text = None, hover_action: any = None,
            hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
            hover_draw_data: any = None, disabled: Union[bool, tuple] = False, name: Hashable = None):
     if settings.game_context:
@@ -214,7 +216,7 @@ def action(area: tuple, text: Text = None, hover_action: any = None,
     Button.static_render_text(area, text)
 
 
-def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None,
+def rect(area: RectType, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None,
          hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
          hover_draw_data: any = None, disabled: Union[bool, tuple] = False, name: Hashable = None):
     if settings.game_context:
@@ -230,7 +232,7 @@ def rect(area: tuple, inactive_color: tuple, active_color: tuple, text: Text = N
     RectButton.static_render_text(area, text)
 
 
-def image(area: tuple, inactive_image: tuple, active_image: tuple, text: Text = None, hover_action: any = None,
+def image(area: RectType, inactive_image: tuple, active_image: tuple, text: Text = None, hover_action: any = None,
           hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
           hover_draw_data: any = None, disabled: Union[bool, Image] = False, name: Hashable = None):
     if settings.game_context:
