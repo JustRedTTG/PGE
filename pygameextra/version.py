@@ -1,8 +1,8 @@
 VERSION = '2.0.0'
-revision = 82
-alpha = True
+revision = 2
+alpha = False
 beta = False
-release_candidate = False
+release_candidate = True
 
 
 def get():
