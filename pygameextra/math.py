@@ -1,11 +1,13 @@
 import math
 
+from pygame.rect import RectType
 
-# noinspection PyUnresolvedReferences
-# from perlin_noise import PerlinNoise
+from pygameextra import Rect
 
 
-def center(rect: tuple):
+def center(rect: RectType):
+    if isinstance(rect, Rect):
+        return rect.center
     return rect[0] + rect[2] * .5, rect[1] + rect[3] * .5
 
 

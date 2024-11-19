@@ -35,6 +35,7 @@ def init(display_init_size: tuple = None):
     time.init()
     if display_init_size:
         display.make(display_init_size, mode=display.DISPLAY_MODE_HIDDEN)
+    settings.initialized = True
 
 
 def start_debug(delete_after: bool = False, reactivate: bool = False):

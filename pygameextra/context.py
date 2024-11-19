@@ -34,6 +34,11 @@ class UnclippedContextException(Exception):
     pass
 
 
+class NotInitialized(Exception):
+    def __init__(self):
+        super().__init__("Are you missing pe.init() at the top of your file?")
+
+
 class Context(ABC):
     BACKGROUND: Tuple[Number, Number, Number] = colors.black
     AREA: Union[None, Tuple[Number, Number], Tuple[Number, Number, Number, Number]] = None
@@ -307,6 +312,8 @@ class GameContext(Context, ABC):
     FPS_LOGGER: bool = False
 
     def __init__(self):
+        if not settings.initialized:
+            raise NotInitialized()
         display.make(self.size, self.TITLE, self.MODE)
         self.surface = display.display_reference
         self.AREA = (0, 0, *display.get_size())

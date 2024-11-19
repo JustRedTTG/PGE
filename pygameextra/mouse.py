@@ -33,8 +33,8 @@ def pos(spoof: bool = True):
 
 def clicked(spoof: bool = True):
     if settings.spoof_enabled and spoof:
-        return settings.spoof_mouse_clicked or pygame.mouse.get_pressed()
-    return pygame.mouse.get_pressed()
+        return settings.spoof_mouse_clicked or pygame.mouse.get_pressed(settings.max_buttons)
+    return pygame.mouse.get_pressed(settings.max_buttons)
 
 
 def place(x, y):

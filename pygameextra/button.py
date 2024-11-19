@@ -1,5 +1,5 @@
 import time
-from typing import Union, Hashable, List, Dict
+from typing import Union, Hashable, List, Dict, TypedDict, Any, Optional
 
 from pygame.rect import RectType
 
@@ -19,18 +19,40 @@ def hover_lock():
     settings.hover_lock = time.time()
 
 
+class ButtonAction(TypedDict, total=False):
+    action: Any
+    args: Any
+    kwargs: Any
+
+
+class ButtonActionSet(TypedDict, total=False):
+    hover: Optional[ButtonAction]
+    l_click: Optional[ButtonAction]
+    m_click: Optional[ButtonAction]
+    r_click: Optional[ButtonAction]
+    e4_click: Optional[ButtonAction]
+    e5_click: Optional[ButtonAction]
+    hover_draw: Optional[ButtonAction]
+
+    @staticmethod
+    def check(dictionary: Dict):
+        for key in ButtonActionSet.__annotations__:
+            if key not in dictionary:
+                dictionary[key] = None
+
+
+class ButtonCallException(Exception):
+    def __init__(self, key):
+        super().__init__(f"The button action <{key}> got an exception.")
+
+
 class Button:
-    def __init__(self, area: RectType, inactive_resource, active_resource, text: Text = None, hover_action: any = None,
-                 hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
-                 hover_draw_data: any = None, disabled: Union[bool, tuple] = False, name: Hashable = None):
+    def __init__(self, area: RectType, inactive_resource, active_resource, text: Text = None,
+                 action_set: ButtonActionSet = None, disabled: Union[bool, tuple] = False,
+                 name: Hashable = None):
         self.area = area
         self.text = text
-        self.action = action
-        self.data = data
-        self.hover_action = hover_action
-        self.hover_data = hover_data
-        self.hover_draw_action = hover_draw_action
-        self.hover_draw_data = hover_draw_data
+        self.action_set = action_set
         self.name = name
         self.disabled = disabled
         self.hovered = False
@@ -41,16 +63,11 @@ class Button:
         if name is not None and settings.game_context:
             settings.game_context.buttons_with_names[name] = self
 
-    def logic(self, area: RectType = None, hover_action: any = None, hover_data: any = None, action: any = None,
-              data: any = None, hover_draw_action: any = None,
-              hover_draw_data: any = None, disabled: Union[bool, tuple] = False):
+    def logic(self, area: RectType = None, action_set: ButtonActionSet = None, disabled: Union[bool, tuple] = False):
         @display.context_wrap(self.display_reference)
         @mouse.offset_wrap(self.mouse_offset)
         def offset_logic():
-            self.hovered = self.static_logic(area or self.area, action or self.action, data or self.data,
-                                             hover_action or self.hover_action, hover_data or self.hover_data,
-                                             hover_draw_action or self.hover_draw_action,
-                                             hover_draw_data or self.hover_draw_data,
+            self.hovered = self.static_logic(area or self.area, action_set or self.action_set,
                                              disabled or self.disabled)
 
         offset_logic()
@@ -64,29 +81,28 @@ class Button:
         offset_logic()
 
     def render(self, area: RectType = None, inactive_resource=None, active_resource=None, text: Text = None,
-               hover_draw_action: any = None, hover_draw_data: any = None,
+               action_set: ButtonActionSet = None,
                disabled: Union[bool, tuple] = False):
         self.full_static_render(area or self.area, inactive_resource or self.inactive_resource,
                                 active_resource or self.active_resource, self.hovered,
-                                hover_draw_action or self.hover_draw_action,
-                                hover_draw_data or self.hover_draw_data, disabled or self.disabled)
+                                action_set or self.action_set, disabled or self.disabled)
         self.static_render_text(area or self.area, text or self.text)
 
     def __call__(self, area: RectType = None, inactive_resource=None, active_resource=None, text: Text = None,
-                 hover_action: any = None, hover_data: any = None, action: any = None, data: any = None,
-                 hover_draw_action: any = None, hover_draw_data: any = None,
+                 action_set: ButtonActionSet = None,
                  disabled: Union[bool, tuple] = False):
-        self.logic(area, hover_action, hover_data, action, data, hover_draw_action, hover_draw_data, disabled)
-        self.render(area, inactive_resource, active_resource, text, hover_draw_action, hover_draw_data, disabled)
+        self.logic(area, action_set, disabled)
+        self.render(area, inactive_resource, active_resource, text, action_set, disabled)
 
     @classmethod
     def full_static_render(cls, area: RectType, inactive_resource=None, active_resource=None, hovered: bool = False,
-                           hover_draw_action: any = None, hover_draw_data: any = None,
+                           action_set: ButtonActionSet = None,
                            disabled: Union[bool, tuple] = None):
-        if not (settings.do_not_render_if_hover_draw and hover_draw_action and hovered):
+        action = action_set['hover_draw']
+        if not (settings.do_not_render_if_hover_draw and action and hovered):
             cls.static_render(area, inactive_resource, active_resource, hovered, disabled)
-        if hover_draw_action and hovered:
-            cls.static_do_hover_action(hover_draw_action, hover_draw_data)
+        if action and hovered:
+            cls.static_do_hover_action(action)
 
     @staticmethod
     def static_render(area: RectType, inactive_resource=None, active_resource=None, hovered: bool = False,
@@ -109,24 +125,42 @@ class Button:
         return button_rect.colliderect(mouse_rect)
 
     @staticmethod
-    def static_logic(area, action, data, hover_action, hover_data, hover_draw_action: any = None,
-                     hover_draw_data: any = None, disabled: Union[bool, tuple] = None) -> bool:
+    def action_call(action: ButtonAction):
+        data = action.get('args', ())
+        kwargs = action.get('kwargs', {})
+        if isinstance(data, tuple):
+            action['action'](*data, **kwargs)
+        else:
+            action['action'](data, **kwargs)
+
+    @staticmethod
+    def static_logic(area, action_set: ButtonActionSet = None, disabled: Union[bool, tuple] = None) -> bool:
         if disabled:
             return False
         if Button.static_hover_logic(area, disabled):
             hovered = True
-            if (not settings.button_lock) and action and mouse.clicked()[0]:
-                button_lock()
-                if data is not None:
-                    if type(data) is tuple:
-                        action(*data)
-                    else:
-                        action(data)
-                else:
-                    action()
+            if (not settings.button_lock) and action_set:
+                clicks = mouse.clicked()
+                if clicks[0] and action_set['l_click']:
+                    button_lock()
+                    Button.action_call(action_set['l_click'])
+                elif clicks[1] and action_set['m_click']:
+                    button_lock()
+                    Button.action_call(action_set['m_click'])
+                elif clicks[2] and action_set['r_click']:
+                    button_lock()
+                    Button.action_call(action_set['r_click'])
+                elif len(clicks) > 3:  # In cases where uses wants to detect 4th or 5th mouse buttons
+                    button_lock()
+                    for i, click in enumerate(clicks[3:], 4):
+                        if not click:
+                            continue
+                        key = f'e{i}_click'
+                        if key in action_set:
+                            Button.action_call(action_set, key)
 
-            Button.static_do_hover_action(hover_draw_action, hover_draw_data)
-            Button.static_do_hover_action(hover_action, hover_data)
+            Button.static_do_hover_action(action_set['hover_draw'])
+            Button.static_do_hover_action(action_set['hover'])
         else:
             hovered = False
         return hovered
@@ -135,21 +169,15 @@ class Button:
         @display.context_wrap(self.display_reference)
         @mouse.offset_wrap(self.mouse_offset)
         def offset_hover_action():
-            self.static_do_hover_action(self.hover_action, self.hover_data)
+            self.static_do_hover_action(self.action_set['hover'])
 
         offset_hover_action()
 
     @staticmethod
-    def static_do_hover_action(hover_action, hover_data):
-        if (not settings.hover_lock) and hover_action:
+    def static_do_hover_action(action: ButtonAction):
+        if action and (not settings.hover_lock):
             hover_lock()
-            if hover_data is not None:
-                if type(hover_data) is tuple:
-                    hover_action(*hover_data)
-                else:
-                    hover_action(hover_data)
-            else:
-                hover_action()
+            Button.action_call(action)
 
 
 class RectButton(Button):
@@ -203,46 +231,67 @@ def check_hover(button: Button):
 
 def action(area: RectType, text: Text = None, hover_action: any = None,
            hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
-           hover_draw_data: any = None, disabled: Union[bool, tuple] = False, name: Hashable = None):
+           hover_draw_data: any = None, action_set: ButtonActionSet = None, disabled: Union[bool, tuple] = False,
+           name: Hashable = None):
+    if not action_set:
+        action_set = ButtonActionSet(
+            hover=ButtonAction(action=hover_action, args=hover_data) if hover_action else None,
+            l_click=ButtonAction(action=action, args=data) if action else None,
+            hover_draw=ButtonAction(action=hover_draw_action, args=hover_draw_data) if hover_draw_action else None
+        )
+    ButtonActionSet.check(action_set)
+
     if settings.game_context:
         button = Button(
             area, None, None,
-            text, hover_action, hover_data, action, data, hover_draw_action, hover_draw_data, disabled, name)
+            text, action_set, disabled, name)
         settings.game_context.buttons.append(button)
         check_hover(button)
         return
-    hovered = Button.static_logic(area, action, data, hover_action, hover_data, hover_draw_action, hover_draw_data,
-                                  disabled)
+    hovered = Button.static_logic(area, action_set, disabled)
     Button.static_render_text(area, text)
 
 
 def rect(area: RectType, inactive_color: tuple, active_color: tuple, text: Text = None, hover_action: any = None,
          hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
-         hover_draw_data: any = None, disabled: Union[bool, tuple] = False, name: Hashable = None):
+         hover_draw_data: any = None, action_set: ButtonActionSet = None, disabled: Union[bool, tuple] = False,
+         name: Hashable = None):
+    if not action_set:
+        action_set = ButtonActionSet(
+            hover=ButtonAction(action=hover_action, args=hover_data) if hover_action else None,
+            l_click=ButtonAction(action=action, args=data) if action else None,
+            hover_draw=ButtonAction(action=hover_draw_action, args=hover_draw_data) if hover_draw_action else None
+        )
+    ButtonActionSet.check(action_set)
+
     if settings.game_context:
-        button = RectButton(area, inactive_color, active_color, text, hover_action, hover_data, action, data,
-                            hover_draw_action, hover_draw_data, disabled, name)
+        button = RectButton(area, inactive_color, active_color, text, action_set, disabled, name)
         settings.game_context.buttons.append(button)
         check_hover(button)
         return
-    hovered = Button.static_logic(area, action, data, hover_action, hover_data, hover_draw_action, hover_draw_data,
-                                  disabled)
-    RectButton.full_static_render(area, inactive_color, active_color, hovered, hover_draw_action, hover_draw_data,
-                                  disabled)
+    hovered = Button.static_logic(area, action_set, disabled)
+    RectButton.full_static_render(area, inactive_color, active_color, hovered, action_set, disabled)
     RectButton.static_render_text(area, text)
 
 
 def image(area: RectType, inactive_image: tuple, active_image: tuple, text: Text = None, hover_action: any = None,
           hover_data: any = None, action: any = None, data: any = None, hover_draw_action: any = None,
-          hover_draw_data: any = None, disabled: Union[bool, Image] = False, name: Hashable = None):
+          hover_draw_data: any = None, action_set: ButtonActionSet = None, disabled: Union[bool, Image] = False,
+          name: Hashable = None):
+    if not action_set:
+        action_set = ButtonActionSet(
+            hover=ButtonAction(action=hover_action, args=hover_data) if hover_action else None,
+            l_click=ButtonAction(action=action, args=data) if action else None,
+            hover_draw=ButtonAction(action=hover_draw_action, args=hover_draw_data) if hover_draw_action else None
+        )
+    ButtonActionSet.check(action_set)
     if settings.game_context:
         button = ImageButton(area, inactive_image, active_image, text, hover_action, hover_data, action, data,
                              hover_draw_action, hover_draw_data, disabled, name)
         settings.game_context.buttons.append(button)
         check_hover(button)
         return
-    hovered = Button.static_logic(area, action, data, hover_action, hover_data, hover_draw_action, hover_draw_data,
-                                  disabled)
+    hovered = Button.static_logic(area, action_set, disabled)
     ImageButton.static_render(area, inactive_image, active_image, hovered, disabled)
     ImageButton.static_render_text(area, text)
 

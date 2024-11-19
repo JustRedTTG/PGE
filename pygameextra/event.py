@@ -34,7 +34,7 @@ def button_locking() -> None:
         if time.time() - settings.button_lock >= settings.button_lock_timeout_time:
             if settings.button_lock_hold:
                 # TODO: potential optimization available
-                if not pygame.mouse.get_pressed()[0]:
+                if not any(pygame.mouse.get_pressed()):
                     settings.button_lock = None
             else:
                 settings.button_lock = None
