@@ -2,8 +2,6 @@
 This script provides contexts which can be used to improve complex scenes"""
 from numbers import Number
 
-import pygame.event
-
 from pygameextra import colors
 from pygameextra import floating_methods
 from pygameextra import layer_methods
@@ -13,7 +11,8 @@ from pygameextra import event
 from pygameextra import settings
 from pygameextra import time
 from pygameextra._deprecations import UNCLIPPED_CONTEXT_DEPRECATION_WRAPPER
-from pygameextra.button import Button, ButtonManager
+from pygameextra.button import ButtonManager
+from pygameextra.inputbox import StandaloneInputBoxManager
 from pygameextra.modified import Surface
 from pygameextra.display import context_wrap
 from pygameextra.mouse import offset_wrap, Offset
@@ -322,6 +321,7 @@ class GameContext(Context, ABC):
         self.clock = time.clock
         settings.game_context = self
         self.button_manager = ButtonManager(False)
+        self.input_box_manager = StandaloneInputBoxManager()
         self.current_fps = self.FPS or 0
         self.fps_logger: FpsLogger = None
         if self.FPS_LOGGER:
@@ -349,6 +349,7 @@ class GameContext(Context, ABC):
         self.current_fps = self.clock.get_fps()
         display.update(self.FPS)
         self.button_manager.handle_buttons()
+        self.input_box_manager.update_input_boxes()
 
     def __call__(self):
         self.events()
@@ -357,6 +358,7 @@ class GameContext(Context, ABC):
         self.end_loop()
 
     def handle_event(self, e: event.Event):
+        self.input_box_manager.handle_input_boxes(e)
         for context in self.sub_contexts:
             context.handle_event(e)
         if event.quit_check():
