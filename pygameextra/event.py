@@ -1,7 +1,7 @@
 """PYGAME EXTRA Event script
 This script manages all event actions"""
 import sys
-from typing import List
+from typing import List, Union
 
 import pygame
 import time
@@ -126,3 +126,36 @@ def key_DOWN(var) -> bool:
     """
     if c.type == pygame.KEYDOWN:
         return c.key == var
+
+
+class KeyHold:
+    KEY_PRESS_INITIAL_DELAY = .6
+    HOLD_DELAY = .05
+
+    def __init__(self):
+        self.keys_down = {}
+
+    def handle_event(self) -> Union[None, int]:
+        global c 
+        if c.type == pygame.KEYDOWN:
+            self.keys_down[c.key] = time.time() + self.KEY_PRESS_INITIAL_DELAY
+            return c.key
+        elif c.type == pygame.KEYUP:
+            try:
+                del self.keys_down[c.key]
+            except KeyError:
+                pass
+
+    def handle_hold(self) -> List[int]:
+        keys: List[int] = []
+        for key, pressed in self.keys_down.items():
+            now = time.time()
+            if now < pressed:
+                continue
+            while now >= pressed + self.HOLD_DELAY:
+                pressed += self.HOLD_DELAY
+                keys.append(key)
+            self.keys_down[key] = pressed
+        return keys
+        
+    

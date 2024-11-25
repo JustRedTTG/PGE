@@ -3,6 +3,7 @@ from typing import Union
 import pygame
 from pygame.rect import RectType
 
+from pygameextra.event import KeyHold
 from pygameextra.text import Text
 from pygameextra.modified import Surface
 from pygameextra import button, mouse, settings, Rect, fill, display, draw, colors
@@ -39,6 +40,11 @@ class InputBox:
         if self._cursor_index != value:
             self.input_box_manager.cursor_blink_timer = time.time()
         self._cursor_index = value
+        if -self._left > (new_left := (self.cursor_x_real - self._padding)):
+            self._left = -new_left
+        if -self._left + self.area.width < (new_right := self.cursor_x_real + self._padding):
+            self._left = self.area.width - new_right
+        self.position_text()
         
 
     @area.setter
@@ -67,7 +73,10 @@ class InputBox:
         self.text.init()
         
         self.text_metrics = self.text.font.metrics(self.text.text)
-        
+
+        self.position_text()
+
+    def position_text(self):
         # Adjust text position
         self.text.rect.centery = self.area.height // 2
         self.text.rect.left = self._left
@@ -80,6 +89,27 @@ class InputBox:
             x += metric[4]
         self.text_indexing.append(x)
 
+    def backspace(self):
+        if len(self.value) < 1 or self.cursor_index == 0:
+            return
+        del self.value[self.cursor_index-1]
+        self.cursor_index -= 1
+        self.refresh_text()
+    
+    def delete(self):
+        if (value_length := len(self.value)) < 1 or self.cursor_index == value_length - 1:
+            return
+        del self.value[self.cursor_index+1]
+        self.refresh_text()
+
+    def right(self):
+        if self.cursor_index < len(self.value):
+            self.cursor_index += 1
+
+    def left(self):
+        if self.cursor_index > 0:
+            self.cursor_index -= 1
+
     @property
     def input_box_manager(self):
         return settings.game_context.input_box_manager
@@ -91,11 +121,16 @@ class InputBox:
     @property
     def cursor_x(self):
         return self.text_indexing[self.cursor_index]
+    
+    @property
+    def cursor_x_real(self):
+        return self.cursor_x - self._left
 
     def display(self):
         self.input_box_manager.input_boxes.append(self)
         with self._surface:
             fill.full((0, 0, 0, 0))
+            self.text.rect.left = self._left
             self.text.display()
             # Enable click to focus and glide
             button.action((0, 0, *self.area.size), action=self.focus_to_cursor, hover_action=self.focus_to_cursor)
@@ -119,6 +154,7 @@ class StandaloneInputBoxManager:
         self.input_boxes = []
         self.previous_input_boxes = []
         self.active_input_box = None
+        self.key_hold = KeyHold()
         self.cursor_blink_timer = time.time()
 
     def update_input_boxes(self):
@@ -128,6 +164,24 @@ class StandaloneInputBoxManager:
             self.active_input_box = None
         if self.cursor_blink_timer + self.CURSOR_BLINK_TIMEOUT < time.time():
             self.cursor_blink_timer = time.time()
+        if not self.active_input_box:
+            return
+        for key in self.key_hold.handle_hold():
+            self.handle_key_action(key)
+        
+    def handle_key_action(self, key: int):
+        if key == pygame.K_BACKSPACE:
+            self.active_input_box.backspace()
+        elif key == pygame.K_DELETE:
+            self.active_input_box.delete()
+        elif key == pygame.K_RIGHT:
+            self.active_input_box.right()
+        elif key == pygame.K_LEFT:
+            self.active_input_box.left()
+        elif key == pygame.K_HOME:
+            self.active_input_box.cursor_index = 0
+        elif key == pygame.K_END:
+            self.active_input_box.cursor_index = len(self.active_input_box.value)
         
     @property
     def cursor_blink(self):
@@ -139,6 +193,8 @@ class StandaloneInputBoxManager:
     def handle_input_boxes(self, event):
         if not self.active_input_box:
             return
+        if key := self.key_hold.handle_event():
+            self.handle_key_action(key)
 
 
 class ContextualizedInputBoxManager:
