@@ -25,6 +25,7 @@ class Tests(pe.GameContext):
         super().__init__()
 
         self.input_box = pe.InputBox((10, 10, self.width - 20, 32), initial_value="A nice long text, to test things out")
+        self.input_box.focus()
 
     def loop(self):
         pe.draw.rect(pe.colors.darkgray, self.input_box.area)

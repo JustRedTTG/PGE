@@ -128,6 +128,21 @@ def key_DOWN(var) -> bool:
         return c.key == var
 
 
+class Key:
+    def __init__(self, event):
+        self.unicode = event.unicode
+        self.key = event.key
+
+    def __hash__(self):
+        return self.key
+
+    def __eq__(self, other):
+        if isinstance(other, Key):
+            return self.key == other.key
+        elif isinstance(other, int):
+            return self.key == other
+        return False
+
 class KeyHold:
     KEY_PRESS_INITIAL_DELAY = .5
     HOLD_DELAY = .03
@@ -138,16 +153,17 @@ class KeyHold:
     def handle_event(self) -> Union[None, int]:
         global c 
         if c.type == pygame.KEYDOWN:
-            self.keys_down[c.key] = time.time() + self.KEY_PRESS_INITIAL_DELAY
-            return c.key
+            capture = Key(c)
+            self.keys_down[capture] = time.time() + self.KEY_PRESS_INITIAL_DELAY
+            return capture
         elif c.type == pygame.KEYUP:
             try:
                 del self.keys_down[c.key]
             except KeyError:
                 pass
 
-    def handle_hold(self) -> List[int]:
-        keys: List[int] = []
+    def handle_hold(self) -> List[Key]:
+        keys: List[Key] = []
         for key, pressed in self.keys_down.items():
             now = time.time()
             if now < pressed:
