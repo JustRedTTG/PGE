@@ -153,7 +153,12 @@ class InputBox:
             self.text.rect.left = self._left
             self.text.display()
             # Enable click to focus and glide
-            button.action((0, 0, *self.area.size), action=self.focus_to_cursor, hover_action=self.focus_to_cursor)
+            button.action(
+                (0, 0, *self.area.size),
+                action=self.focus_to_cursor,
+                hover_action=self.focus_to_cursor,
+                name=f'input_box_{id(self)}'
+            )
             if self.active:
                 self.draw_cursor(self.input_box_manager.cursor_blink)
 
