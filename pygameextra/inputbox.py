@@ -3,7 +3,7 @@ from pygame.rect import RectType
 
 from pygameextra.text import Text
 from pygameextra.modified import Surface
-from pygameextra import settings, Rect, fill, display
+from pygameextra import settings, Rect, fill, display, draw, colors
 from pygameextra.assets import ASSET_FONT
 
 
@@ -15,6 +15,7 @@ class InputBox:
                  colors: [tuple, list] = ((255, 255, 255), None), antialias: bool = True):
         self.area = area
         self.value = [*initial_value]
+        self.text_metrics = {}
         self.text = Text('', font, font_size, (0, 0), colors, antialias)
         self.refresh_text()
         self._surface = Surface(self.area.size)
@@ -34,6 +35,7 @@ class InputBox:
 
     def refresh_text(self):
         self.text.text = ''.join(self.value)
+        self.text_metrics = self.text.font.metrics(self.text.text)
         self.text.init()
 
         # Adjust text position
@@ -49,7 +51,11 @@ class InputBox:
         with self._surface:
             fill.full((0, 0, 0, 0))
             self.text.display()
-
+            x = self.text.rect.left
+            # metric = (minx, maxx, miny, maxy, advance)
+            for i, metric in enumerate(self.text_metrics):
+                draw.rect(colors.blue if i % 2 == 0 else colors.aqua, (x, self.text.rect.top, metric[4], self.text.font.get_height()), 1)
+                x += metric[4]
         display.blit(self._surface, self.area.topleft)
 
 
