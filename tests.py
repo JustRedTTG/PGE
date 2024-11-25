@@ -10,7 +10,6 @@ pe.init()
 
 os.makedirs("tests/_test_temp", exist_ok=True)
 
-
 class Tests(pe.GameContext):
     TITLE = "tests"
     AREA = (700, 700)
@@ -24,14 +23,11 @@ class Tests(pe.GameContext):
     def __init__(self):
         super().__init__()
 
-        self.loading_screen = pe.animations.PgeIntro(self, False)
+        self.input_box = pe.InputBox((10, 10, 200, 32), initial_value="A nice long text, to test things out")
 
     def loop(self):
-        pass
-
-    def start_loop(self):
-        super().start_loop()
-        self.loading_screen()
+        pe.draw.rect(pe.colors.darkgray, self.input_box.area)
+        self.input_box.display()
 
 
 tests = Tests()

@@ -121,9 +121,8 @@ class Button:
     def static_hover_logic(area, disabled: Union[bool, tuple] = None) -> bool:
         if disabled:
             return False
-        mouse_rect = Rect(*mouse.pos(), 1, 1)
         button_rect = Rect(*area)
-        return button_rect.colliderect(mouse_rect)
+        return button_rect.collidepoint(mouse.pos())
 
     @staticmethod
     def action_call(action: ButtonAction):
@@ -131,6 +130,8 @@ class Button:
         kwargs = action.get('kwargs', {})
         if isinstance(data, tuple):
             action['action'](*data, **kwargs)
+        elif not data:
+            action['action'](**kwargs)
         else:
             action['action'](data, **kwargs)
 

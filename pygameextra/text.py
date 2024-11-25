@@ -1,3 +1,4 @@
+from typing import Union
 import pygame
 import os
 
@@ -18,8 +19,8 @@ class Text:
     obj: Surface = None
     rect: Rect = None
 
-    def __init__(self, text: str = '-_-', font: [str, pygame.font.Font] = ASSET_FONT,
-                 font_size: int = 20, position: tuple = (0, 0), colors: [tuple, list] = ((255, 255, 255), None),
+    def __init__(self, text: str = '-_-', font: Union[str, pygame.font.Font] = ASSET_FONT,
+                 font_size: int = 20, position: tuple = (0, 0), colors: Union[tuple, list] = ((255, 255, 255), None),
                  antialias: bool = True):
         if isinstance(font, pygame.font.Font):
             self.font = font
