@@ -1,6 +1,7 @@
 import time
 from typing import Union
 import pygame
+import pyperclip
 from pygame.rect import RectType
 
 from pygameextra.event import KeyHold
@@ -15,7 +16,8 @@ class InputBox:
     _padding: int
     _surface: Surface
 
-    def __init__(self, area: RectType, font: Union[str, pygame.font.Font] = ASSET_FONT, initial_value: str = '', font_size: int = 20,
+    def __init__(self, area: RectType, font: Union[str, pygame.font.Font] = ASSET_FONT, initial_value: str = '',
+                 font_size: int = 20,
                  colors: Union[tuple, list] = ((255, 255, 255), None), antialias: bool = True):
         self.area = area
         self.value = [*initial_value]
@@ -30,11 +32,11 @@ class InputBox:
     @property
     def area(self):
         return self._area
-    
+
     @property
     def cursor_index(self):
         return self._cursor_index
-    
+
     @cursor_index.setter
     def cursor_index(self, value):
         if self._cursor_index != value:
@@ -45,7 +47,6 @@ class InputBox:
         if -self._left + self.area.width < (new_right := self.cursor_x_real + self._padding):
             self._left = self.area.width - new_right
         self.position_text()
-        
 
     @area.setter
     def area(self, value):
@@ -71,7 +72,7 @@ class InputBox:
     def refresh_text(self):
         self.text.text = ''.join(self.value)
         self.text.init()
-        
+
         self.text_metrics = self.text.font.metrics(self.text.text)
 
         self.position_text()
@@ -92,14 +93,14 @@ class InputBox:
     def backspace(self):
         if len(self.value) < 1 or self.cursor_index == 0:
             return
-        del self.value[self.cursor_index-1]
+        del self.value[self.cursor_index - 1]
         self.cursor_index -= 1
         self.refresh_text()
-    
+
     def delete(self):
-        if (value_length := len(self.value)) < 1 or self.cursor_index == value_length - 1:
+        if (value_length := len(self.value)) < 1 or self.cursor_index == value_length:
             return
-        del self.value[self.cursor_index+1]
+        del self.value[self.cursor_index]
         self.refresh_text()
 
     def right(self):
@@ -117,11 +118,11 @@ class InputBox:
     @property
     def active(self):
         return self.input_box_manager.active_input_box == self
-       
+
     @property
     def cursor_x(self):
         return self.text_indexing[self.cursor_index]
-    
+
     @property
     def cursor_x_real(self):
         return self.cursor_x - self._left
@@ -136,8 +137,7 @@ class InputBox:
             button.action((0, 0, *self.area.size), action=self.focus_to_cursor, hover_action=self.focus_to_cursor)
             if self.active:
                 self.draw_cursor(self.input_box_manager.cursor_blink)
-            
-        
+
         display.blit(self._surface, self.area.topleft)
 
     def draw_cursor(self, active_blink: bool):
@@ -150,10 +150,11 @@ class StandaloneInputBoxManager:
     CURSOR_BLINK_STAY = .3
     CURSOR_BLINK_DELAY = .4
     CURSOR_BLINK_TIMEOUT = CURSOR_BLINK_STAY + CURSOR_BLINK_DELAY
+
     def __init__(self):
         self.input_boxes = []
         self.previous_input_boxes = []
-        self.active_input_box = None
+        self.active_input_box: InputBox = None
         self.key_hold = KeyHold()
         self.cursor_blink_timer = time.time()
 
@@ -168,7 +169,7 @@ class StandaloneInputBoxManager:
             return
         for key in self.key_hold.handle_hold():
             self.handle_key_action(key)
-        
+
     def handle_key_action(self, key: int):
         if key == pygame.K_BACKSPACE:
             self.active_input_box.backspace()
@@ -182,7 +183,16 @@ class StandaloneInputBoxManager:
             self.active_input_box.cursor_index = 0
         elif key == pygame.K_END:
             self.active_input_box.cursor_index = len(self.active_input_box.value)
-        
+        elif pygame.K_LCTRL in self.key_hold.keys_down or pygame.K_RCTRL in self.key_hold.keys_down:
+            if key == pygame.K_v:
+                text = pyperclip.paste()
+                self.active_input_box.value = \
+                    self.active_input_box.value[:self.active_input_box.cursor_index] + \
+                    [*text] + \
+                    self.active_input_box.value[self.active_input_box.cursor_index:]
+                self.active_input_box.refresh_text()
+                self.active_input_box.cursor_index += len(text)
+
     @property
     def cursor_blink(self):
         return time.time() < self.cursor_blink_timer + self.CURSOR_BLINK_STAY

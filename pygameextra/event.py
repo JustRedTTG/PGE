@@ -129,8 +129,8 @@ def key_DOWN(var) -> bool:
 
 
 class KeyHold:
-    KEY_PRESS_INITIAL_DELAY = .6
-    HOLD_DELAY = .05
+    KEY_PRESS_INITIAL_DELAY = .5
+    HOLD_DELAY = .03
 
     def __init__(self):
         self.keys_down = {}
