@@ -5,6 +5,7 @@ from pygame.rect import RectType
 
 from pygameextra import draw, mouse, math, display, settings, colors
 from pygameextra.image import Image
+from pygameextra.inputbox import StandaloneInputBoxManager
 from pygameextra.rect import Rect
 from pygameextra.text import Text
 
@@ -286,8 +287,7 @@ def image(area: RectType, inactive_image: tuple, active_image: tuple, text: Text
         )
     ButtonActionSet.check(action_set)
     if settings.game_context:
-        button = ImageButton(area, inactive_image, active_image, text, hover_action, hover_data, action, data,
-                             hover_draw_action, hover_draw_data, disabled, name)
+        button = ImageButton(area, inactive_image, active_image, text, action_set, disabled, name)
         settings.game_context.buttons.append(button)
         check_hover(button)
         return
@@ -314,3 +314,9 @@ class ButtonManager:
     def push_buttons(self):
         self.buttons, self.previous_buttons = [], self.buttons
         self.buttons_with_names, self.previous_buttons_with_names = {}, self.buttons_with_names
+
+
+class ButtonManagerWithInputBoxManager(ButtonManager):
+    def __init__(self, set_as_context: bool = True):
+        super().__init__(set_as_context)
+        self.input_box_manager = StandaloneInputBoxManager()
