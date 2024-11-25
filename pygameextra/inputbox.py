@@ -24,7 +24,7 @@ class InputBox:
         self._left = self._padding
         self.refresh_text()
         self._surface = Surface(self.area.size)
-        self.cursor_index = len(self.value)
+        self._cursor_index = len(self.value)
 
     @property
     def area(self):
@@ -36,8 +36,10 @@ class InputBox:
     
     @cursor_index.setter
     def cursor_index(self, value):
+        if self._cursor_index != value:
+            self.input_box_manager.cursor_blink_timer = time.time()
         self._cursor_index = value
-        self.input_box_manager.cursor_blink_timer = time.time()
+        
 
     @area.setter
     def area(self, value):
