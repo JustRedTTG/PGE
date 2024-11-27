@@ -1,6 +1,5 @@
 import string
 import time
-from curses.ascii import isalpha
 from typing import Union
 import pygame
 import pyperclip
