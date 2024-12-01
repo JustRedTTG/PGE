@@ -26,7 +26,8 @@ class InputBox:
     def __init__(self, area: RectType, font: Union[str, pygame.font.Font] = ASSET_FONT, initial_value: str = '',
                  font_size: int = 20,
                  colors: Union[tuple, list] = ((255, 255, 255), None), antialias: bool = True,
-                 allowed_characters: tuple = DEFAULT_ALLOWED_CHARACTERS):
+                 allowed_characters: tuple = DEFAULT_ALLOWED_CHARACTERS, return_action=None):
+        self.return_action = return_action
         self.area = area
         self.value = [*initial_value]
         self.text_metrics = {}
@@ -129,6 +130,10 @@ class InputBox:
         if self.cursor_index > 0:
             self.cursor_index -= 1
 
+    def action(self):
+        if self.return_action:
+            self.return_action()
+
     @property
     def input_box_manager(self):
         return settings.game_context.input_box_manager
@@ -209,6 +214,8 @@ class StandaloneInputBoxManager:
             self.active_input_box.cursor_index = 0
         elif key == pygame.K_END:
             self.active_input_box.cursor_index = len(self.active_input_box.value)
+        elif key == pygame.K_RETURN:
+            self.active_input_box.action()
         elif pygame.K_LCTRL in self.key_hold.keys_down or pygame.K_RCTRL in self.key_hold.keys_down:
             if key == pygame.K_v:
                 text = pyperclip.paste()
