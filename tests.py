@@ -1,4 +1,5 @@
 import os
+import random
 import time
 import pygameextra as pe
 
@@ -9,6 +10,9 @@ from pygameextra import event
 pe.init()
 
 os.makedirs("tests/_test_temp", exist_ok=True)
+
+pe.settings.raise_error_for_button_without_name = True
+pe.settings.use_button_context_indexing = False
 
 
 class Tests(pe.GameContext):
@@ -29,6 +33,14 @@ class Tests(pe.GameContext):
 
     def loop(self):
         pe.draw.rect(pe.colors.darkgray, self.input_box.area)
+
+        for i in range(random.randint(100, 700)):
+            pe.button.rect((i*1, 100, 1, 1), pe.colors.red, pe.colors.aqua, name=f"random_button_{i}",
+                           hover_draw_action=pe.draw.rect, hover_draw_data=(pe.colors.aqua, (i*1, 100, 1, 100)))
+
+        for i in range(5):
+            pe.button.rect((i*50, 120+i*2, 100, 50), pe.colors.red, pe.colors.aqua, name=f"button_{i}")
+
         self.input_box.display()
 
 

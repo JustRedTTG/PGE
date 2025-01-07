@@ -1,5 +1,5 @@
 import time
-from typing import Union, Hashable, List, Dict, TypedDict, Any, Optional
+from typing import Union, Hashable, List, Dict, TypedDict, Any, Optional, Annotated
 
 from pygame.rect import RectType
 
@@ -50,7 +50,7 @@ class ButtonCallException(Exception):
 class Button:
     def __init__(self, area: RectType, inactive_resource, active_resource, text: Text = None,
                  action_set: ButtonActionSet = None, disabled: Union[bool, tuple] = False,
-                 name: Hashable = None):
+                 name: Annotated[str, Hashable] = None):
         self.area = area
         self.text = text
         self.action_set = action_set
@@ -224,7 +224,7 @@ def check_hover(button: Button):
     elif not settings.use_button_context_indexing:
         button.hovered = button.static_hover_logic(button.area, button.disabled)
         if button.hovered:
-            button.static_do_hover_action(button.hover_action, button.hover_data)
+            button.static_do_hover_action(button.action_set.get('hover'))
             button.render()
     else:
         button.hovered = False
