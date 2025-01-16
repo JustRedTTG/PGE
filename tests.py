@@ -15,7 +15,7 @@ pe.settings.raise_error_for_button_without_name = True
 pe.settings.use_button_context_indexing = False
 
 
-class Tests(pe.GameContext):
+class Tests(pe.ShaderGameContext):
     TITLE = "tests"
     AREA = (700, 700)
     BACKGROUND = pe.colors.verydarkgray

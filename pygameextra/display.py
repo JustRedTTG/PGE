@@ -1,7 +1,7 @@
 """PYGAME EXTRA Display script
 This script manages all display functions"""
 from __future__ import annotations
-from typing import Union, Tuple
+from typing import Union, Tuple, List, Optional
 
 import pygame
 from pygame.rect import RectType
@@ -55,7 +55,8 @@ def context(display: modified.Surface):
 make_data = []
 
 
-def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int = DISPLAY_MODE_NORMAL):
+def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int = DISPLAY_MODE_NORMAL,
+         other_flags: Optional[List[int]] = None):
     """Creates a window that the user can work with
     make(size: tuple, title: str, mode = 0) -> None
 
@@ -64,8 +65,8 @@ def make(size: tuple = (50, 50), title: str = DISPLAY_DEFAULT_TITLE, mode: int =
         title -- Determines the title of the window
     """
     global make_data
-    make_data = [size, title, mode]
-    flags = []  # Initiate a flags list
+    make_data = [size, title, mode, other_flags]
+    flags = other_flags.copy() if other_flags else []  # Initiate a flags list
     final_flags = 0  # Initiate a final flags variable
     flags.append(DISPLAY_FLAG_MAP[mode])
 

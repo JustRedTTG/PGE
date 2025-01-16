@@ -47,16 +47,16 @@ class AbstractButtonTest(PygameExtraTest):
     @property
     def button_center(self):
         pos = pe.math.center(self.area)
-        return (pos[0] - 10, pos[1] - 10)
+        return int(pos[0] - 10), int(pos[1] - 10)
 
     @property
     def button_center2(self):
         pos = pe.math.center(self.area2)
-        return (pos[0] + 10, pos[1] + 10)
+        return int(pos[0] + 10), int(pos[1] + 10)
 
     @property
     def button_center_mid(self):
-        return pe.math.lerp(self.button_center, self.button_center2, .5)
+        return tuple(map(int, pe.math.lerp(self.button_center, self.button_center2, .5)))
 
     def check_color(self, position, color, msg, index):
         if self.ignore_first_frame and index < 1:

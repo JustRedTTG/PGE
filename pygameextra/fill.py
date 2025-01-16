@@ -2,7 +2,7 @@ from pygameextra.modified import *
 
 
 def full(color: tuple, display_work: Surface = None):
-    display_work.surface.fill(color) if display_work else display.display_reference.surface.fill(color)
+    display_work.fill(color) if display_work else display.display_reference.surface.fill(color)
 
 
 def transparency(color: tuple, alpha=255, display_work: Surface = None):

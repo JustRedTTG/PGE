@@ -1,5 +1,6 @@
 import time
 import unittest
+from abc import ABC
 from types import GeneratorType
 
 import pygameextra as pe
@@ -197,7 +198,7 @@ class PygameExtraSubSurfaceWithButtonManagerTest(PygameExtraTest):
         pe.settings.game_context = None
 
 
-class PygameExtraDebugGameContext(pe.GameContext):
+class PygameExtraDebugGameContext(pe.GameContext, ABC):
     def post_loop(self):
         for button in self.buttons:
             pe.draw.rect(pe.colors.yellow, (
@@ -207,17 +208,22 @@ class PygameExtraDebugGameContext(pe.GameContext):
         pe.draw.circle(pe.colors.yellow, pe.mouse.pos(), 5, 1)
         super().post_loop()
 
+class PygameExtraDebugGameContextShader(pe.ShaderGameContext, PygameExtraDebugGameContext, ABC):
+    pass
+
 
 class PygameExtraContextTest(PygameExtraTest):
     AREA = (500, 500)
+    FLAGS = []
 
     class TestContext(PygameExtraDebugGameContext):
         BACKGROUND = pe.colors.black
         FPS = TEST_FPS
         MODE = SCREEN_MODE
 
-        def __init__(self, area):
+        def __init__(self, area, flags):
             self.AREA = area
+            self.FLAGS = flags
             super().__init__()
 
         def loop(self):
@@ -231,12 +237,15 @@ class PygameExtraContextTest(PygameExtraTest):
             pe.settings.game_context.__exit__(exc_type, exc_val, exc_tb)
             between_frame_sleep()
 
+        def __getattr__(self, item):
+            return getattr(pe.settings.game_context, item)
+
         @property
         def display_reference(self):
             return pe.display.display_reference
 
     def setUp(self):
-        self._context = self.TestContext(self.AREA)
+        self._context = self.TestContext(self.AREA, self.FLAGS)
         self.context = self.ContextingLogic()
 
     def tearDown(self):
@@ -246,6 +255,9 @@ class PygameExtraContextTest(PygameExtraTest):
         screen_flash_sleep()
         pe.settings.game_context = None
 
+class PygameExtraContextTestShader(PygameExtraContextTest):
+    class TestContext(PygameExtraContextTest.TestContext, PygameExtraDebugGameContextShader):
+        pass
 
 class PygameExtraSubContextTest(PygameExtraTest):
     AREA = (500, 500)
@@ -285,6 +297,9 @@ class PygameExtraSubContextTest(PygameExtraTest):
             pe.settings.game_context.sub_context.__exit__(exc_type, exc_val, exc_tb)
             pe.settings.game_context.__exit__(exc_type, exc_val, exc_tb)
             between_frame_sleep()
+
+        def __getattr__(self, item):
+            return getattr(pe.settings.game_context, item)
 
         @property
         def display_reference(self):

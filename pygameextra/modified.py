@@ -71,7 +71,7 @@ class Surface:
 
     def stamp(self, source: Union['Surface', pygame.Surface], position: tuple = (0, 0), area: tuple = None,
               special_flags: int = 0):
-        if type(source) is pygame.Surface:
+        if isinstance(source, pygame.Surface):
             self.surface.blit(source, position, area, special_flags)
         else:
             self.surface.blit(source.surface, position, area, special_flags)
@@ -151,6 +151,9 @@ class Surface:
         display.context(self._display_backup)
         self._display_backup = None
         self._offset.__exit__(exc_type, exc_val, exc_tb)
+
+    def fill(self, color):
+        return self.surface.fill(color)
 
 
 SurfaceFileType = Union[str, IO, Surface, pygame.Surface, CompressedSurface]

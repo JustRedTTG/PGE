@@ -307,13 +307,14 @@ class UnclippedContext(Context, ABC):
 class GameContext(Context, ABC):
     TITLE: str = "Game context"
     MODE: int = display.DISPLAY_MODE_NORMAL
+    FLAGS: List[int] = []
     FPS: int = None
     FPS_LOGGER: bool = False
 
     def __init__(self):
         if not settings.initialized:
             raise NotInitialized()
-        display.make(self.size, self.TITLE, self.MODE)
+        display.make(self.size, self.TITLE, self.MODE, self.FLAGS)
         self.surface = display.display_reference
         self.AREA = (0, 0, *display.get_size())
         self.area_based = False

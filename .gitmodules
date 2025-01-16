@@ -1,0 +1,3 @@
+[submodule "pygame_shaders_module"]
+	path = pygame_shaders_module
+	url = https://github.com/ScriptLineStudios/pygame_shaders.git

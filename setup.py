@@ -1,3 +1,6 @@
+import os
+import sys
+
 from setuptools import setup
 
 version = "2.0.0b77"
@@ -19,7 +22,9 @@ setup(
     description=short,
     long_description_content_type="text/markdown",
     long_description=long,
-    packages=['pygameextra', 'pygameextra.atlas', 'pygameextra.animations', 'pygameextra.touchingperimeter', 'pygameextra_tester'],
+    packages=['pygameextra', 'pygameextra.atlas', 'pygameextra.animations', 'pygameextra.touchingperimeter',
+              'pygameextra_tester', 'pygame_shaders'],
+    package_dir={'pygame_shaders': 'pygame_shaders_module/pygame_shaders'},
     install_requires=['pygame-ce', 'numpy', 'frozendict', 'requests', 'deprecation', 'pyperclip'],
     package_data={'pygameextra': ['assets/*'], 'pygameextra.touchingperimeter': ['LICENSE'], 'pygameextra_tester': [
         'columns.png', 'rows.png',
