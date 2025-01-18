@@ -23,7 +23,7 @@ class Draggable:
             self.rect = Rect(*self.pos, *self.area)
 
     def __init__(self, position: tuple[int, int], area: [tuple[int, int], None] = None,
-                 move_multiplier: [float, int] = 1):
+                 move_multiplier: [float, int] = 1, button_index: int = 0):
         self.pos = position
         self.area = area
         self.lock = False
@@ -32,6 +32,7 @@ class Draggable:
         self.active = False
         self.move_multiplier = move_multiplier
         self.collide = False
+        self.button_index = button_index
 
     def _calculate(self):
         new_pos = self.pos
@@ -71,17 +72,17 @@ class Draggable:
             button.action((0, 0, *display.get_size()), hover_action=self.__setattr__, hover_data=('collide', True),
                           name=self.button_name)
             collide = self.collide and not settings.button_lock
-        if (collide and clicked()[0] and not self.last_left_click) and not self.active:
+        if (collide and clicked()[self.button_index] and not self.last_left_click) and not self.active:
             self.active = True
             settings.button_lock = time.time()
             self.start_pos = pos()
-        elif clicked()[0] and self.active:
-            self.last_left_click = clicked()[0]
+        elif clicked()[self.button_index] and self.active:
+            self.last_left_click = clicked()[self.button_index]
             return True, self._calculate()
-        elif not clicked()[0] and self.active:
+        elif not clicked()[self.button_index] and self.active:
             self.active = False
             self.pos = self._calculate()
 
-        self.last_left_click = clicked()[0]
+        self.last_left_click = clicked()[self.button_index]
         self.collide = False
         return False, self.pos

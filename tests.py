@@ -15,7 +15,7 @@ pe.settings.raise_error_for_button_without_name = True
 pe.settings.use_button_context_indexing = False
 
 
-class Tests(pe.ShaderGameContext):
+class Tests(pe.GameContext):
     TITLE = "tests"
     AREA = (700, 700)
     BACKGROUND = pe.colors.verydarkgray
@@ -31,6 +31,8 @@ class Tests(pe.ShaderGameContext):
         self.input_box = pe.InputBox((10, 10, self.width - 20, 32), initial_value="A nice long text, to test things out")
         self.input_box.focus()
 
+        self.draggable = pe.Draggable((250, 250), area=(100, 100), button_index=2)
+
     def loop(self):
         pe.draw.rect(pe.colors.darkgray, self.input_box.area)
 
@@ -42,6 +44,9 @@ class Tests(pe.ShaderGameContext):
             pe.button.rect((i*50, 120+i*2, 100, 50), pe.colors.red, pe.colors.aqua, name=f"button_{i}")
 
         self.input_box.display()
+
+        _, pos = self.draggable.check()
+        pe.draw.rect(pe.colors.red, (*pos, 100, 100), 2)
 
 
 tests = Tests()
