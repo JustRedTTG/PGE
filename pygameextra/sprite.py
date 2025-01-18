@@ -65,7 +65,7 @@ class Sprite:
 
     def skip_frame(self, speed: int = None):
         """Skips to the next frame in the sprite animation, according to a speed variable"""
-        if not isinstance(self.reference, Union[Animator, Sheet]):
+        if not (isinstance(self.reference, Sheet) or isinstance(self.reference, Animator)):
             return
         self.index += speed or self.speed * self.delta_time * self.multiplier  # Add to the index, according to a speed variable
         if self.multiplier > 0 and self.index >= self.reference.frames - 1:  # Check direction and index
