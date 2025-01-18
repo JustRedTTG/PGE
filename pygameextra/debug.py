@@ -1,5 +1,6 @@
 from pygameextra import display, fill, draw, colors, event, mouse
 from pygameextra.fpslogger import Logger
+from pygameextra.draggable import Draggable
 
 
 class Debugger:
@@ -36,7 +37,7 @@ class Debugger:
             self.target.size[0] * .5,
             self.target.size[1] * .5
         )
-        self.draggable = mouse.Draggable(self.offset)
+        self.draggable = Draggable(self.offset)
 
     def reset(self):
         del self.target
