@@ -1,12 +1,14 @@
 """PYGAME EXTRA Modifications script
 This script manages all pygame modifications"""
 import zlib
+from io import IOBase
+
 import pygame
 
 from pygameextra import display, mouse
 from pygameextra.rect import Rect
 from pygameextra.sorters import layer_sorter
-from typing import Union, IO, List, Literal
+from typing import Union, List, Literal
 
 _string_format = Literal["P", "RGB", "RGBX", "RGBA", "ARGB", "BGRA"]
 
@@ -156,7 +158,7 @@ class Surface:
         return self.surface.fill(color)
 
 
-SurfaceFileType = Union[str, IO, Surface, pygame.Surface, CompressedSurface]
+SurfaceFileType = Union[str, IOBase, Surface, pygame.Surface, CompressedSurface]
 
 
 def transparent_surface(area: tuple, alpha: int):
