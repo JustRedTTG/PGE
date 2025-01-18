@@ -18,7 +18,10 @@ from pygameextra.floating_methods import *
 from pygameextra.layer_methods import *
 from pygameextra.atlas import *
 from pygameextra.context import Context, GameContext, ChildContext
-from pygameextra.shaders import ShaderGameContext
+try:
+    from pygameextra.shaders import ShaderGameContext
+except ModuleNotFoundError:
+    pass
 from pygameextra.button import Button, RectButton, ImageButton, ButtonManager, ButtonManagerWithInputBoxManager
 from pygameextra.inputbox import InputBox, ContextualizedInputBoxManager
 from pygameextra.draggable import Draggable
