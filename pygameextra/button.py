@@ -126,11 +126,11 @@ class Button:
 
     @staticmethod
     def action_call(action: ButtonAction):
-        data = action.get('args', ())
+        data = action.get('args', None)
         kwargs = action.get('kwargs', {})
         if isinstance(data, tuple):
             action['action'](*data, **kwargs)
-        elif not data:
+        elif data is None:
             action['action'](**kwargs)
         else:
             action['action'](data, **kwargs)
