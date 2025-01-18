@@ -1,6 +1,6 @@
 """PYGAME EXTRA Sprite script
 This script manages all sprite functions"""
-from typing import Union
+from typing import Union, get_args
 
 import pygame
 from pygameextra.rect import Rect
@@ -29,7 +29,7 @@ class Sprite:
             self.reference = sprite_reference
             self.resize = resize
             self.sheet_or_animator = True
-        elif isinstance(sprite_reference, SurfaceFileType):  # Using SurfaceFileType
+        elif any(isinstance(sprite_reference, arg) for arg in get_args(SurfaceFileType)):  # Using SurfaceFileType
             self.reference = get_surface_file(sprite_reference, layer)
             self.resize = resize or self.reference.size
         else:
