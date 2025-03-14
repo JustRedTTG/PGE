@@ -343,6 +343,7 @@ class GameContext(Context, ABC):
     def start_loop(self):
         super().start_loop()
         self.button_manager.push_buttons()
+        self.input_box_manager.push_input_boxes()
 
     def end_loop(self):
         if self.FPS_LOGGER:
