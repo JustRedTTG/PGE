@@ -162,6 +162,10 @@ class KeyHold:
             except KeyError:
                 pass
 
+    def clear(self):
+        if len(self.keys_down) > 0:
+            self.keys_down.clear()
+
     def handle_hold(self) -> List[Key]:
         keys: List[Key] = []
         for key, pressed in self.keys_down.items():

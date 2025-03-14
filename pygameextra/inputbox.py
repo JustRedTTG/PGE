@@ -192,9 +192,19 @@ class StandaloneInputBoxManager:
     def __init__(self):
         self.input_boxes = []
         self.previous_input_boxes = []
-        self.active_input_box: Optional[InputBox] = None
+        self._active_input_box: Optional[InputBox] = None
         self.key_hold = KeyHold()
         self.cursor_blink_timer = time.time()
+
+    @property
+    def active_input_box(self):
+        return self._active_input_box
+
+    @active_input_box.setter
+    def active_input_box(self, value):
+        if value is None:
+            self.key_hold.clear()
+        self._active_input_box = value
 
     def update_input_boxes(self):
         if self.active_input_box and self.active_input_box not in self.input_boxes:
@@ -206,9 +216,20 @@ class StandaloneInputBoxManager:
         if not self.active_input_box:
             return
         for key in self.key_hold.handle_hold():
-            self.handle_key_action(key)
+            self.handle_key_action_hold(key)
 
-    def handle_key_action(self, key: Key):
+    def handle_key_action_press(self, key: Key):
+        if key == pygame.K_RETURN or key == pygame.KSCAN_RETURN:
+            self.active_input_box.action()
+        elif key == pygame.K_HOME:
+            self.active_input_box.cursor_index = 0
+        elif key == pygame.K_END:
+            self.active_input_box.cursor_index = len(self.active_input_box.value)
+        else:
+            return False
+        return True
+
+    def handle_key_action_hold(self, key: Key):
         if key == pygame.K_BACKSPACE:
             self.active_input_box.backspace()
         elif key == pygame.K_DELETE:
@@ -217,12 +238,6 @@ class StandaloneInputBoxManager:
             self.active_input_box.right()
         elif key == pygame.K_LEFT:
             self.active_input_box.left()
-        elif key == pygame.K_HOME:
-            self.active_input_box.cursor_index = 0
-        elif key == pygame.K_END:
-            self.active_input_box.cursor_index = len(self.active_input_box.value)
-        elif key == pygame.K_RETURN:
-            self.active_input_box.action()
         elif pygame.K_LCTRL in self.key_hold.keys_down or pygame.K_RCTRL in self.key_hold.keys_down:
             if key == pygame.K_v:
                 text = pyperclip.paste()
@@ -250,7 +265,9 @@ class StandaloneInputBoxManager:
         if not self.active_input_box:
             return
         if key := self.key_hold.handle_event():
-            self.handle_key_action(key)
+            if not self.handle_key_action_press(key):
+                self.handle_key_action_hold(key)
+
 
 
 class ContextualizedInputBoxManager:
