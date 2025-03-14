@@ -1,6 +1,6 @@
 import string
 import time
-from typing import Union
+from typing import Union, Optional
 import pygame
 import pyperclip
 from pygame.rect import RectType
@@ -78,6 +78,13 @@ class InputBox:
 
     def focus(self):
         self.input_box_manager.active_input_box = self
+
+    def unfocus(self):
+        self.input_box_manager.active_input_box = None
+
+    @property
+    def focused(self):
+        return self.input_box_manager.active_input_box == self
 
     def focus_to_cursor(self):
         if not mouse.clicked()[0]:
@@ -185,7 +192,7 @@ class StandaloneInputBoxManager:
     def __init__(self):
         self.input_boxes = []
         self.previous_input_boxes = []
-        self.active_input_box: InputBox = None
+        self.active_input_box: Optional[InputBox] = None
         self.key_hold = KeyHold()
         self.cursor_blink_timer = time.time()
 
