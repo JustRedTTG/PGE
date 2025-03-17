@@ -225,8 +225,6 @@ class ChildContext(ABC):
         pass
 
     def _loop(self):
-
-        self.events()
         self.pre_loop()
         self.loop()
         self.post_loop()
