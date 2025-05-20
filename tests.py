@@ -31,7 +31,8 @@ class Tests(pe.GameContext):
         self.input_box = pe.InputBox(
             (10, 10, self.width - 20, 32),
             initial_value="A nice long text, to test things out",
-            text_colors=[pe.colors.white, None]
+            text_colors=[pe.colors.white, None],
+            selected_colors=[pe.colors.white, pe.colors.gray]
         )
         self.input_box.focus()
 

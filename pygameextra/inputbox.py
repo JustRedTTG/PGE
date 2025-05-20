@@ -26,13 +26,16 @@ class InputBox:
 
     def __init__(self, area: RectType, font: Union[str, pygame.font.Font] = ASSET_FONT, initial_value: str = '',
                  font_size: int = 20,
-                 text_colors: Union[tuple, list] = (colors.black, None), antialias: bool = True,
+                 text_colors: Union[tuple, list] = (colors.black, None),
+                 selected_colors=(colors.white, colors.aquamarine),
+                 antialias: bool = True,
                  allowed_characters: tuple = DEFAULT_ALLOWED_CHARACTERS, return_action=None):
         self.return_action = return_action
         self.area = area
         self.value = initial_value
         self.text_metrics = {}
         self.text = Text('', font, font_size, (0, 0), text_colors, antialias)
+        self.selected_text = Text('', font, font_size, (0, 0), selected_colors, antialias)
         self._padding = self.text.font.get_height() * .4
         self._left = self._padding
         self.text_indexing = []
@@ -40,7 +43,8 @@ class InputBox:
         self._surface = Surface(self.area.size)
         self._cursor_index = len(self.value)
         self.allowed_characters = allowed_characters
-        self.active_selection = None
+        self._active_selection = None
+        self._selection_hold = False
 
     @property
     def value(self):
@@ -91,11 +95,18 @@ class InputBox:
 
     def focus_to_cursor(self):
         if not mouse.clicked()[0]:
+            self._selection_hold = False
             return
         self.focus()
         with mouse.Offset(self.area.topleft, False, True):
             pos = mouse.pos()
         nearest_x = min(self.text_indexing, key=lambda x: abs(x - pos[0]))
+        mods = pygame.key.get_mods()
+        if mods & pygame.KMOD_SHIFT or self._selection_hold:
+            self.select_to(self.text_indexing.index(nearest_x))
+        elif not self._selection_hold:
+            self.active_selection = None
+        self._selection_hold = True
         self.cursor_index = self.text_indexing.index(nearest_x)
 
     def refresh_text(self):
@@ -119,7 +130,23 @@ class InputBox:
             x += metric[4]
         self.text_indexing.append(x)
 
+    def cut(self):
+        left, right = self._pair_selection(*self.active_selection)
+        del self._value[left:right]
+        self.cursor_index = left
+        self.refresh_text()
+        self.active_selection = None
+
+    def copy(self):
+        if self.active_selection:
+            left, right = self._pair_selection(*self.active_selection)
+            return ''.join(self._value[left:right])
+        return ''
+
     def backspace(self):
+        if self.active_selection:
+            self.cut()
+            return
         if len(self.value) < 1 or self.cursor_index == 0:
             return
         del self._value[self.cursor_index - 1]
@@ -127,6 +154,9 @@ class InputBox:
         self.refresh_text()
 
     def delete(self):
+        if self.active_selection:
+            self.cut()
+            return
         if (value_length := len(self.value)) < 1 or self.cursor_index == value_length:
             return
         del self._value[self.cursor_index]
@@ -166,6 +196,8 @@ class InputBox:
             fill.full((0, 0, 0, 0))
             self.text.rect.left = self._left
             self.text.display()
+            if self.active_selection:
+                self.draw_selection()
             # Enable click to focus and glide
             button.action(
                 (0, 0, *self.area.size),
@@ -183,10 +215,51 @@ class InputBox:
             return
         draw.line(self.text.color, (self.cursor_x, self.text.rect.top), (self.cursor_x, self.text.rect.bottom), 2)
 
-    # def draw_selection(self, ):
+    def draw_selection(self):
+        draw.rect(self.selected_text.background, self.selected_text.rect.inflate(self._padding / 2, self._padding / 2),
+                  1)
+        self.selected_text.display()
 
     def check_value(self):
         pass
+
+    @staticmethod
+    def _pair_selection(*values):
+        # Ensure the values are in ascending order
+        left = min(values)
+        right = max(values)
+        return left, right
+
+    @property
+    def active_selection(self):
+        return self._active_selection
+
+    @active_selection.setter
+    def active_selection(self, value):
+        if value is None:
+            self._active_selection = None
+            self.selected_text.text = ''
+            self.selected_text.init()
+            return
+        # Get the indexes in order from the selection
+        left, right = self._pair_selection(*value)  # unpack the selection
+        self._active_selection = value
+
+        # Update the selected text
+        self.selected_text.text = self.value[left:right]
+        self.selected_text.init()
+
+        # Update the selected text position to match the input box
+        self.selected_text.rect.left = self.text_indexing[left]
+        self.selected_text.rect.centery = self.text.rect.centery
+
+    def select_to(self, index):
+        if index < 0 or index > len(self.value):
+            return
+        if self.active_selection is None and self.cursor_index != index:  # Create a new selection
+            self.active_selection = (self.cursor_index, index)
+        elif self.active_selection:  # Update the existing selection from its origin
+            self.active_selection = (self.active_selection[0], index)
 
 
 # noinspection PyProtectedMember
@@ -255,6 +328,11 @@ class StandaloneInputBoxManager:
                     self.active_input_box._value[self.active_input_box.cursor_index:]
                 self.active_input_box.refresh_text()
                 self.active_input_box.cursor_index += len(text)
+            elif self.active_input_box.active_selection and key == pygame.K_c:
+                pyperclip.copy(self.active_input_box.copy())
+            elif self.active_input_box.active_selection and key == pygame.K_x:
+                pyperclip.copy(self.active_input_box.copy())
+                self.active_input_box.cut()
         elif key.unicode:
             if key.unicode.isalpha() or key.unicode in self.active_input_box.allowed_characters:
                 self.active_input_box._value.insert(self.active_input_box.cursor_index, key.unicode)
