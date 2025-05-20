@@ -108,6 +108,7 @@ def keylog() -> int:
     """
     if c.type == pygame.KEYDOWN or c.type == pygame.KEYUP:
         return c.key
+    return None
 
 
 def key_UP(var) -> bool:
@@ -117,6 +118,7 @@ def key_UP(var) -> bool:
     """
     if c.type == pygame.KEYUP:
         return c.key == var
+    return False
 
 
 def key_DOWN(var) -> bool:
@@ -126,6 +128,7 @@ def key_DOWN(var) -> bool:
     """
     if c.type == pygame.KEYDOWN:
         return c.key == var
+    return False
 
 
 class Key:
@@ -159,8 +162,10 @@ class KeyHold:
         elif c.type == pygame.KEYUP:
             try:
                 del self.keys_down[c.key]
+                return None
             except KeyError:
-                pass
+                return None
+        return None
 
     def clear(self):
         if len(self.keys_down) > 0:
@@ -177,5 +182,24 @@ class KeyHold:
                 keys.append(key)
             self.keys_down[key] = pressed
         return keys
-        
-    
+
+
+def check_home(key):
+    if sys.platform == 'darwin':
+        # Handle macOS specific keys
+        mods = pygame.key.get_mods()
+        if mods & pygame.KMOD_META:
+            return key.key == pygame.K_LEFT
+    else:
+        return key == pygame.K_HOME or key == pygame.KSCAN_HOME
+    return False
+
+def check_end(key):
+    if sys.platform == 'darwin':
+        # Handle macOS specific keys
+        mods = pygame.key.get_mods()
+        if mods & pygame.KMOD_META:
+            return key.key == pygame.K_RIGHT
+    else:
+        return key == pygame.K_END or key == pygame.KSCAN_END
+    return False

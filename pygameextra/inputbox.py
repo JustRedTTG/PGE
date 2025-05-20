@@ -1,4 +1,5 @@
 import string
+import sys
 import time
 from typing import Union, Optional
 import pygame
@@ -8,7 +9,7 @@ from pygame.rect import RectType
 from pygameextra.event import KeyHold, Key
 from pygameextra.text import Text
 from pygameextra.modified import Surface
-from pygameextra import button, mouse, settings, Rect, fill, display, draw, colors
+from pygameextra import button, mouse, settings, Rect, fill, display, draw, colors, event
 from pygameextra.assets import ASSET_FONT
 
 
@@ -25,27 +26,29 @@ class InputBox:
 
     def __init__(self, area: RectType, font: Union[str, pygame.font.Font] = ASSET_FONT, initial_value: str = '',
                  font_size: int = 20,
-                 colors: Union[tuple, list] = ((255, 255, 255), None), antialias: bool = True,
+                 text_colors: Union[tuple, list] = (colors.black, None), antialias: bool = True,
                  allowed_characters: tuple = DEFAULT_ALLOWED_CHARACTERS, return_action=None):
         self.return_action = return_action
         self.area = area
-        self.value = [*initial_value]
+        self.value = initial_value
         self.text_metrics = {}
-        self.text = Text('', font, font_size, (0, 0), colors, antialias)
+        self.text = Text('', font, font_size, (0, 0), text_colors, antialias)
         self._padding = self.text.font.get_height() * .4
         self._left = self._padding
+        self.text_indexing = []
         self.refresh_text()
         self._surface = Surface(self.area.size)
         self._cursor_index = len(self.value)
         self.allowed_characters = allowed_characters
+        self.active_selection = None
 
     @property
     def value(self):
-        return self._value
+        return ''.join(self._value)
 
     @value.setter
-    def value(self, value):
-        self._value = value
+    def value(self, value: str):
+        self._value = [*value]
         self.check_value()
 
     @property
@@ -96,7 +99,7 @@ class InputBox:
         self.cursor_index = self.text_indexing.index(nearest_x)
 
     def refresh_text(self):
-        self.text.text = ''.join(self.value)
+        self.text.text = self.value
         self.text.init()
 
         self.text_metrics = self.text.font.metrics(self.text.text)
@@ -109,7 +112,7 @@ class InputBox:
         self.text.rect.left = self._left
 
         # Calculate the x coordinates of each index
-        self.text_indexing = []
+        self.text_indexing.clear()
         x = self.text.rect.left
         for metric in self.text_metrics:
             self.text_indexing.append(x)
@@ -119,14 +122,14 @@ class InputBox:
     def backspace(self):
         if len(self.value) < 1 or self.cursor_index == 0:
             return
-        del self.value[self.cursor_index - 1]
+        del self._value[self.cursor_index - 1]
         self.cursor_index -= 1
         self.refresh_text()
 
     def delete(self):
         if (value_length := len(self.value)) < 1 or self.cursor_index == value_length:
             return
-        del self.value[self.cursor_index]
+        del self._value[self.cursor_index]
         self.refresh_text()
 
     def right(self):
@@ -178,12 +181,15 @@ class InputBox:
     def draw_cursor(self, active_blink: bool):
         if not active_blink:
             return
-        draw.line(colors.white, (self.cursor_x, self.text.rect.top), (self.cursor_x, self.text.rect.bottom), 2)
+        draw.line(self.text.color, (self.cursor_x, self.text.rect.top), (self.cursor_x, self.text.rect.bottom), 2)
+
+    # def draw_selection(self, ):
 
     def check_value(self):
         pass
 
 
+# noinspection PyProtectedMember
 class StandaloneInputBoxManager:
     CURSOR_BLINK_STAY = .3
     CURSOR_BLINK_DELAY = .4
@@ -208,9 +214,9 @@ class StandaloneInputBoxManager:
 
     def update_input_boxes(self):
         if self.active_input_box and self.active_input_box not in self.input_boxes:
-            self.active_input_box = None
-        if self.active_input_box and mouse.clicked()[0] and not self.active_input_box.area.collidepoint(mouse.pos()):
-            self.active_input_box = None
+            self.active_input_box.unfocus()
+        if self.active_input_box and any(mouse.clicked()) and not self.active_input_box.area.collidepoint(mouse.pos()):
+            self.active_input_box.unfocus()
         if self.cursor_blink_timer + self.CURSOR_BLINK_TIMEOUT < time.time():
             self.cursor_blink_timer = time.time()
         if not self.active_input_box:
@@ -221,15 +227,17 @@ class StandaloneInputBoxManager:
     def handle_key_action_press(self, key: Key):
         if key == pygame.K_RETURN or key == pygame.KSCAN_RETURN:
             self.active_input_box.action()
-        elif key == pygame.K_HOME:
+        elif event.check_home(key):
             self.active_input_box.cursor_index = 0
-        elif key == pygame.K_END:
+        elif event.check_end(key):
             self.active_input_box.cursor_index = len(self.active_input_box.value)
         else:
             return False
         return True
 
     def handle_key_action_hold(self, key: Key):
+        mods = pygame.key.get_mods()
+        system_mod = mods & pygame.KMOD_CTRL if sys.platform != 'darwin' else mods & pygame.KMOD_META
         if key == pygame.K_BACKSPACE:
             self.active_input_box.backspace()
         elif key == pygame.K_DELETE:
@@ -238,18 +246,18 @@ class StandaloneInputBoxManager:
             self.active_input_box.right()
         elif key == pygame.K_LEFT:
             self.active_input_box.left()
-        elif pygame.K_LCTRL in self.key_hold.keys_down or pygame.K_RCTRL in self.key_hold.keys_down:
+        elif system_mod:
             if key == pygame.K_v:
                 text = pyperclip.paste()
-                self.active_input_box.value = \
-                    self.active_input_box.value[:self.active_input_box.cursor_index] + \
+                self.active_input_box._value = \
+                    self.active_input_box._value[:self.active_input_box.cursor_index] + \
                     [*text] + \
-                    self.active_input_box.value[self.active_input_box.cursor_index:]
+                    self.active_input_box._value[self.active_input_box.cursor_index:]
                 self.active_input_box.refresh_text()
                 self.active_input_box.cursor_index += len(text)
         elif key.unicode:
             if key.unicode.isalpha() or key.unicode in self.active_input_box.allowed_characters:
-                self.active_input_box.value.insert(self.active_input_box.cursor_index, key.unicode)
+                self.active_input_box._value.insert(self.active_input_box.cursor_index, key.unicode)
                 self.active_input_box.refresh_text()
                 self.active_input_box.cursor_index += 1
             return
@@ -261,13 +269,12 @@ class StandaloneInputBoxManager:
     def push_input_boxes(self):
         self.input_boxes, self.previous_input_boxes = [], self.input_boxes
 
-    def handle_input_boxes(self, event):
+    def handle_input_boxes(self, _):
         if not self.active_input_box:
             return
         if key := self.key_hold.handle_event():
             if not self.handle_key_action_press(key):
                 self.handle_key_action_hold(key)
-
 
 
 class ContextualizedInputBoxManager:

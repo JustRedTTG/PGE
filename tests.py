@@ -28,7 +28,11 @@ class Tests(pe.GameContext):
     def __init__(self):
         super().__init__()
 
-        self.input_box = pe.InputBox((10, 10, self.width - 20, 32), initial_value="A nice long text, to test things out")
+        self.input_box = pe.InputBox(
+            (10, 10, self.width - 20, 32),
+            initial_value="A nice long text, to test things out",
+            text_colors=[pe.colors.white, None]
+        )
         self.input_box.focus()
 
         self.draggable = pe.Draggable((250, 250), area=(100, 100), button_index=2)
