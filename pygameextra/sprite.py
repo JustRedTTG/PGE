@@ -121,7 +121,7 @@ class Sprite:
             self.speed = self.reference.speed or self.speed or 0
             self.skip_frame()
         else:
-            display.blit(self.get_finished_surface(), position or self.pos, area)
+            display.blit(self.get_finished_surface(), rect.topleft, area)
 
     @property
     def delta_time(self):
