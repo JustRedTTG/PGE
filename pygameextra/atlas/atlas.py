@@ -151,11 +151,16 @@ class Atlas:
 
         surface = Surface(size)
 
+        seen_mappings = set()
         with surface:
             for key, sheet in sheets.items():
                 for index in range(sheet.frames):
                     mapping = sheet.handler.get(index)
-                    display.blit(sheet.surface, mappings[key][index][:2], mapping)
+                    packed_mapping = mappings[key][index]
+                    if packed_mapping in seen_mappings:
+                        continue
+                    seen_mappings.add(packed_mapping)
+                    display.blit(sheet.surface, packed_mapping, mapping)
 
         # noinspection PyTypeChecker
         return cls(surface, mappings, {

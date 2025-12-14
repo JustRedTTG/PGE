@@ -96,14 +96,26 @@ def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: d
     # Set a random starting size for the atlas
     begin_size = surfaces[0][1].size
 
+    # Separate unique surfaces from duplicates
+    unique_surfaces = {}
+    surface_uniqueness_map = {}
+    for surface in surfaces:
+        surface_hash = hash(surface[1])
+        if surface_hash not in surface_uniqueness_map:
+            surface_uniqueness_map[surface_hash] = [(surface[0], surface[2])]
+            unique_surfaces[surface_hash] = surface[1]
+        else:
+            surface_uniqueness_map[surface_hash].append((surface[0], surface[2]))
+
+
     # Create a box object for each surface
     rects = [
-        Rect(0, 0, *surface[1].size) for surface in surfaces
+        Rect(0, 0, *surface.size) for surface in unique_surfaces.values()
     ]
 
     # Store a reference to the surface for each rect
     surface_backref = {
-        id(rect): surface for rect, surface in zip(rects, surfaces)
+        id(rect): surface_hash for rect, surface_hash in zip(rects, unique_surfaces.keys())
     }
 
     # Pack the rects
@@ -113,9 +125,10 @@ def pack_surfaces(surfaces: List[Tuple[str, Surface, int]], existing_mappings: d
     temporary_mappings = {key: [] for key in keys}
 
     for rect in packing_map:
-        surface = surface_backref[id(rect)]
+        surface_hash = surface_backref[id(rect)]
         # Temporarily map the rects to their surfaces to determine the key and get the index
-        temporary_mappings[surface[0]].append((rect, surface[2]))
+        for surface in surface_uniqueness_map[surface_hash]:
+            temporary_mappings[surface[0]].append((rect, surface[1]))
 
     # Sort the temporary mappings by the frame index
     for key in keys:

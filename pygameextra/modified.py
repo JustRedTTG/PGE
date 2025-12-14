@@ -154,6 +154,9 @@ class Surface:
         self._display_backup = None
         self._offset.__exit__(exc_type, exc_val, exc_tb)
 
+    def __hash__(self):
+        return hash(pygame.image.tobytes(self.surface, 'RGBA'))
+
     def fill(self, color):
         return self.surface.fill(color)
 

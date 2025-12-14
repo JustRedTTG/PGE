@@ -57,10 +57,7 @@ class PygameExtraTest(unittest.TestCase):
 
     def assert_surfaces_are_same(self, surface1: pe.Surface, surface2: pe.Surface):
         self.assertEqual(surface1.size, surface2.size, "Sizes should be the same")
-        for x in range(surface1.size[0]):
-            for y in range(surface1.size[1]):
-                self.assertEqual(surface1.get_at((x, y)), surface2.get_at((x, y)),
-                                 f"Color at {x}, {y} should be the same")
+        self.assertEqual(hash(surface1), hash(surface2), "Surface hashes should be the same")
 
     def _test_sheet_matches(self, sheet: pe.Sheet, generator: GeneratorType):
         for i in generator:
